@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dailyreprotmc" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
+	<property name="ireport.zoom" value="2.5937424601000028"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DATE" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from forex.mtranx where date(date) = $P{DATE}]]>
+	</queryString>
+	<field name="tranx_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="date" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="rate" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="curr" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="serials" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="net" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="CURR_TOTAL" class="java.lang.Double" resetType="Group" resetGroup="CURR" calculation="Sum">
+		<variableExpression><![CDATA[$F{net}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
+	</variable>
+	<variable name="CURR_QTY" class="java.lang.Double" resetType="Group" resetGroup="CURR">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
+	</variable>
+	<variable name="TOTAK" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{net}]]></variableExpression>
+	</variable>
+	<group name="CURR">
+		<groupExpression><![CDATA[$F{curr}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField>
+					<reportElement x="0" y="0" width="49" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{curr}.toUpperCase()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="218" y="0" width="70" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[AMOUNT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="89" y="0" width="79" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[QUANTITY]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="168" y="0" width="50" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[RATE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="49" y="0" width="40" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[#]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<textField pattern="#,##0.00">
+					<reportElement x="218" y="0" width="70" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{CURR_TOTAL})]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00">
+					<reportElement x="89" y="0" width="79" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CURR_QTY}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="49" y="0" width="40" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CURR_COUNT}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="49" height="20" />
+					<box>
+						<pen lineWidth="0.5" lineColor="#333333"/>
+						<topPen lineWidth="0.5" lineColor="#333333"/>
+						<leftPen lineWidth="0.5" lineColor="#333333"/>
+						<bottomPen lineWidth="0.5" lineColor="#333333"/>
+						<rightPen lineWidth="0.5" lineColor="#333333"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[SUBTOTAL]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="80">
+			<staticText>
+				<reportElement x="36" y="0" width="248" height="23" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[MERLIN PAWNSHOP, INC. - MONEY CHANGER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="33" width="284" height="13" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[SUMMARY OF TRANSACTIONS / DAILY REPORT]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="46" width="284" height="20" />
+				<box>
+					<pen lineWidth="0.0" lineColor="#333333"/>
+					<topPen lineWidth="0.0" lineColor="#333333"/>
+					<leftPen lineWidth="0.0" lineColor="#333333"/>
+					<bottomPen lineWidth="0.0" lineColor="#333333"/>
+					<rightPen lineWidth="0.0" lineColor="#333333"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new StringBuilder(new SimpleDateFormat("MMMMMMMMM dd, yyyy").format($F{date}).toUpperCase())]]></textFieldExpression>
+			</textField>
+			<image onErrorType="Blank">
+				<reportElement x="12" y="2" width="21" height="20" />
+				<imageExpression><![CDATA["C:\\MPIS\\merlin icon forms.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="20">
+			<textField>
+				<reportElement x="168" y="0" width="50" height="20" />
+				<box>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+					<topPen lineWidth="0.5" lineColor="#333333"/>
+					<leftPen lineWidth="0.5" lineColor="#333333"/>
+					<bottomPen lineWidth="0.5" lineColor="#333333"/>
+					<rightPen lineWidth="0.5" lineColor="#333333"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="218" y="0" width="70" height="20" />
+				<box>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+					<topPen lineWidth="0.5" lineColor="#333333"/>
+					<leftPen lineWidth="0.5" lineColor="#333333"/>
+					<bottomPen lineWidth="0.5" lineColor="#333333"/>
+					<rightPen lineWidth="0.5" lineColor="#333333"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{net})]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="89" y="0" width="79" height="20" />
+				<box>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+					<topPen lineWidth="0.5" lineColor="#333333"/>
+					<leftPen lineWidth="0.5" lineColor="#333333"/>
+					<bottomPen lineWidth="0.5" lineColor="#333333"/>
+					<rightPen lineWidth="0.5" lineColor="#333333"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="49" y="0" width="40" height="20" />
+				<box>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+					<topPen lineWidth="0.5" lineColor="#333333"/>
+					<leftPen lineWidth="0.5" lineColor="#333333"/>
+					<bottomPen lineWidth="0.5" lineColor="#333333"/>
+					<rightPen lineWidth="0.5" lineColor="#333333"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{CURR_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="85">
+			<textField pattern="#,##0.00">
+				<reportElement x="218" y="0" width="70" height="20" />
+				<box>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+					<topPen lineWidth="0.5" lineColor="#333333"/>
+					<leftPen lineWidth="0.5" lineColor="#333333"/>
+					<bottomPen lineWidth="0.5" lineColor="#333333"/>
+					<rightPen lineWidth="0.5" lineColor="#333333"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{TOTAK})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="49" height="20" />
+				<box>
+					<pen lineWidth="0.5" lineColor="#333333"/>
+					<topPen lineWidth="0.5" lineColor="#333333"/>
+					<leftPen lineWidth="0.5" lineColor="#333333"/>
+					<bottomPen lineWidth="0.5" lineColor="#333333"/>
+					<rightPen lineWidth="0.5" lineColor="#333333"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="49" y="0" width="40" height="20" />
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="35" width="288" height="8" />
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[USD - US DOLLAR  |  CAD - CANADIAN DOLLAR  |  AUD - AUSTRALIAN DOLLAR  |  JPY - JAPAN YEN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="43" width="288" height="10" />
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[GBP - UK POUND  |  BHD - BAHRAINI DINAR  |  BND - BRUNEI DOLLAR  |  HKD - HONGKONG DOLLAR ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="53" width="288" height="10" />
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[CHF - SWISS FRANC  |  QAR - QATAR RIYAL  |  KRW - KOREAN WON  |  KWD - KUWAITI DINAR ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="63" width="288" height="10" />
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[JPY - JAPAN YEN  |  THB - THAILAND BAHT  |  SGD - SINGAPOREAN DOLLAR  |  AED - UAE DIRHAM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="73" width="288" height="10" />
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[EUR - EURO  |   MYR - MALAYSIAN RINGGIT   |   TWD - TAIWAN NEW DOLLAR]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

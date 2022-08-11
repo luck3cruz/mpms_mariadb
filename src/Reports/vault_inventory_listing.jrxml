@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="2.1435888100000016"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="BRANCH_PARAM" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select branch, a.pap_num AS 'Pap. No.', client_name AS 'Client Name', remarks AS 'Remarks', item_description AS 'Item Description', transaction_date AS 'Transaction Date', b.principal AS 'Principal', classification as 'Classification' FROM merlininventorydatabase.client_info a INNER JOIN merlininventorydatabase.empeno b ON a.item_code_a = b.pap_num WHERE a.branch = $P{BRANCH_PARAM} and a.status = 'Open' and (new_pap_num = 'null') order by classification asc, transaction_date desc]]>
+	</queryString>
+	<field name="branch" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Pap. No." class="java.lang.String"/>
+	<field name="Client Name" class="java.lang.String"/>
+	<field name="Remarks" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Item Description" class="java.lang.String"/>
+	<field name="Transaction Date" class="java.sql.Date"/>
+	<field name="Principal" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Classification" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="VEHICLE_4W_COUNT" class="java.lang.Integer" resetType="Group" resetGroup="CLASS_GROUP">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_EMP" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{Principal}]]></variableExpression>
+	</variable>
+	<variable name="CLASS_AMOUNT" class="java.lang.Double" resetType="Group" resetGroup="CLASS_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{Principal}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
+	</variable>
+	<group name="CLASS_GROUP">
+		<groupExpression><![CDATA[$F{Classification}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField>
+					<reportElement mode="Opaque" x="0" y="0" width="572" height="20" forecolor="#FFFFFF" backcolor="#666666"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" isBold="true"/>
+						<paragraph leftIndent="15"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Classification}.toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="58" splitType="Stretch">
+			<staticText>
+				<reportElement x="43" y="21" width="531" height="17"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VAULT INVENTORY LISTING]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="437" y="21" width="132" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new StringBuilder("AS OF  " + new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()))]]></textFieldExpression>
+			</textField>
+			<image onErrorType="Blank">
+				<reportElement x="1" y="1" width="101" height="37" isRemoveLineWhenBlank="true"/>
+				<imageExpression><![CDATA["D:\\merlin logo.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="43" y="2" width="526" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MERLIN PAWNSHOP INVENTORY SYSTEM]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="437" y="2" width="135" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{branch}.toUpperCase() + new String(' BRANCH')]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="12" splitType="Stretch">
+			<textField>
+				<reportElement x="449" y="0" width="80" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Roboto Condensed" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="529" y="0" width="40" height="12"/>
+				<textElement>
+					<font fontName="Roboto Condensed" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="58" y="0" width="110" height="25" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CLIENT NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="168" y="0" width="193" height="25" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ITEM DESCRIPTION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="428" y="0" width="57" height="25" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRINCIPAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="23" height="25" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="23" y="0" width="35" height="25" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PAP #.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="361" y="0" width="67" height="25" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DATE LOAN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="485" y="0" width="87" height="25" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REMARKS]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="572" height="32" backcolor="#E2E2E2">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2 == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Roboto Condensed"/>
+				</textElement>
+				<text><![CDATA[ ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="23" y="0" width="35" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Pap. No.}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="58" y="0" width="110" height="32"/>
+				<box leftPadding="8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Client Name}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="0" width="193" height="32"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Item Description}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="361" y="0" width="67" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new StringBuilder(new SimpleDateFormat("MM/dd/yyyy").format($F{Transaction Date}).toUpperCase())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="428" y="0" width="58" height="32"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{Principal})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="0" width="22" height="32"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{CLASS_GROUP_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="485" y="1" width="87" height="31"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Remarks}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<lastPageFooter>
+		<band height="15">
+			<staticText>
+				<reportElement x="389" y="0" width="100" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+				</textElement>
+				<text><![CDATA[Date and Time Printed:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="489" y="0" width="83" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="93">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="572" height="38" forecolor="#FFFFFF" backcolor="#333333"/>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<topPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+				</textElement>
+				<text><![CDATA[        REPORT SUMMARY   |]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="267" y="0" width="49" height="38" forecolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="134" y="0" width="133" height="38" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TOTAL NO OF ITEMS (LOTES):  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="315" y="0" width="174" height="38" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TOTAL AMOUNT OF EMPEÑO(IN PHP):  ]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="489" y="0" width="80" height="38" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{TOTAL_EMP})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="398" y="73" width="168" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9"/>
+				</textElement>
+				<text><![CDATA[Date Audited:  __________________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="53" width="219" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9"/>
+				</textElement>
+				<text><![CDATA[Vault Custodian:  __________________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="398" y="53" width="168" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9"/>
+				</textElement>
+				<text><![CDATA[Audited by:  __________________________]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

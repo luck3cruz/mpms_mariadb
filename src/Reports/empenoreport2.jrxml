@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="EMPENO_DATE" class="java.lang.String"/>
+	<parameter name="AMOUNT_DIVISION" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[10000.00]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMPENO_DATE2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT case
+	when principal > 50000 then 'big'
+	else 'small'
+	END AS amount_grp, a.branch, a.pap_num, client_name, client_address, principal, ai, sc, insurance, item_description, date, remarks from merlininventorydatabase.client_info a inner join merlininventorydatabase.empeno b on a.item_code_a = b.pap_num
+where date between $P{EMPENO_DATE} and $P{EMPENO_DATE2}
+order by amount_grp, pap_num;;]]>
+	</queryString>
+	<field name="amount_grp" class="java.lang.String"/>
+	<field name="branch" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pap_num" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="client_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="client_address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="principal" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ai" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sc" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="insurance" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_description" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="remarks" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="TOTAL_PRINCIPAL" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{principal}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_AI" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{ai}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_SC" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{sc}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_INSURANCE" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{insurance}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_NET_PROCEEDS" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{principal}-$F{ai}-$F{sc}-$F{insurance}]]></variableExpression>
+	</variable>
+	<group name="AMOUNT_GROUP">
+		<groupExpression><![CDATA[$F{amount_grp}]]></groupExpression>
+		<groupHeader>
+			<band height="55">
+				<textField>
+					<reportElement x="0" y="0" width="572" height="19"/>
+					<box>
+						<bottomPen lineWidth="0.75" lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("big") ?
+new StringBuilder("LOANS WITH CAPITAL AMOUNTING TO " + new DecimalFormat("#,##0.00").format($P{AMOUNT_DIVISION}+1) + " AND UP")
+: new StringBuilder("LOANS WITH CAPITAL AMOUNTING BELOW " + new DecimalFormat("#,##0.00").format($P{AMOUNT_DIVISION}))]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="19" width="182" height="36" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.5" lineStyle="Double"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[DESCRIPTION OF PAWN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="182" y="19" width="111" height="36" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.5" lineStyle="Double"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[ADDRESS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="293" y="19" width="62" height="36" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.5" lineStyle="Double"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[NATIONALITY]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="355" y="19" width="42" height="36" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.5" lineStyle="Double"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[GENDER]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="397" y="19" width="91" height="36" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.5" lineStyle="Double"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[APPEARANCE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="488" y="19" width="84" height="36" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.5" lineStyle="Double"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[SIGNATURE]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="18">
+				<staticText>
+					<reportElement x="0" y="3" width="572" height="15"/>
+					<box>
+						<pen lineStyle="Dashed"/>
+						<topPen lineWidth="0.25" lineStyle="Dashed"/>
+						<leftPen lineStyle="Dashed"/>
+						<bottomPen lineStyle="Dashed"/>
+						<rightPen lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="8"/>
+					</textElement>
+					<text><![CDATA[C   U   T            A   B   O   V   E            T   H   I   S            L   I   N   E]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="TRANS_DATE_GROUP" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{date}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField pattern="dd MMMMM yyyy">
+					<reportElement mode="Opaque" x="397" y="0" width="175" height="18" forecolor="#333333" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("MMMMMMMMM dd, yyyy     EEEEEEEEE").format($F{date}).toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="18">
+			<image hAlign="Right" onErrorType="Blank">
+				<reportElement x="540" y="0" width="32" height="18" isRemoveLineWhenBlank="true"/>
+				<imageExpression><![CDATA["D:\\merlin logo.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="370" y="0" width="180" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font fontName="Roboto Condensed" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LOANS EXTENDED (EMPEÑO) REPORT]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="18">
+			<textField>
+				<reportElement x="0" y="0" width="182" height="18"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineStyle="Double"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="6"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_description}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="182" y="0" width="111" height="18"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineStyle="Double"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="6"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{client_address}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="355" y="0" width="42" height="18" backcolor="#CCCCCC"/>
+				<box>
+					<pen lineWidth="0.5" lineStyle="Double"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="397" y="0" width="91" height="18" backcolor="#CCCCCC"/>
+				<box>
+					<pen lineWidth="0.5" lineStyle="Double"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="293" y="0" width="62" height="18" backcolor="#CCCCCC"/>
+				<box>
+					<pen lineWidth="0.5" lineStyle="Double"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="488" y="0" width="84" height="18" backcolor="#CCCCCC"/>
+				<box>
+					<pen lineWidth="0.5" lineStyle="Double"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>
