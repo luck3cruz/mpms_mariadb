@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.7715610000000035"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="EMPENO_DATE" class="java.lang.String"/>
+	<parameter name="AMOUNT_DIVISION" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[10000.00]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRACKET1" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[100.00]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRACKET2" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[1000.00]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRACKET3" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[5000.00]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMPENO_DATE2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT case
+	when principal > $P{AMOUNT_DIVISION} then 'big'
+	else 'small'
+	END AS amount_grp, a.branch, a.pap_num, client_name, principal, ai, sc,insurance, item_description, date, remarks, old_pap_num, new_pap_num from merlininventorydatabase.client_info a inner join merlininventorydatabase.empeno b on a.item_code_a = b.pap_num where date between $P{EMPENO_DATE} and $P{EMPENO_DATE2} order by amount_grp, pap_num;]]>
+	</queryString>
+	<field name="amount_grp" class="java.lang.String"/>
+	<field name="branch" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pap_num" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="client_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="principal" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ai" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sc" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="insurance" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_description" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="remarks" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="old_pap_num" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="new_pap_num" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="TOTAL_PRINCIPAL" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{principal}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_AI" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{ai}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_SC" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{sc}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_INSURANCE" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{insurance}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_NET_PROCEEDS" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{principal}-$F{ai}-$F{sc}-$F{insurance}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{principal}]]></variableExpression>
+	</variable>
+	<variable name="ITEM_COUNT" class="java.lang.String"/>
+	<group name="AMOUNT_GRP">
+		<groupExpression><![CDATA[$F{amount_grp}]]></groupExpression>
+		<groupHeader>
+			<band height="55">
+				<staticText>
+					<reportElement mode="Transparent" x="257" y="19" width="233" height="36" backcolor="#FFFFFF">
+						<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("big")]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[CAPITAL]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="0" y="0" width="752" height="19"/>
+					<box>
+						<bottomPen lineWidth="0.75" lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("big") ?
+new StringBuilder("LOANS WITH CAPITAL AMOUNTING TO " + new DecimalFormat("#,##0.00").format($P{AMOUNT_DIVISION}+1) + " AND UP")
+: new StringBuilder("LOANS WITH CAPITAL AMOUNTING BELOW " + new DecimalFormat("#,##0.00").format($P{AMOUNT_DIVISION}))]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="75" y="19" width="182" height="36" backcolor="#FFFFFF"/>
+					<box>
+						<pen lineWidth="0.25" lineStyle="Double"/>
+						<topPen lineWidth="0.25" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Double"/>
+						<bottomPen lineWidth="0.25" lineStyle="Double"/>
+						<rightPen lineWidth="0.25" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[NAME OF PAWNER]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="10" y="19" width="65" height="36" backcolor="#FFFFFF"/>
+					<box>
+						<pen lineWidth="0.25" lineStyle="Double"/>
+						<topPen lineWidth="0.25" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Double"/>
+						<bottomPen lineWidth="0.25" lineStyle="Double"/>
+						<rightPen lineWidth="0.25" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[LOAN NUMBER]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="257" y="19" width="233" height="18" backcolor="#FFFFFF">
+						<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("small")]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25" lineStyle="Double"/>
+						<topPen lineWidth="0.25" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Double"/>
+						<bottomPen lineWidth="0.25" lineStyle="Double"/>
+						<rightPen lineWidth="0.25" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[CAPITAL]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="257" y="37" width="79" height="18">
+						<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("small")]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new StringBuilder(new DecimalFormat("#,##0").format($P{BRACKET3}+1) + "-UP" )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="336" y="37" width="78" height="18">
+						<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("small")]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new StringBuilder(new DecimalFormat("#,##0").format($P{BRACKET2}+1) + "-" + new DecimalFormat("#,##0").format($P{BRACKET3}))]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="414" y="37" width="76" height="18">
+						<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("small")]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new StringBuilder(new DecimalFormat("#,##0").format($P{BRACKET1}) + "-" + new DecimalFormat("#,##0").format($P{BRACKET2}))]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="638" y="19" width="71" height="36"/>
+					<box>
+						<pen lineWidth="0.25" lineStyle="Double"/>
+						<topPen lineWidth="0.25" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Double"/>
+						<bottomPen lineWidth="0.25" lineStyle="Double"/>
+						<rightPen lineWidth="0.25" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[ADVANCE INTEREST]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="490" y="19" width="86" height="36" backcolor="#FFFFFF"/>
+					<box>
+						<pen lineWidth="0.25" lineStyle="Double"/>
+						<topPen lineWidth="0.25" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Double"/>
+						<bottomPen lineWidth="0.25" lineStyle="Double"/>
+						<rightPen lineWidth="0.25" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[APPRAISED VALUE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="576" y="19" width="62" height="36"/>
+					<box>
+						<pen lineWidth="0.25" lineStyle="Double"/>
+						<topPen lineWidth="0.25" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Double"/>
+						<bottomPen lineWidth="0.25" lineStyle="Double"/>
+						<rightPen lineWidth="0.25" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[SERVICE CHARGE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="709" y="19" width="43" height="36" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.25" lineStyle="Double"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="9" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[RATE
+IN %]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="17">
+				<staticText>
+					<reportElement x="0" y="2" width="752" height="15"/>
+					<box>
+						<pen lineStyle="Dashed"/>
+						<topPen lineWidth="0.25" lineStyle="Dashed"/>
+						<leftPen lineStyle="Dashed"/>
+						<bottomPen lineStyle="Dashed"/>
+						<rightPen lineStyle="Dashed"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="8"/>
+					</textElement>
+					<text><![CDATA[C   U   T            A   B   O   V   E            T   H   I   S            L   I   N   E]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="TRANS_DATE_GRP" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{date}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField pattern="dd MMMMM yyyy">
+					<reportElement mode="Opaque" x="10" y="0" width="185" height="18" forecolor="#333333" backcolor="#CCCCCC"/>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Roboto Condensed" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("MMMMMMMMM dd, yyyy     EEEEEEEEE").format($F{date}).toUpperCase()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="18">
+			<staticText>
+				<reportElement x="27" y="0" width="180" height="18"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Roboto Condensed" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LOANS EXTENDED (EMPEÑO) REPORT]]></text>
+			</staticText>
+			<image onErrorType="Blank">
+				<reportElement x="7" y="0" width="32" height="18" isRemoveLineWhenBlank="true"/>
+				<imageExpression><![CDATA["D:\\merlin logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="18">
+			<textField pattern="#,##0.00">
+				<reportElement x="257" y="0" width="233" height="18"/>
+				<box rightPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("big") ? new DecimalFormat("#,##0.00").format($F{principal}) : " "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="0" width="182" height="18"/>
+				<box leftPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{client_name}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="0" width="65" height="18"/>
+				<box>
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pap_num}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="336" y="0" width="78" height="18">
+					<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("small")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{principal} > ($P{BRACKET2}+1) && $F{principal} <= $P{BRACKET3} && $F{amount_grp}.equalsIgnoreCase("small") ? new DecimalFormat("#,##0.00").format($F{principal}) : " "]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="257" y="0" width="79" height="18">
+					<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("small")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{principal} > ($P{BRACKET3}+1) && $F{principal} <= $P{AMOUNT_DIVISION} && $F{amount_grp}.equalsIgnoreCase("small") ? new DecimalFormat("#,##0.00").format($F{principal}): " "]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="10" height="18">
+					<printWhenExpression><![CDATA[$F{old_pap_num} != 'N/A']]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="8"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[R]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="638" y="0" width="71" height="18"/>
+				<box rightPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{ai})]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="490" y="0" width="86" height="18"/>
+				<box rightPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{principal}*1.25)]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="576" y="0" width="62" height="18"/>
+				<box rightPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{sc})]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="709" y="0" width="43" height="18"/>
+				<box>
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0").format($F{ai}/$F{principal}*100)]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="414" y="0" width="76" height="18">
+					<printWhenExpression><![CDATA[$F{amount_grp}.equalsIgnoreCase("small")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="4">
+					<pen lineWidth="0.25" lineStyle="Double"/>
+					<topPen lineWidth="0.25" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Double"/>
+					<bottomPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="0.25" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Roboto Condensed" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{principal} >= $P{BRACKET1} && $F{principal} <= $P{BRACKET2} && $F{amount_grp}.equalsIgnoreCase("small")
+? new DecimalFormat("#,##0.00").format($F{principal}) : " "]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
