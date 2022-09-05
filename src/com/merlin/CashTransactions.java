@@ -87,6 +87,7 @@ public class CashTransactions {
     NumberFormat papeletaFormat = new DecimalFormat("#00000");
 
     Sangla sangla = new Sangla();
+    DatabaseUpdater dbu = new DatabaseUpdater();
 
     public void generateTransaction_id() {
         this.sangla.setBranch(this.branch);
@@ -109,11 +110,12 @@ public class CashTransactions {
 
     public boolean addPettyCashTransactionToDB() {
         String pettyCashIns = "Insert into " + getDatabase() + ".petty_cash (pty_id, pty_date, pty_branch, pty_type, pty_amount, pty_voucher, pty_remarks, pty_prep, pty_rcvd) values ( '" + this.transaction_id + "', '" + getDateDBformat() + "', '" + this.branch + "', '" + this.petty_cast_type + "', " + this.transaction_amount + ", '" + this.petty_cash_voucher + "', '" + this.transaction_remarks + "', '" + this.prep_by + "', '" + this.rcvd_by + "')";
+        
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
-            System.out.println(pettyCashIns);
             insert.executeUpdate(pettyCashIns);
+            dbu.editFile(pettyCashIns, dbu.getCurDateBackUpFilename());
             setPetty_cash_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -125,10 +127,12 @@ public class CashTransactions {
 
     public boolean delPettyCashTransactionToDB() {
         String pettyCashIns = "Delete from " + getDatabase() + ".petty_cash where pty_voucher = '" + getPetty_cash_voucher() + "'";
+        
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(pettyCashIns);
+            dbu.editFile(pettyCashIns, dbu.getCurDateBackUpFilename());
             return true;
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));
@@ -139,10 +143,11 @@ public class CashTransactions {
     public boolean addTransferTransaction(String fromBranch, String toBranch) {
         try {
             String query = "Insert into " + getDatabase() + ".transfer (x_id, x_amount, x_branch, x_dest, x_prepared, x_received, x_date, x_no) values ('" + this.transaction_id + "', " + this.transaction_amount + ", '" + fromBranch + "', '" + toBranch + "', '" + this.prep_by + "', '" + this.rcvd_by + "', '" + getDateDBformat() + "', '" + getXrefno() + "')";
+            
             Connection connect = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement state = connect.createStatement();
-            System.out.println(query);
             state.executeUpdate(query);
+            dbu.editFile(query, dbu.getCurDateBackUpFilename());
             connect.close();
             state.close();
             setTransfer_inserted(true);
@@ -157,10 +162,11 @@ public class CashTransactions {
     public boolean delTransferTransaction(String fromBranch, String toBranch) {
         try {
             String query = "Delete from " + getDatabase() + ".transfer where x_id = '" + this.transaction_id + "'";
+            
             Connection connect = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement state = connect.createStatement();
-            System.out.println(query);
             state.executeUpdate(query);
+            dbu.editFile(query, dbu.getCurDateBackUpFilename());
             connect.close();
             state.close();
             return true;
@@ -173,10 +179,11 @@ public class CashTransactions {
     public boolean addDocTransferTransaction(String fromBranch, String toBranch) {
         try {
             String query = "Insert into " + getDatabase() + ".transfer (x_id, x_doc, x_branch, x_dest, x_prepared, x_received, x_date, x_no) values ('" + this.transaction_id + "', '" + getXdoc() + "', '" + fromBranch + "', '" + toBranch + "', '" + this.prep_by + "', '" + this.rcvd_by + "', '" + getDateDBformat() + "', '" + getXrefno() + "')";
+            
             Connection connect = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement state = connect.createStatement();
-            System.out.println(query);
             state.executeUpdate(query);
+            dbu.editFile(query, dbu.getCurDateBackUpFilename());
             connect.close();
             state.close();
             setTransfer_inserted(true);
@@ -191,10 +198,11 @@ public class CashTransactions {
     public boolean delDocTransferTransaction(String fromBranch, String toBranch) {
         try {
             String query = "Delete from " + getDatabase() + ".transfer where x_id = '" + this.transaction_id + "'";
+            
             Connection connect = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement state = connect.createStatement();
-            System.out.println(query);
             state.executeUpdate(query);
+            dbu.editFile(query, dbu.getCurDateBackUpFilename());
             connect.close();
             state.close();
             return true;
@@ -228,11 +236,12 @@ public class CashTransactions {
 
     public boolean addAdditionalTransactionToDB() {
         String additionalsInsert = "Insert into " + getDatabase() + ".additionals (add_id, add_date, add_branch, add_amount, add_from, add_remarks, add_dest, ref_no, add_by, add_sub, add_type) values ( '" + this.transaction_id + "', '" + getDateDBformat() + "', '" + this.branch + "', " + this.transaction_amount + ", '" + this.loans_name + "', '" + this.transaction_remarks + "', '" + getFromBranch() + "', '" + getXrefno() + "', '" + getRcvd_by() + "', " + getAddsub() + ", '" + getPetty_cast_type() + "')";
+        
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
-            System.out.println(additionalsInsert);
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             setAdditionals_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -244,12 +253,12 @@ public class CashTransactions {
 
     public boolean addAdditionalTransactionToDB(String database) {
         String additionalsInsert = "Insert into " + database + ".additionals (add_id, add_date, add_branch, add_amount, add_from, add_remarks, add_dest, ref_no, add_by, add_sub, add_type) values ( '" + this.transaction_id + "', '" + getDateDBformat() + "', '" + this.branch + "', " + this.transaction_amount + ", '" + this.loans_name + "', '" + this.transaction_remarks + "', '" + getFromBranch() + "', '" + getXrefno() + "', '" + getRcvd_by() + "', " + getAddsub() + ", '" + getPetty_cast_type() + "')";
+        
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
-            System.out.println(additionalsInsert);
             insert.executeUpdate(additionalsInsert);
-            System.out.println(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             setAdditionals_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -264,8 +273,8 @@ public class CashTransactions {
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
-            System.out.println(additionalsInsert);
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             return true;
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));
@@ -279,6 +288,7 @@ public class CashTransactions {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             setNewloan_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -294,6 +304,7 @@ public class CashTransactions {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             return true;
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));
@@ -307,6 +318,7 @@ public class CashTransactions {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             setRenewal_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -322,6 +334,7 @@ public class CashTransactions {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             return true;
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));
@@ -335,6 +348,7 @@ public class CashTransactions {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             setRedeem_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -350,6 +364,7 @@ public class CashTransactions {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(additionalsInsert);
+            dbu.editFile(additionalsInsert, dbu.getCurDateBackUpFilename());
             return true;
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));
@@ -362,8 +377,8 @@ public class CashTransactions {
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
-            System.out.println("daily trans \n" + tableInsert);
             insert.executeUpdate(tableInsert);
+            dbu.editFile(tableInsert, dbu.getCurDateBackUpFilename());
             setDaily_trans_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -379,8 +394,8 @@ public class CashTransactions {
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
-            System.out.println("daily trans \n" + tableInsert);
             insert.executeUpdate(tableInsert);
+            dbu.editFile(tableInsert, dbu.getCurDateBackUpFilename());
             setDaily_trans_inserted(true);
             return true;
         } catch (SQLException ex) {
@@ -396,8 +411,8 @@ public class CashTransactions {
         try {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
-            System.out.println("daily trans \n" + tableInsert);
             insert.executeUpdate(tableInsert);
+            dbu.editFile(tableInsert, dbu.getCurDateBackUpFilename());
             return true;
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));

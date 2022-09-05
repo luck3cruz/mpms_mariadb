@@ -176,7 +176,7 @@ public class Transaction extends javax.swing.JPanel {
         setMinimumSize(new java.awt.Dimension(300, 560));
         setPreferredSize(new java.awt.Dimension(300, 560));
 
-        jLabel2.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
+        jLabel2.setFont(jLabel2.getFont().deriveFont(jLabel2.getFont().getStyle() | java.awt.Font.BOLD, jLabel2.getFont().getSize()+1));
         jLabel2.setForeground(new java.awt.Color(51, 51, 51));
         jLabel2.setText("Cash on Hand:   ");
 
@@ -186,7 +186,7 @@ public class Transaction extends javax.swing.JPanel {
         remainingCOH.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         remainingCOH.setText("0.00");
 
-        jLabel3.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
+        jLabel3.setFont(jLabel3.getFont().deriveFont(jLabel3.getFont().getStyle() | java.awt.Font.BOLD, jLabel3.getFont().getSize()+1));
         jLabel3.setForeground(new java.awt.Color(51, 51, 51));
         jLabel3.setText("Total Cash In Flow:   ");
 
@@ -196,7 +196,7 @@ public class Transaction extends javax.swing.JPanel {
         totalCashInFlow.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         totalCashInFlow.setText("0.00");
 
-        jLabel4.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
+        jLabel4.setFont(jLabel4.getFont().deriveFont(jLabel4.getFont().getStyle() | java.awt.Font.BOLD, jLabel4.getFont().getSize()+1));
         jLabel4.setForeground(new java.awt.Color(51, 51, 51));
         jLabel4.setText("Total Cash Out Flow: ");
 
@@ -314,7 +314,7 @@ public class Transaction extends javax.swing.JPanel {
         jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel1.setBackground(new java.awt.Color(169, 45, 102));
-        jLabel1.setFont(new java.awt.Font("Roboto", 1, 16)); // NOI18N
+        jLabel1.setFont(jLabel1.getFont().deriveFont(jLabel1.getFont().getStyle() | java.awt.Font.BOLD, jLabel1.getFont().getSize()+3));
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("C A S H       T R A N S A C T I O N S");
@@ -334,7 +334,7 @@ public class Transaction extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(addtlBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pettyBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(pettyBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
                     .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(refreshBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)

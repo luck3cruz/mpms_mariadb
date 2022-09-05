@@ -395,8 +395,12 @@
                   <SubComponents>
                     <Component class="org.jdesktop.swingx.JXDatePicker" name="dateCombo">
                       <Properties>
+                        <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                           <Font name="Segoe UI" size="13" style="0"/>
+                        </Property>
+                        <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                          <Connection code="dateFormatter" type="code"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -569,8 +573,12 @@
                   <SubComponents>
                     <Component class="org.jdesktop.swingx.JXDatePicker" name="date1">
                       <Properties>
+                        <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                           <Font name="Segoe UI" size="13" style="0"/>
+                        </Property>
+                        <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                          <Connection code="dateFormatter" type="code"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -598,8 +606,12 @@
                     </Component>
                     <Component class="org.jdesktop.swingx.JXDatePicker" name="date2">
                       <Properties>
+                        <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                           <Font name="Segoe UI" size="13" style="0"/>
+                        </Property>
+                        <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                          <Connection code="dateFormatter" type="code"/>
                         </Property>
                       </Properties>
                       <Events>

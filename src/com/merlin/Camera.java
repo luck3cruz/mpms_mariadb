@@ -138,13 +138,13 @@ public class Camera extends javax.swing.JFrame {
         webcam.setViewSize(new Dimension(640, 480));
         webcam.open();
 //        startWebcam();
-        if (con.getProp("Default_Photo_Folder") == null) {
-            con.saveProp("Default_Photo_Folder", "C:\\\\KYC_photos\\\\");
-            if (!new File(con.getProp("Default_Photo_Folder")).exists()) {
-                new File(con.getProp("Default_Photo_Folder")).mkdir();
+        if (con.getProp("default_photo_folder") == null) {
+            con.saveProp("default_photo_folder", "C:\\KYC_photos\\");
+            if (!new File(con.getProp("default_photo_folder")).exists()) {
+                new File(con.getProp("default_photo_folder")).mkdir();
             }
         } else {
-            setFile_dest(con.getProp("Default_Photo_Folder"));
+            setFile_dest(con.getProp("default_photo_folder"));
         }
 //        if (con.getProp("Default_ID_Folder") == null) {
 //            con.saveProp("Default_ID_Folder", "C:\\\\KYC_ids\\\\");

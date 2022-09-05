@@ -95,7 +95,7 @@ public class Sangla {
     private final String username = this.con.getProp("username");
 
     private final String password = this.con.getProp("password");
-
+    private DatabaseUpdater dbu = new DatabaseUpdater();
     public Double computeOtherCharges() {
         double oth = getLiq_dam() + getStamp() + getAff() + getUnpaid();
         return Double.valueOf(oth);
@@ -106,6 +106,7 @@ public class Sangla {
             Connection connect = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement state = connect.createStatement();
             String insertStatement = "Insert into merlininventorydatabase.empeno (pap_num, date, principal, ai, sc,insurance, other_charges) values ('" + this.item_code_a + "', '" + this.transaction_date + "', " + this.principal + ", " + this.advance_interest + ", " + this.service_charge + ", " + this.insurance + ", " + this.other_charges + ")";
+            dbu.writeToFile(insertStatement, dbu.getCurDateBackUpFilename());
             state.executeUpdate(insertStatement);
             connect.close();
             return true;
@@ -122,6 +123,7 @@ public class Sangla {
             double total_interest = this.interest + getStamp() + getAff() + getUnpaid() + getLiq_dam();
             String insertStatement = "Replace into merlininventorydatabase.rescate (pap_num, date, principal, interest, stamp, liq_dam, affidavit, unpaid_ai, subasta, tubos) values ('" + this.old_pap_num + getBranchCode(getOld_branch()) + "', '" + this.transaction_date + "', " + this.principal + ", " + total_interest + ", " + getStamp() + ", " + getLiq_dam() + ", " + getAff() + ", " + getUnpaid() + ", " + getSubastaStatus() + ", " + getTubosStatus() + ")";
             state.executeUpdate(insertStatement);
+            dbu.writeToFile(insertStatement, dbu.getCurDateBackUpFilename());
             connect.close();
             setResInserted(true);
             return true;
@@ -139,6 +141,7 @@ public class Sangla {
             double total_interest = this.interest + getStamp() + getAff() + getUnpaid() + getLiq_dam();
             String insertStatement = "Replace into merlininventorydatabase.rescate (pap_num, date, principal, interest, stamp, liq_dam, affidavit, unpaid_ai, subasta, tubos) values ('" + given_id + "', '" + this.transaction_date + "', " + this.principal + ", " + total_interest + ", " + getStamp() + ", " + getLiq_dam() + ", " + getAff() + ", " + getUnpaid() + ", " + getSubastaStatus() + ", " + getTubosStatus() + ")";
             state.executeUpdate(insertStatement);
+            dbu.writeToFile(insertStatement, dbu.getCurDateBackUpFilename());
             connect.close();
             setResInserted(true);
             return true;
@@ -253,6 +256,7 @@ public class Sangla {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement qry = connexion.createStatement();
             qry.executeUpdate(updateStatusRep);
+            dbu.writeToFile(updateStatusRep, dbu.getCurDateBackUpFilename());
             setUpdateStatusToRepossessed(true);
             return true;
         } catch (SQLException ex) {
@@ -269,6 +273,7 @@ public class Sangla {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement qry = connexion.createStatement();
             qry.executeUpdate(updateStatusRep);
+            dbu.writeToFile(updateStatusRep, dbu.getCurDateBackUpFilename());
             setUpdateTubosPapStatus(true);
             return true;
         } catch (SQLException ex) {
@@ -289,6 +294,7 @@ public class Sangla {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement insert = connexion.createStatement();
             insert.executeUpdate(clientInfoInsert);
+            dbu.writeToFile(clientInfoInsert, dbu.getCurDateBackUpFilename());
             setInsertToClientStatus(true);
             return true;
         } catch (SQLException ex) {
@@ -305,6 +311,7 @@ public class Sangla {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement qry = connexion.createStatement();
             qry.executeUpdate(oldPapUpdate);
+            dbu.writeToFile(oldPapUpdate, dbu.getCurDateBackUpFilename());
             setUpdateOldPapStatus(true);
             return true;
         } catch (SQLException ex) {
@@ -320,6 +327,7 @@ public class Sangla {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement qry = connexion.createStatement();
             qry.executeUpdate(oldPapUpdate);
+            dbu.writeToFile(oldPapUpdate, dbu.getCurDateBackUpFilename());
             setUpdateOldPapStatus(true);
             return true;
         } catch (SQLException ex) {
@@ -335,6 +343,7 @@ public class Sangla {
             Statement state = connect.createStatement();
             String insertStatement = "Delete from merlininventorydatabase.empeno where pap_num = '" + getItem_code_a() + "'";
             state.executeUpdate(insertStatement);
+            dbu.writeToFile(insertStatement, dbu.getCurDateBackUpFilename());
             connect.close();
             setEmpDeleted(true);
             return true;
@@ -351,6 +360,7 @@ public class Sangla {
             Statement state = connect.createStatement();
             String insertStatement = "Delete from merlininventorydatabase.rescate where pap_num = '" + getItem_code_a() + "'";
             state.executeUpdate(insertStatement);
+            dbu.writeToFile(insertStatement, dbu.getCurDateBackUpFilename());
             connect.close();
             setResDeleted(true);
             return true;
@@ -367,6 +377,7 @@ public class Sangla {
             Connection connexion = DriverManager.getConnection(this.driver, this.username, this.password);
             Statement qry = connexion.createStatement();
             qry.executeUpdate(deleteThis);
+            dbu.writeToFile(deleteThis, dbu.getCurDateBackUpFilename());
             qry.close();
             connexion.close();
             setCliDeleted(true);

@@ -16,21 +16,53 @@ import java.util.logging.Logger;
  * @author Lucky
  */
 public class DatabaseUpdater {
+
+    /**
+     * @return the curDateBackUpFilename
+     */
+    public String getCurDateBackUpFilename() {
+        return curDateBackUpFilename;
+    }
+
+    /**
+     * @param curDateBackUpFilename the curDateBackUpFilename to set
+     */
+    public void setCurDateBackUpFilename(String curDateBackUpFilename) {
+        this.curDateBackUpFilename = curDateBackUpFilename;
+    }
+    
+    private String curDateBackUpFilename = new DateHelper().getCurrentDate().concat(".txt");
+    
+//    public DatabaseUpdater() {
+//        try {
+//            createBackupFile();
+//        } catch (IOException ex) {
+//            Logger.getLogger(DatabaseUpdater.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
     
     public void createNewFile(String filename) throws IOException {
         File f1 = new File(filename.concat(".txt"));
         f1.createNewFile();
+    }
+    
+    public void createBackupFile() throws IOException {
+        setCurDateBackUpFilename(new Config().getProp("default_backup_folder").concat("\\" + new DateHelper().getCurrentDate().concat(".txt")));
+        File f1 = new File(getCurDateBackUpFilename());
+        if (!f1.exists())
+        f1.createNewFile();
+        
     }
 //    
 //    public boolean createNewTextfile(String filename) {
 //        return
 //    }
 //    
-    public void writeToFile(String data, String filename) {
+    public void writeToFile(String query, String filename) {
         FileWriter output = null;
         try {
             output = new FileWriter(filename);
-            output.write("data");
+            output.write(query);
             output.close();
         } catch (IOException ex) {
             Logger.getLogger(DatabaseUpdater.class.getName()).log(Level.SEVERE, null, ex);
@@ -60,10 +92,11 @@ public class DatabaseUpdater {
         }
     }
     
-    public void editFile( String data, String filename) {
+    public void editFile( String query, String filename) {
         try {
             FileWriter output = new FileWriter(filename, true);
-            output.write(data);
+            output.write(query.concat(";\n\n"));
+            output.close();
         } catch (IOException ex) {
             Logger.getLogger(DatabaseUpdater.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -78,4 +111,18 @@ public class DatabaseUpdater {
             System.out.println("file delete error");
         }
     }
+    
+    public static void main(String[] args) {
+        DatabaseUpdater dbu = new DatabaseUpdater();
+        try {
+            dbu.createBackupFile();
+//System.out.println(dbu.getCurDateBackUpFilename());
+            String query = "Remove into cashtransactions.petty_cash (pty_id, pty_date, pty_branch, pty_type, pty_amount, pty_voucher, pty_remarks, pty_prep, pty_rcvd) values ( '";
+            dbu.editFile(query, dbu.getCurDateBackUpFilename());
+        } catch (IOException ex) {
+            Logger.getLogger(DatabaseUpdater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
+
+

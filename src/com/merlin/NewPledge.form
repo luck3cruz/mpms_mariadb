@@ -143,16 +143,6 @@
                                           <Component id="motorInCheckbox" min="-2" pref="112" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" pref="115" max="-2" attributes="0"/>
                                       </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="jLabel14" linkSize="3" alignment="0" max="32767" attributes="0"/>
-                                              <Component id="jLabel13" linkSize="3" alignment="0" max="32767" attributes="0"/>
-                                              <Component id="jLabel12" alignment="0" min="-2" pref="141" max="-2" attributes="0"/>
-                                              <Component id="jScrollPane2" alignment="0" pref="444" max="32767" attributes="0"/>
-                                              <Component id="jScrollPane3" alignment="0" pref="0" max="32767" attributes="0"/>
-                                          </Group>
-                                          <EmptySpace max="32767" attributes="0"/>
-                                      </Group>
                                       <Group type="102" attributes="0">
                                           <Group type="103" groupAlignment="1" attributes="0">
                                               <Group type="102" alignment="0" attributes="0">
@@ -160,35 +150,41 @@
                                                       <Component id="tempPapNum" alignment="0" max="32767" attributes="0"/>
                                                       <Component id="jLabel11" alignment="0" pref="143" max="32767" attributes="0"/>
                                                   </Group>
-                                                  <Group type="103" groupAlignment="0" attributes="0">
-                                                      <Group type="102" attributes="0">
-                                                          <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-                                                          <Component id="tempBranch" max="32767" attributes="0"/>
-                                                      </Group>
-                                                      <Group type="102" attributes="0">
-                                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                                          <Component id="jLabel4" max="32767" attributes="0"/>
-                                                      </Group>
-                                                  </Group>
+                                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                                  <Component id="jLabel4" max="32767" attributes="0"/>
                                               </Group>
                                               <Group type="102" alignment="0" attributes="0">
                                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                      <Component id="tempTransDate" linkSize="13" max="32767" attributes="0"/>
+                                                      <Component id="tempTransDate" linkSize="13" min="-2" pref="133" max="-2" attributes="0"/>
                                                       <Component id="jLabel8" max="32767" attributes="0"/>
                                                   </Group>
                                                   <EmptySpace type="unrelated" max="32767" attributes="0"/>
-                                                  <Group type="103" groupAlignment="0" attributes="0">
-                                                      <Component id="jLabel9" min="-2" pref="143" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                      <Component id="jLabel9" max="32767" attributes="0"/>
                                                       <Component id="maturityDatePicker" linkSize="13" min="-2" pref="114" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                                                  <Group type="103" groupAlignment="0" attributes="0">
-                                                      <Component id="jLabel10" min="-2" pref="143" max="-2" attributes="0"/>
+                                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                                       <Component id="expiryDatePicker" linkSize="13" min="-2" pref="69" max="-2" attributes="0"/>
+                                                      <Component id="jLabel10" max="32767" attributes="0"/>
                                                   </Group>
+                                                  <EmptySpace min="-2" pref="64" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
                                           <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="1" attributes="0">
+                                              <Component id="tempBranch" alignment="1" min="-2" pref="285" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                                  <Component id="jLabel14" linkSize="3" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="jLabel13" linkSize="3" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="jLabel12" alignment="0" min="-2" pref="141" max="-2" attributes="0"/>
+                                                  <Component id="jScrollPane2" alignment="0" pref="444" max="32767" attributes="0"/>
+                                                  <Component id="jScrollPane3" alignment="0" pref="0" max="32767" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                          <EmptySpace max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -429,7 +425,13 @@
                             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="33" green="33" red="33" type="rgb"/>
                             </Property>
-                            <Property name="toolTipText" type="java.lang.String" value=""/>
+                            <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
+                            <Property name="UI" type="org.jdesktop.swingx.plaf.DatePickerUI" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="new FlatDatePickerUI()" type="code"/>
+                            </Property>
+                            <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="dateFormatter" type="code"/>
+                            </Property>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tempTransDateActionPerformed"/>
@@ -448,6 +450,10 @@
                             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="33" green="33" red="33" type="rgb"/>
                             </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
+                            <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="dateFormatter" type="code"/>
+                            </Property>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel10">
@@ -462,6 +468,10 @@
                           <Properties>
                             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="33" green="33" red="33" type="rgb"/>
+                            </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
+                            <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="dateFormatter" type="code"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -1050,6 +1060,7 @@
                       <Events>
                         <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tempClientNameFocusGained"/>
                         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tempClientNameFocusLost"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tempClientNameActionPerformed"/>
                         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tempClientNameKeyPressed"/>
                         <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tempClientNameKeyTyped"/>
                       </Events>

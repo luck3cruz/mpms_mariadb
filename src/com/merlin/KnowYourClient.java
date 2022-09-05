@@ -1771,6 +1771,8 @@ public class KnowYourClient extends javax.swing.JPanel {
         jLabel36.setText("Place of Birth");
 
         bDateCal.setForeground(new java.awt.Color(102, 102, 102));
+        bDateCal.setToolTipText("YYYY-MM-DD");
+        bDateCal.setFormats(dateformatter);
         bDateCal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bDateCalActionPerformed(evt);
@@ -2712,26 +2714,16 @@ public class KnowYourClient extends javax.swing.JPanel {
         cam2.setId_filename(lNameText.getText().concat("_").concat(fNameText.getText()).concat("_id.jpg"));
         setIdPath(con.getProp("default_photo_folder").concat(lNameText.getText().concat("_").concat(fNameText.getText()).concat("_id.jpg")));
         cam2.setVisible(true);
-        File photofile = new File(con.getProp("default_photo_folder").concat(cam2.getId_filename()));
+        File idFile = new File(con.getProp("default_photo_folder").concat(cam2.getId_filename()));
         cl1.setId_loc(con.getProp("default_photo_folder").concat(cam2.getId_filename()));
         cam2.addWindowListener(new WindowAdapter() {
             @Override
                     public void windowClosed (WindowEvent e) {
                         System.out.println("accessing window event");
-                        refreshPhoto(cam2.isPhotoCaptured(), photofile.exists(), photofile, idPhoto);
+                        refreshPhoto(cam2.isIdCaptured(), idFile.exists(), idFile, idPhoto);
                     }
             
         });
-//        if (cam2.isIdCaptured()&& photofile.exists()) {
-//            try {
-//                BufferedImage img=ImageIO.read(photofile);
-//                ImageIcon icon = new ImageIcon(scaleImage(img, photo.getWidth(), photo.getHeight()));
-//                photo.setIcon(icon);
-//            } catch (IOException ex) {
-//                JOptionPane.showMessageDialog(null, "Image Output Error! Please contact your database manager.\n" + ex);
-//                Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
     }//GEN-LAST:event_updateIDActionPerformed
 
     private void captureIDbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureIDbtnActionPerformed

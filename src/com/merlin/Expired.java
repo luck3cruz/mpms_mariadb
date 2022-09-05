@@ -71,7 +71,7 @@ public class Expired extends javax.swing.JPanel {
     private DecimalHelper decHelp = new DecimalHelper();
     private final String srcFilePath = this.con.getProp("rep_source");;
     private final String subastaRepName = this.con.getProp("subastaRepName");
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");;
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
     private String whereExpiry = "";
     
     public void updateCombo(JComboBox<String> combo) {
@@ -324,6 +324,9 @@ public class Expired extends javax.swing.JPanel {
 
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
         jLabel2.setText("Expired Loans as of:");
+
+        toDateExpLoan.setToolTipText("YYYY-MM-DD");
+        toDateExpLoan.setFormats(dateFormatter);
 
         jLabel3.setForeground(new java.awt.Color(102, 102, 102));
         jLabel3.setText("Branch:");

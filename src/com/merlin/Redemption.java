@@ -762,6 +762,8 @@ public class Redemption extends javax.swing.JPanel {
         insuranceRet.setMinimumSize(new java.awt.Dimension(36, 20));
 
         transDateRet.setForeground(new java.awt.Color(102, 102, 102));
+        transDateRet.setToolTipText("YYYY-MM-DD");
+        transDateRet.setFormats(dateFormatter);
         transDateRet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 transDateRetActionPerformed(evt);
@@ -769,8 +771,12 @@ public class Redemption extends javax.swing.JPanel {
         });
 
         expDateRet.setForeground(new java.awt.Color(102, 102, 102));
+        expDateRet.setToolTipText("YYYY-MM-DD");
+        expDateRet.setFormats(dateFormatter);
 
         matDateRet.setForeground(new java.awt.Color(102, 102, 102));
+        matDateRet.setToolTipText("YYYY-MM-DD");
+        matDateRet.setFormats(dateFormatter);
 
         motorInCheckbox.setFont(new java.awt.Font("Segoe UI Semibold", 1, 13)); // NOI18N
         motorInCheckbox.setForeground(new java.awt.Color(102, 102, 102));

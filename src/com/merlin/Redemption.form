@@ -1016,6 +1016,10 @@
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="66" green="66" red="66" type="rgb"/>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
+                    <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="dateFormatter" type="code"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="transDateRetActionPerformed"/>
@@ -1026,12 +1030,20 @@
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="66" green="66" red="66" type="rgb"/>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
+                    <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="dateFormatter" type="code"/>
+                    </Property>
                   </Properties>
                 </Component>
                 <Component class="org.jdesktop.swingx.JXDatePicker" name="matDateRet">
                   <Properties>
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="66" green="66" red="66" type="rgb"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="YYYY-MM-DD"/>
+                    <Property name="formats" type="[Ljava.text.DateFormat;" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="dateFormatter" type="code"/>
                     </Property>
                   </Properties>
                 </Component>

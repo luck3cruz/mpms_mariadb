@@ -9,10 +9,13 @@ import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Insets;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
@@ -36,7 +39,22 @@ public class MainFrame extends javax.swing.JFrame {
 //        if(!new File("C:\\MPIS\\config.properties").exists()) {
 //            JOptionPane.showMessageDialog(null, "Configuration File must exist. Please check that a configuration file is at your MPIS folder.");
 //        }
-//        if (!new File(con.getProp("default_photo_folder")))
+        File defPhoFile = new File(con.getProp("default_photo_folder"));
+        if (!defPhoFile.exists()) {
+                try {
+                    defPhoFile.createNewFile();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Error on creating Default Photo Folder for KYC.", "File Creation Error",JOptionPane.ERROR_MESSAGE);
+//                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+        DatabaseUpdater dbu = new DatabaseUpdater();
+        try {
+            dbu.createBackupFile();
+            
+            
+        
+            
 //        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 //        ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("/font/Roboto-Bold.ttf")));
 //        ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("/font/RobotoCondensed-Bold.ttf")));
@@ -45,6 +63,9 @@ public class MainFrame extends javax.swing.JFrame {
 //        } catch (IOException ex) {
 //            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
 //        }
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private Config con = new Config();

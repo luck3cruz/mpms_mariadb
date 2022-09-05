@@ -38,6 +38,7 @@ public class BeginningBalance extends JDialog {
   private JLabel jLabel1;
   
   private JTextField jTextField1;
+  private DatabaseUpdater dbu = new DatabaseUpdater();
   
   public BeginningBalance(Frame parent, boolean modal) {
     super(parent, modal);
@@ -111,7 +112,10 @@ public class BeginningBalance extends JDialog {
     try {
       Connection connect = DriverManager.getConnection(driver, username, password);
       Statement query = connect.createStatement();
-      query.executeUpdate("Insert into cashtransactions.running_balance (date, beginning_balance, ending_balance, total_cash_inflow, total_cash_outflow) values ('" + curDateText + "', " + Double.parseDouble(this.jTextField1.getText()) + ", " + Double.parseDouble(this.jTextField1.getText()) + ", " + 0.0D + ", " + 0.0D + ")");
+      
+      String updquery = "Insert into cashtransactions.running_balance (date, beginning_balance, ending_balance, total_cash_inflow, total_cash_outflow) values ('" + curDateText + "', " + Double.parseDouble(this.jTextField1.getText()) + ", " + Double.parseDouble(this.jTextField1.getText()) + ", " + 0.0D + ", " + 0.0D + ")";
+      query.executeUpdate(updquery);
+      
     } catch (SQLException ex) {
       con.saveProp("mpis_last_error", String.valueOf(ex));
       Logger.getLogger(BeginningBalance.class.getName()).log(Level.SEVERE, (String)null, ex);

@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -100,7 +101,7 @@ public class EmpenoRescate extends javax.swing.JPanel {
     private String fquery = "";
     private DateHelper dateHelp = new DateHelper();
     private DecimalHelper decHelp = new DecimalHelper();
-    
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     private ReportPrinter pr = new ReportPrinter();
 
@@ -545,7 +546,9 @@ Color alternate = new Color(239,246,250);
 
         jPanel4.setBackground(new java.awt.Color(227, 240, 251));
 
+        dateCombo.setToolTipText("YYYY-MM-DD");
         dateCombo.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        dateCombo.setFormats(dateFormatter);
         dateCombo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dateComboActionPerformed(evt);
@@ -638,7 +641,9 @@ Color alternate = new Color(239,246,250);
 
         jPanel6.setBackground(new java.awt.Color(227, 240, 251));
 
+        date1.setToolTipText("YYYY-MM-DD");
         date1.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        date1.setFormats(dateFormatter);
         date1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 date1ActionPerformed(evt);
@@ -656,7 +661,9 @@ Color alternate = new Color(239,246,250);
 
         jLabel3.setText("to");
 
+        date2.setToolTipText("YYYY-MM-DD");
         date2.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        date2.setFormats(dateFormatter);
         date2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 date2ActionPerformed(evt);
