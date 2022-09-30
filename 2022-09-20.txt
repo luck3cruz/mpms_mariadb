@@ -1,0 +1,24 @@
+Update cashtransactions.running_balance set total_cash_outflow = 6000.00 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set ending_balance = 37108.65 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set ending_balance = 37108.65 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set total_cash_outflow = 6000.00 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set ending_balance = 37108.65 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set ending_balance = 37108.65 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set total_cash_outflow = 6000.00 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set ending_balance = 37108.65 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-20';
+
+Update cashtransactions.running_balance set ending_balance = 37108.65 where date = '2022-09-20';
+

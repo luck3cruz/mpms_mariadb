@@ -1,9 +1,11 @@
 package com.merlin;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,25 +39,66 @@ public class ReportPrinter {
     private String destination = "";
     private String report_name = "";
     private String jrxml_name = "";
+    
+    public boolean saveReport(String filePath, String destination, Map params) {
+        boolean saveSuccessful = false;
+        Connection conn;
+        try {
+            conn = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
+            JasperDesign jasperDesign = JRXmlLoader.load(getClass().getResourceAsStream(filePath));
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, conn);
+            JasperExportManager.exportReportToPdfFile(jasperPrint, destination);
+            conn.close();
+            saveSuccessful = true;
+        } catch (JRException | SQLException ex) {
+            this.con.saveProp("mpis_last_error", String.valueOf(ex.getMessage()));
+            System.out.println(ex);
+            return false;
+        } 
+        return saveSuccessful;
+   }
+    
+    public void saveReportWithQuery(String filePath, String query, String destination, Map parameters) {
+        try {
+            Connection conn = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
+            JasperDesign jasperDesign = JRXmlLoader.load(getClass().getResourceAsStream(filePath));
+            JRDesignQuery newQuery = new JRDesignQuery();
+            newQuery.setText(query);
+            jasperDesign.setQuery(newQuery);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
+            JasperExportManager.exportReportToPdfFile(jasperPrint, destination);
+            conn.close();
+            InputStream is = new FileInputStream(new File(destination));
+            try {
+                is.close();
+                File fi = new File(destination);
+                fi.deleteOnExit();
+
+            } catch (IOException ex) {
+                this.con.saveProp("mpis_last_error", String.valueOf(ex));
+                Logger.getLogger(EmpenoRescate.class.getName()).log(Level.SEVERE, (String) null, ex);
+            }
+            conn.close();
+        } catch (FileNotFoundException | net.sf.jasperreports.engine.JRException | SQLException ex) {
+            this.con.saveProp("mpis_last_error", String.valueOf(ex));
+            JOptionPane.showMessageDialog(null, "An error occured while saving your " + getReport_name() + "\n" + ex, getReport_name(), 0);
+            Logger.getLogger(org.jfree.data.statistics.Statistics.class.getName()).log(Level.SEVERE, (String) null, ex);
+        }
+    }
 
     public void printReport(String filePath, Map parameters) {
         try {
-            OutputStream output = null;
             Connection conn = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
          try {
              JasperDesign jasperDesign = JRXmlLoader.load(getClass().getResourceAsStream(filePath));
              JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
              JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
              JasperPrintManager.printReport(jasperPrint, false);
-//             output = new FileOutputStream(new File(getDestination()));
-//             JasperExportManager.exportReportToPdfStream(jasperPrint, output);
          } catch (JRException ex) {
              this.con.saveProp("mpis_last_error", String.valueOf(ex));
              JOptionPane.showMessageDialog(null, "An error occured while printing your " + getReport_name() + " \n " + ex, getReport_name(), 0);
-//         } catch (FileNotFoundException ex) {
-//             this.con.saveProp("mpis_last_error", String.valueOf(ex));
-//             JOptionPane.showMessageDialog(null, "An error occured while printing your " + getReport_name() + " \n " + ex, getReport_name(), 0);
-//             Logger.getLogger(TransferBreakdown.class.getName()).log(Level.SEVERE, (String) null, ex);
          }
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));

@@ -1,152 +1,99 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
+ */
 package com.merlin;
 
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
-public class TransferBreakdown extends JDialog {
+/**
+ *
+ * @author luckycruz
+ */
+public class TransferBreakdown extends javax.swing.JDialog {
 
-    Config con = new Config();
+    public boolean isValuesEntered() {
+        return this.valuesEntered;
+      }
 
-    private final String driver;
+      public void setValuesEntered(boolean valuesEntered) {
+        this.valuesEntered = valuesEntered;
+      }
 
-    private final String f_user;
+      public double getTransfer() {
+        return this.transfer;
+      }
 
-    private final String f_pass;
+      public void setTransfer(double transfer) {
+        this.transfer = transfer;
+      }
 
-    private DateHelper dateHelp;
+      public String getXnum() {
+        return this.xnum;
+      }
 
-    private boolean valuesEntered;
+      public void setXnum(String xnum) {
+        this.xnum = xnum;
+      }
 
-    private NumberFormat formatter;
+      public boolean isCancelled() {
+        return this.cancelled;
+      }
 
-    private double transfer;
+      public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+      }
 
-    private String xnum;
+      public String getRefNo() {
+        return this.refNo;
+      }
 
-    private boolean cancelled;
+      public void setRefNo(String refNo) {
+        this.refNo = refNo;
+      }
 
-    private String refNo;
+      public String getFromFundName() {
+        return this.fromFundName;
+      }
 
-    private String fromFundName;
+      public void setFromFundName(String fromFundName) {
+        this.fromFundName = fromFundName;
+      }
 
-    private String toFundName;
+      public String getToFundName() {
+        return this.toFundName;
+      }
 
-    private String database;
+      public void setToFundName(String toFundName) {
+        this.toFundName = toFundName;
+      }
 
-    private JTextField cent;
+      public String getDatabase() {
+        return this.database;
+      }
 
-    private JTextField fhun;
+      public void setDatabase(String database) {
+        this.database = database;
+      }
 
-    private JTextField fif;
-
-    private JTextField fivc;
-
-    private JTextField five;
-
-    private JTextField gtot;
-
-    private JTextField hun;
-
-    private JButton jButton1;
-
-    private JLabel jLabel1;
-
-    private JLabel jLabel10;
-
-    private JLabel jLabel11;
-
-    private JLabel jLabel12;
-
-    private JLabel jLabel14;
-
-    private JLabel jLabel15;
-
-    private JLabel jLabel2;
-
-    private JLabel jLabel3;
-
-    private JLabel jLabel4;
-
-    private JLabel jLabel5;
-
-    private JLabel jLabel6;
-
-    private JLabel jLabel7;
-
-    private JLabel jLabel8;
-
-    private JLabel jLabel9;
-
-    private JSeparator jSeparator1;
-
-    private JTextField one;
-
-    private JTextField tcent;
-
-    private JTextField ten;
-
-    private JTextField tenc;
-
-    private JTextField tfce;
-
-    private JTextField tfhun;
-
-    private JTextField tfif;
-
-    private JTextField tfive;
-
-    private JTextField thou;
-
-    private JTextField thun;
-
-    private JTextField tohun;
-
-    private JTextField tone;
-
-    private JTextField ttce;
-
-    private JTextField tten;
-
-    private JTextField tthou;
-
-    private JTextField tthun;
-
-    private JTextField ttwen;
-
-    private JTextField twen;
-
-    public TransferBreakdown(Frame parent, boolean modal) {
+    /**
+     * Creates new form CashBreakdownMer
+     */
+    public TransferBreakdown(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         this.driver = "jdbc:mariadb://" + this.con.getProp("IP") + ":" + this.con.getProp("port") + "/merlininventorydatabase";
         this.f_user = this.con.getProp("username");
@@ -163,491 +110,833 @@ public class TransferBreakdown extends JDialog {
         this.database = "";
         initComponents();
     }
+    
+    Config con = new Config();
+    private final String driver;
+    private final String f_user;
+    private final String f_pass;
+    private DateHelper dateHelp;
+    private boolean valuesEntered;
+    private NumberFormat formatter;
+    private double transfer;
+    private String xnum;
+    private boolean cancelled;
+    private String refNo;
+    private String fromFundName;
+    private String toFundName;
+    private String database;
+    
+    
+    public boolean isPtcPresent() throws SQLException {
+    Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
+    Statement state = connect.createStatement();
+    String query = "Select count(*) from cashtransactions.petty_cash where pty_date = '" + this.dateHelp.formatDate(Calendar.getInstance().getTime()) + "'";
+    int count = 0;
+    ResultSet rset = state.executeQuery(query);
+    while (rset.next())
+      count = rset.getInt(1); 
+    state.close();
+    connect.close();
+    if (count > 0)
+      return true; 
+    return false;
+  }
+  
+  public boolean isAddPresent() throws SQLException {
+    Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
+    Statement state = connect.createStatement();
+    String query = "Select count(*) from cashtransactions.additionals where add_date = '" + this.dateHelp.formatDate(Calendar.getInstance().getTime()) + "'";
+    int count = 0;
+    ResultSet rset = state.executeQuery(query);
+    while (rset.next())
+      count = rset.getInt(1); 
+    state.close();
+    connect.close();
+    if (count > 0)
+      return true; 
+    return false;
+  }
+  
+  public boolean isXfrPresent() throws SQLException {
+    Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
+    Statement state = connect.createStatement();
+    String query = "Select count(*) from cashtransactions.transfer where x_date = '" + this.dateHelp.formatDate(Calendar.getInstance().getTime()) + "'";
+    int count = 0;
+    ResultSet rset = state.executeQuery(query);
+    while (rset.next())
+      count = rset.getInt(1); 
+    state.close();
+    connect.close();
+    if (count > 0)
+      return true; 
+    return false;
+  }
 
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        this.jLabel1 = new JLabel();
-        this.thou = new JTextField();
-        this.jLabel2 = new JLabel();
-        this.tthou = new JTextField();
-        this.fhun = new JTextField();
-        this.jLabel3 = new JLabel();
-        this.tfhun = new JTextField();
-        this.thun = new JTextField();
-        this.jLabel4 = new JLabel();
-        this.tthun = new JTextField();
-        this.hun = new JTextField();
-        this.jLabel5 = new JLabel();
-        this.tohun = new JTextField();
-        this.fif = new JTextField();
-        this.jLabel6 = new JLabel();
-        this.tfif = new JTextField();
-        this.twen = new JTextField();
-        this.jLabel7 = new JLabel();
-        this.ttwen = new JTextField();
-        this.ten = new JTextField();
-        this.jLabel8 = new JLabel();
-        this.tten = new JTextField();
-        this.five = new JTextField();
-        this.jLabel9 = new JLabel();
-        this.tfive = new JTextField();
-        this.one = new JTextField();
-        this.jLabel10 = new JLabel();
-        this.tone = new JTextField();
-        this.cent = new JTextField();
-        this.jLabel11 = new JLabel();
-        this.tcent = new JTextField();
-        this.jButton1 = new JButton();
-        this.jSeparator1 = new JSeparator();
-        this.jLabel12 = new JLabel();
-        this.gtot = new JTextField();
-        this.tenc = new JTextField();
-        this.jLabel14 = new JLabel();
-        this.ttce = new JTextField();
-        this.fivc = new JTextField();
-        this.jLabel15 = new JLabel();
-        this.tfce = new JTextField();
-        setDefaultCloseOperation(0);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent evt) {
-                TransferBreakdown.this.formWindowClosing(evt);
-            }
-        });
-        this.jLabel1.setFont(new Font("Tahoma", 0, 12));
-        this.jLabel1.setHorizontalAlignment(0);
-        this.jLabel1.setText("CASH BREAKDOWN");
-        this.thou.setHorizontalAlignment(11);
-        this.thou.setText("0");
-        this.thou.setNextFocusableComponent(this.fhun);
-        this.thou.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.thouFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.thouFocusLost(evt);
-            }
-        });
-        this.thou.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.thouKeyPressed(evt);
-            }
+        jLabel1 = new javax.swing.JLabel();
+        tthou = new javax.swing.JTextField();
+        tfhun = new javax.swing.JTextField();
+        tthun = new javax.swing.JTextField();
+        tohun = new javax.swing.JTextField();
+        tfif = new javax.swing.JTextField();
+        ttwen = new javax.swing.JTextField();
+        tten = new javax.swing.JTextField();
+        tfive = new javax.swing.JTextField();
+        tone = new javax.swing.JTextField();
+        tcent = new javax.swing.JTextField();
+        ttce = new javax.swing.JTextField();
+        tfce = new javax.swing.JTextField();
+        gtot = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        thou = new javax.swing.JTextField();
+        thun = new javax.swing.JTextField();
+        fhun = new javax.swing.JTextField();
+        hun = new javax.swing.JTextField();
+        fif = new javax.swing.JTextField();
+        twen = new javax.swing.JTextField();
+        ten = new javax.swing.JTextField();
+        five = new javax.swing.JTextField();
+        one = new javax.swing.JTextField();
+        cent = new javax.swing.JTextField();
+        tenc = new javax.swing.JTextField();
+        fivc = new javax.swing.JTextField();
+        jSeparator1 = new javax.swing.JSeparator();
+        jLabel15 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.thouKeyTyped(evt);
-            }
-        });
-        this.jLabel2.setText("x Php 1000.00");
-        this.tthou.setEditable(false);
-        this.tthou.setFont(new Font("Tahoma", 1, 11));
-        this.tthou.setHorizontalAlignment(11);
-        this.tthou.setText("0.00");
-        this.tthou.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tthouActionPerformed(evt);
-            }
-        });
-        this.fhun.setHorizontalAlignment(11);
-        this.fhun.setText("0");
-        this.fhun.setNextFocusableComponent(this.thun);
-        this.fhun.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.fhunFocusGained(evt);
-            }
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.fhunFocusLost(evt);
-            }
-        });
-        this.fhun.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.fhunKeyPressed(evt);
-            }
+        jLabel1.setFont(jLabel1.getFont().deriveFont(jLabel1.getFont().getStyle() | java.awt.Font.BOLD, jLabel1.getFont().getSize()+1));
+        jLabel1.setForeground(new java.awt.Color(79, 119, 141));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("CASH BREAKDOWN");
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.fhunKeyTyped(evt);
+        tthou.setEditable(false);
+        tthou.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tthou.setText("0.00");
+        tthou.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tthouActionPerformed(evt);
             }
         });
-        this.jLabel3.setText("x Php   500.00");
-        this.tfhun.setEditable(false);
-        this.tfhun.setFont(new Font("Tahoma", 1, 11));
-        this.tfhun.setHorizontalAlignment(11);
-        this.tfhun.setText("0.00");
-        this.tfhun.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tfhunActionPerformed(evt);
-            }
-        });
-        this.thun.setHorizontalAlignment(11);
-        this.thun.setText("0");
-        this.thun.setNextFocusableComponent(this.hun);
-        this.thun.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.thunFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.thunFocusLost(evt);
+        tfhun.setEditable(false);
+        tfhun.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tfhun.setText("0.00");
+        tfhun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfhunActionPerformed(evt);
             }
         });
-        this.thun.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.thunKeyPressed(evt);
-            }
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.thunKeyTyped(evt);
+        tthun.setEditable(false);
+        tthun.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tthun.setText("0.00");
+        tthun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tthunActionPerformed(evt);
             }
         });
-        this.jLabel4.setText("x Php   200.00");
-        this.tthun.setEditable(false);
-        this.tthun.setFont(new Font("Tahoma", 1, 11));
-        this.tthun.setHorizontalAlignment(11);
-        this.tthun.setText("0.00");
-        this.tthun.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tthunActionPerformed(evt);
-            }
-        });
-        this.hun.setHorizontalAlignment(11);
-        this.hun.setText("0");
-        this.hun.setNextFocusableComponent(this.fif);
-        this.hun.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.hunFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.hunFocusLost(evt);
+        tohun.setEditable(false);
+        tohun.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tohun.setText("0.00");
+        tohun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tohunActionPerformed(evt);
             }
         });
-        this.hun.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.hunKeyPressed(evt);
-            }
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.hunKeyTyped(evt);
+        tfif.setEditable(false);
+        tfif.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tfif.setText("0.00");
+        tfif.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfifActionPerformed(evt);
             }
         });
-        this.jLabel5.setText("x Php   100.00");
-        this.tohun.setEditable(false);
-        this.tohun.setFont(new Font("Tahoma", 1, 11));
-        this.tohun.setHorizontalAlignment(11);
-        this.tohun.setText("0.00");
-        this.tohun.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tohunActionPerformed(evt);
-            }
-        });
-        this.fif.setHorizontalAlignment(11);
-        this.fif.setText("0");
-        this.fif.setNextFocusableComponent(this.twen);
-        this.fif.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.fifFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.fifFocusLost(evt);
+        ttwen.setEditable(false);
+        ttwen.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        ttwen.setText("0.00");
+        ttwen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ttwenActionPerformed(evt);
             }
         });
-        this.fif.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.fifKeyPressed(evt);
-            }
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.fifKeyTyped(evt);
+        tten.setEditable(false);
+        tten.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tten.setText("0.00");
+        tten.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ttenActionPerformed(evt);
             }
         });
-        this.jLabel6.setText("x Php     50.00");
-        this.tfif.setEditable(false);
-        this.tfif.setFont(new Font("Tahoma", 1, 11));
-        this.tfif.setHorizontalAlignment(11);
-        this.tfif.setText("0.00");
-        this.tfif.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tfifActionPerformed(evt);
-            }
-        });
-        this.twen.setHorizontalAlignment(11);
-        this.twen.setText("0");
-        this.twen.setNextFocusableComponent(this.ten);
-        this.twen.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.twenFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.twenFocusLost(evt);
+        tfive.setEditable(false);
+        tfive.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tfive.setText("0.00");
+        tfive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfiveActionPerformed(evt);
             }
         });
-        this.twen.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.twenKeyPressed(evt);
-            }
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.twenKeyTyped(evt);
+        tone.setEditable(false);
+        tone.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tone.setText("0.00");
+        tone.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toneActionPerformed(evt);
             }
         });
-        this.jLabel7.setText("x Php     20.00");
-        this.ttwen.setEditable(false);
-        this.ttwen.setFont(new Font("Tahoma", 1, 11));
-        this.ttwen.setHorizontalAlignment(11);
-        this.ttwen.setText("0.00");
-        this.ttwen.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.ttwenActionPerformed(evt);
-            }
-        });
-        this.ten.setHorizontalAlignment(11);
-        this.ten.setText("0");
-        this.ten.setNextFocusableComponent(this.five);
-        this.ten.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.tenFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.tenFocusLost(evt);
+        tcent.setEditable(false);
+        tcent.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tcent.setText("0.00");
+        tcent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tcentActionPerformed(evt);
             }
         });
-        this.ten.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.tenKeyPressed(evt);
-            }
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.tenKeyTyped(evt);
+        ttce.setEditable(false);
+        ttce.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        ttce.setText("0.00");
+        ttce.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ttceActionPerformed(evt);
             }
         });
-        this.jLabel8.setText("x Php     10.00");
-        this.tten.setEditable(false);
-        this.tten.setFont(new Font("Tahoma", 1, 11));
-        this.tten.setHorizontalAlignment(11);
-        this.tten.setText("0.00");
-        this.tten.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.ttenActionPerformed(evt);
-            }
-        });
-        this.five.setHorizontalAlignment(11);
-        this.five.setText("0");
-        this.five.setNextFocusableComponent(this.one);
-        this.five.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.fiveFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.fiveFocusLost(evt);
+        tfce.setEditable(false);
+        tfce.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tfce.setText("0.00");
+        tfce.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfceActionPerformed(evt);
             }
         });
-        this.five.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.fiveKeyPressed(evt);
-            }
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.fiveKeyTyped(evt);
+        gtot.setEditable(false);
+        gtot.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        gtot.setText("0.00");
+        gtot.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gtotActionPerformed(evt);
             }
         });
-        this.jLabel9.setText("x Php       5.00");
-        this.tfive.setEditable(false);
-        this.tfive.setFont(new Font("Tahoma", 1, 11));
-        this.tfive.setHorizontalAlignment(11);
-        this.tfive.setText("0.00");
-        this.tfive.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tfiveActionPerformed(evt);
-            }
-        });
-        this.one.setHorizontalAlignment(11);
-        this.one.setText("0");
-        this.one.setNextFocusableComponent(this.cent);
-        this.one.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.oneFocusGained(evt);
-            }
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.oneFocusLost(evt);
-            }
-        });
-        this.one.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.oneKeyPressed(evt);
-            }
+        jLabel3.setText("x 1000.00");
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.oneKeyTyped(evt);
-            }
-        });
-        this.jLabel10.setText("x Php       1.00");
-        this.tone.setEditable(false);
-        this.tone.setFont(new Font("Tahoma", 1, 11));
-        this.tone.setHorizontalAlignment(11);
-        this.tone.setText("0.00");
-        this.tone.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.toneActionPerformed(evt);
-            }
-        });
-        this.cent.setHorizontalAlignment(11);
-        this.cent.setText("0");
-        this.cent.setNextFocusableComponent(this.tenc);
-        this.cent.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.centFocusGained(evt);
-            }
+        jLabel4.setText("x  500.00");
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.centFocusLost(evt);
-            }
-        });
-        this.cent.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.centKeyPressed(evt);
-            }
+        jLabel5.setText("x  200.00");
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.centKeyTyped(evt);
-            }
-        });
-        this.jLabel11.setText("x Php       0.25");
-        this.tcent.setEditable(false);
-        this.tcent.setFont(new Font("Tahoma", 1, 11));
-        this.tcent.setHorizontalAlignment(11);
-        this.tcent.setText("0.00");
-        this.tcent.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tcentActionPerformed(evt);
-            }
-        });
-        this.jButton1.setText("Save & Print Transfer Slip");
-        this.jButton1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.jButton1ActionPerformed(evt);
-            }
-        });
-        this.jLabel12.setHorizontalAlignment(11);
-        this.jLabel12.setText("Total:");
-        this.gtot.setEditable(false);
-        this.gtot.setFont(new Font("Tahoma", 1, 11));
-        this.gtot.setHorizontalAlignment(11);
-        this.gtot.setText("0.00");
-        this.gtot.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.gtotActionPerformed(evt);
-            }
-        });
-        this.tenc.setHorizontalAlignment(11);
-        this.tenc.setText("0");
-        this.tenc.setNextFocusableComponent(this.fivc);
-        this.tenc.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.tencFocusGained(evt);
-            }
+        jLabel6.setText("x  100.00");
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.tencFocusLost(evt);
-            }
-        });
-        this.tenc.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.tencKeyPressed(evt);
-            }
+        jLabel7.setText("x   50.00");
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.tencKeyTyped(evt);
-            }
-        });
-        this.jLabel14.setText("x Php       0.10");
-        this.ttce.setEditable(false);
-        this.ttce.setFont(new Font("Tahoma", 1, 11));
-        this.ttce.setHorizontalAlignment(11);
-        this.ttce.setText("0.00");
-        this.ttce.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.ttceActionPerformed(evt);
-            }
-        });
-        this.fivc.setHorizontalAlignment(11);
-        this.fivc.setText("0");
-        this.fivc.setNextFocusableComponent(this.jButton1);
-        this.fivc.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                TransferBreakdown.this.fivcFocusGained(evt);
-            }
+        jLabel8.setText("x   20.00");
 
-            public void focusLost(FocusEvent evt) {
-                TransferBreakdown.this.fivcFocusLost(evt);
-            }
-        });
-        this.fivc.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                TransferBreakdown.this.fivcKeyPressed(evt);
-            }
+        jLabel9.setText("x   10.00");
 
-            public void keyTyped(KeyEvent evt) {
-                TransferBreakdown.this.fivcKeyTyped(evt);
+        jLabel10.setText("x    5.00");
+
+        jLabel11.setText("x    1.00");
+
+        jLabel12.setText("x    0.25");
+
+        jLabel13.setText("x    0.10");
+
+        jLabel14.setText("x    0.05");
+
+        thou.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        thou.setText("0");
+        thou.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                thouFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                thouFocusLost(evt);
             }
         });
-        this.jLabel15.setText("x Php       0.05");
-        this.tfce.setEditable(false);
-        this.tfce.setFont(new Font("Tahoma", 1, 11));
-        this.tfce.setHorizontalAlignment(11);
-        this.tfce.setText("0.00");
-        this.tfce.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                TransferBreakdown.this.tfceActionPerformed(evt);
+        thou.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                thouKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                thouKeyTyped(evt);
             }
         });
-        GroupLayout layout = new GroupLayout(getContentPane());
+
+        thun.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        thun.setText("0");
+        thun.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                thunFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                thunFocusLost(evt);
+            }
+        });
+        thun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                thunActionPerformed(evt);
+            }
+        });
+        thun.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                thunKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                thunKeyTyped(evt);
+            }
+        });
+
+        fhun.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        fhun.setText("0");
+        fhun.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                fhunFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                fhunFocusLost(evt);
+            }
+        });
+        fhun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fhunActionPerformed(evt);
+            }
+        });
+        fhun.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                fhunKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fhunKeyTyped(evt);
+            }
+        });
+
+        hun.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        hun.setText("0");
+        hun.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                hunFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                hunFocusLost(evt);
+            }
+        });
+        hun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hunActionPerformed(evt);
+            }
+        });
+        hun.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                hunKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                hunKeyTyped(evt);
+            }
+        });
+
+        fif.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        fif.setText("0");
+        fif.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                fifFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                fifFocusLost(evt);
+            }
+        });
+        fif.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fifActionPerformed(evt);
+            }
+        });
+        fif.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                fifKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fifKeyTyped(evt);
+            }
+        });
+
+        twen.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        twen.setText("0");
+        twen.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                twenFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                twenFocusLost(evt);
+            }
+        });
+        twen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                twenActionPerformed(evt);
+            }
+        });
+        twen.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                twenKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                twenKeyTyped(evt);
+            }
+        });
+
+        ten.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        ten.setText("0");
+        ten.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tenFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tenFocusLost(evt);
+            }
+        });
+        ten.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tenActionPerformed(evt);
+            }
+        });
+        ten.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tenKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tenKeyTyped(evt);
+            }
+        });
+
+        five.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        five.setText("0");
+        five.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                fiveFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                fiveFocusLost(evt);
+            }
+        });
+        five.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fiveActionPerformed(evt);
+            }
+        });
+        five.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                fiveKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fiveKeyTyped(evt);
+            }
+        });
+
+        one.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        one.setText("0");
+        one.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                oneFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                oneFocusLost(evt);
+            }
+        });
+        one.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                oneActionPerformed(evt);
+            }
+        });
+        one.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                oneKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                oneKeyTyped(evt);
+            }
+        });
+
+        cent.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        cent.setText("0");
+        cent.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                centFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                centFocusLost(evt);
+            }
+        });
+        cent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                centActionPerformed(evt);
+            }
+        });
+        cent.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                centKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                centKeyTyped(evt);
+            }
+        });
+
+        tenc.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        tenc.setText("0");
+        tenc.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tencFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tencFocusLost(evt);
+            }
+        });
+        tenc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tencActionPerformed(evt);
+            }
+        });
+        tenc.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tencKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tencKeyTyped(evt);
+            }
+        });
+
+        fivc.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        fivc.setText("0");
+        fivc.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                fivcFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                fivcFocusLost(evt);
+            }
+        });
+        fivc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fivcActionPerformed(evt);
+            }
+        });
+        fivc.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                fivcKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fivcKeyTyped(evt);
+            }
+        });
+
+        jLabel15.setText("Total");
+
+        jButton1.setBackground(new java.awt.Color(79, 119, 141));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Save and Print Transfer Slip");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addContainerGap().addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(this.fivc, -2, 42, -2).addComponent(this.fhun, -2, 42, -2).addComponent(this.thun, -2, 42, -2).addComponent(this.hun, -2, 42, -2).addComponent(this.fif, -2, 42, -2).addComponent(this.twen, -2, 42, -2).addComponent(this.ten, -2, 42, -2).addComponent(this.five, -2, 42, -2).addComponent(this.one, -2, 42, -2).addComponent(this.cent, -2, 42, -2).addComponent(this.thou, -2, 42, -2).addComponent(this.tenc, -2, 42, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 18, 32767).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(this.jLabel2).addComponent(this.jLabel3).addComponent(this.jLabel4).addComponent(this.jLabel5).addComponent(this.jLabel6).addComponent(this.jLabel7).addComponent(this.jLabel8).addComponent(this.jLabel9).addComponent(this.jLabel10).addComponent(this.jLabel11).addComponent(this.jLabel14).addComponent(this.jLabel15, -2, 73, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 6, 32767).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(this.tfce, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tfhun, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tthun, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tohun, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tfif, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.ttwen, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tten, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tfive, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tone, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tcent, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.tthou, GroupLayout.Alignment.TRAILING, -2, 70, -2).addComponent(this.ttce, GroupLayout.Alignment.TRAILING, -2, 70, -2)).addContainerGap()).addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup().addContainerGap().addComponent(this.jLabel12, -2, 118, -2).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, -1, 32767).addComponent(this.gtot, -2, 70, -2).addGap(10, 10, 10)).addGroup(layout.createSequentialGroup().addGap(10, 10, 10).addComponent(this.jLabel1, -1, -1, 32767).addGap(10, 10, 10)).addGroup(layout.createSequentialGroup().addContainerGap().addComponent(this.jSeparator1).addContainerGap()).addGroup(layout.createSequentialGroup().addContainerGap().addComponent(this.jButton1, -1, -1, 32767).addContainerGap()));
-        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addContainerGap().addComponent(this.jLabel1).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.thou, -2, -1, -2).addComponent(this.jLabel2).addComponent(this.tthou, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.fhun, -2, -1, -2).addComponent(this.jLabel3).addComponent(this.tfhun, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.thun, -2, -1, -2).addComponent(this.jLabel4).addComponent(this.tthun, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.hun, -2, -1, -2).addComponent(this.jLabel5).addComponent(this.tohun, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.fif, -2, -1, -2).addComponent(this.jLabel6).addComponent(this.tfif, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.twen, -2, -1, -2).addComponent(this.jLabel7).addComponent(this.ttwen, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.ten, -2, -1, -2).addComponent(this.jLabel8).addComponent(this.tten, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.five, -2, -1, -2).addComponent(this.jLabel9).addComponent(this.tfive, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.one, -2, -1, -2).addComponent(this.jLabel10).addComponent(this.tone, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.cent, -2, -1, -2).addComponent(this.jLabel11).addComponent(this.tcent, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.tenc, -2, -1, -2).addComponent(this.jLabel14).addComponent(this.ttce, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.fivc, -2, -1, -2).addComponent(this.jLabel15).addComponent(this.tfce, -2, -1, -2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(this.jSeparator1, -2, 10, -2).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, -1, 32767).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(this.gtot, -2, -1, -2).addComponent(this.jLabel12)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(this.jButton1).addContainerGap()));
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 4, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addComponent(jLabel15)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(gtot, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(thou, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(fhun, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(thun, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(hun, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(fif, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(twen, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(ten, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(five, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(one, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(cent, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(tenc, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(fivc, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGap(18, 18, 18)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel4)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tfhun, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel5)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tthun, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel6)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tohun, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel7)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tfif, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel8)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(ttwen, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel9)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tten, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel10)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tfive, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel11)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tone, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel12)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tcent, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel13)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(ttce, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel14)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tfce, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jLabel3)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addComponent(tthou, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(10, 10, 10))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tthou, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(thou, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfhun, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(fhun, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tthun, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(thun, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tohun, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(hun, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfif, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(fif, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ttwen, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(twen, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tten, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(ten, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfive, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10)
+                    .addComponent(five, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tone, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11)
+                    .addComponent(one, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tcent, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12)
+                    .addComponent(cent, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ttce, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13)
+                    .addComponent(tenc, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfce, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14)
+                    .addComponent(fivc, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(gtot, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
         pack();
-    }
+    }// </editor-fold>//GEN-END:initComponents
 
-    private void tthouActionPerformed(ActionEvent evt) {
-    }
+    private void tthouActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tthouActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tthouActionPerformed
 
-    private void tfhunActionPerformed(ActionEvent evt) {
-    }
+    private void tfhunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfhunActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tfhunActionPerformed
 
-    private void tthunActionPerformed(ActionEvent evt) {
-    }
+    private void tthunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tthunActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tthunActionPerformed
 
-    private void tohunActionPerformed(ActionEvent evt) {
-    }
+    private void tohunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tohunActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tohunActionPerformed
 
-    private void tfifActionPerformed(ActionEvent evt) {
-    }
+    private void tfifActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfifActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tfifActionPerformed
 
-    private void ttwenActionPerformed(ActionEvent evt) {
-    }
+    private void ttwenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ttwenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ttwenActionPerformed
 
-    private void ttenActionPerformed(ActionEvent evt) {
-    }
+    private void ttenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ttenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ttenActionPerformed
 
-    private void tfiveActionPerformed(ActionEvent evt) {
-    }
+    private void tfiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfiveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tfiveActionPerformed
 
-    private void toneActionPerformed(ActionEvent evt) {
-    }
+    private void toneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toneActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_toneActionPerformed
 
-    private void tcentActionPerformed(ActionEvent evt) {
-    }
+    private void tcentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tcentActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tcentActionPerformed
 
-    private void jButton1ActionPerformed(ActionEvent evt) {
+    private void ttceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ttceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ttceActionPerformed
+
+    private void tfceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tfceActionPerformed
+
+    private void gtotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gtotActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_gtotActionPerformed
+
+    private void thunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_thunActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_thunActionPerformed
+
+    private void fhunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fhunActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fhunActionPerformed
+
+    private void hunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hunActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hunActionPerformed
+
+    private void fifActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fifActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fifActionPerformed
+
+    private void twenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_twenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_twenActionPerformed
+
+    private void tenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tenActionPerformed
+
+    private void fiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fiveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fiveActionPerformed
+
+    private void oneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oneActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_oneActionPerformed
+
+    private void centActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_centActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_centActionPerformed
+
+    private void tencActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tencActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tencActionPerformed
+
+    private void fivcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fivcActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fivcActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         setCancelled(false);
-        if (getTransfer() != Double.parseDouble(this.gtot.getText().replace(",", ""))) {
-            JOptionPane.showMessageDialog(null, "Cash breakdown and Amount to be transferred did not match. \n Please make sure that Cash Breakdown is equal to the amount to be transfer.", "Cash Transfer Breakdown", 1);
-        } else {
-            setValuesEntered(true);
-            try {
+            if (getTransfer() != Double.parseDouble(this.gtot.getText().replace(",", ""))) {
+              JOptionPane.showMessageDialog(null, "Cash breakdown and Amount to be transferred did not match. \n Please make sure that Cash Breakdown is equal to the amount to be transfer.", "Cash Transfer Breakdown", 1);
+            } else {
+              setValuesEntered(true);
+              try {
                 Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
                 Statement state = connect.createStatement();
                 String query = "Insert into " + getDatabase() + ".x_breakdown (bd_date, v_no, bd_thou, bd_fhun, bd_thun, bd_hund, bd_fift, bd_twen, bd_ten, bd_five, bd_one, bd_cen, bd_tenc, bd_fivc, bd_total) values ('" + this.dateHelp.getDateTime() + "', '" + getXnum() + "', " + this.thou.getText().replace(",", "") + ", " + this.fhun.getText().replace(",", "") + ", " + this.thun.getText().replace(",", "") + ", " + this.hun.getText().replace(",", "") + ", " + this.fif.getText().replace(",", "") + ", " + this.twen.getText().replace(",", "") + ", " + this.ten.getText().replace(",", "") + ", " + this.five.getText().replace(",", "") + ", " + this.one.getText().replace(",", "") + ", " + this.cent.getText().replace(",", "") + ", " + this.tenc.getText().replace(",", "") + ", " + this.fivc.getText().replace(",", "") + ", " + this.gtot.getText().replace(",", "") + ")";
@@ -656,347 +945,351 @@ public class TransferBreakdown extends JDialog {
                 state.close();
                 connect.close();
                 File tempFolder = new File("C:\\MPIS\\tempRep\\transfers");
-                if (!tempFolder.exists()) {
-                    tempFolder.mkdir();
-                }
+                if (!tempFolder.exists())
+                  tempFolder.mkdir(); 
                 ReportPrinter pr = new ReportPrinter();
                 Map<Object, Object> parameters = new HashMap<>();
                 parameters.put("XNO", getXnum());
-//                if (this.con.getProp("branch").equalsIgnoreCase("Tangos")) {
-                    pr.setDestination("C:\\MPIS\\tempRep\\transfers\\" + getRefNo() + ".pdf");
-                    if (this.fromFundName.equalsIgnoreCase("") && this.toFundName.equalsIgnoreCase("")) {
-                        if (getDatabase().equalsIgnoreCase("cashtransactions")) {
-                            pr.printReport("/Reports/transferslip2.jrxml", parameters);
-                        } else if (getDatabase().equalsIgnoreCase("palawan")) {
-                            pr.printReport("/Reports/transferslip2-palawan.jrxml", parameters);
-                        } else if (getDatabase().equalsIgnoreCase("forex")) {
-                            pr.printReport("/Reports/transferslip2-forex.jrxml", parameters);
-                        }
-                    } else {
-                        if (getDatabase().equalsIgnoreCase("cashtransactions")) {
-                            pr.printReport("/Reports/transferslip.jrxml", parameters);
-                        } else if (getDatabase().equalsIgnoreCase("palawan")) {
-                            pr.printReport("/Reports/transferslip-palawan.jrxml", parameters);
-                        } else if (getDatabase().equalsIgnoreCase("forex")) {
-                            pr.printReport("/Reports/transferslip-forex.jrxml", parameters);
-                        }
-                    }
-//                } else {
-//                    pr.setDestination("C:\\MPIS\\tempRep\\transfers\\" + getRefNo() + ".xls");
-//                    if (this.fromFundName.equalsIgnoreCase("") && this.toFundName.equalsIgnoreCase("")) {
-//                        System.out.println("whats the choice here3: " + getDatabase());
-//                        if (getDatabase().equalsIgnoreCase("cashtransactions")) {
-//                            pr.printDotMatrix("/Reports/transferslip2.jrxml", parameters);
-//                        } else if (getDatabase().equalsIgnoreCase("palawan")) {
-//                            pr.printDotMatrix("/Reports/transferslip2-palawan.jrxml", parameters);
-//                        } else if (getDatabase().equalsIgnoreCase("forex")) {
-//                            pr.printDotMatrix("/Reports/transferslip2-forex.jrxml", parameters);
-//                        }
-//                    } else {
-//                        System.out.println("whats the choice here4: " + getDatabase());
-//                        if (getDatabase().equalsIgnoreCase("cashtransactions")) {
-//                            pr.printDotMatrix("/Reports/transferslip.jrxml", parameters);
-//                        } else if (getDatabase().equalsIgnoreCase("palawan")) {
-//                            pr.printDotMatrix("/Reports/transferslip-palawan.jrxml", parameters);
-//                        } else if (getDatabase().equalsIgnoreCase("forex")) {
-//                            pr.printDotMatrix("/Reports/transferslip-forex.jrxml", parameters);
-//                        }
-//                    }
-//                }
+                System.out.println("printing for " + getDatabase());
+                if (this.con.getProp("branch").equalsIgnoreCase("Tangos")) {
+                  pr.setDestination("C:\\MPIS\\tempRep\\transfers\\" + getRefNo() + ".pdf");
+                  if (this.fromFundName.equalsIgnoreCase("") && this.toFundName.equalsIgnoreCase("")) {
+                    System.out.println("whats the choice here1: " + getDatabase());
+                    if (getDatabase().equalsIgnoreCase("cashtransactions")) {
+                      pr.printReport("/Reports/transferslip2.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("palawan")) {
+                      pr.printReport("/Reports/transferslip2-palawan.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("forex")) {
+                      pr.printReport("/Reports/transferslip2-forex.jrxml", parameters);
+                    } 
+                  } else {
+                    System.out.println("whats the choice here2: " + getDatabase());
+                    if (getDatabase().equalsIgnoreCase("cashtransactions")) {
+                      pr.printReport("/Reports/transferslip.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("palawan")) {
+                      pr.printReport("/Reports/transferslip-palawan.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("forex")) {
+                      pr.printReport("/Reports/transferslip-forex.jrxml", parameters);
+                    } 
+                  } 
+                } else {
+                  pr.setDestination("C:\\MPIS\\tempRep\\transfers\\" + getRefNo() + ".xls");
+                  if (this.fromFundName.equalsIgnoreCase("") && this.toFundName.equalsIgnoreCase("")) {
+                    System.out.println("whats the choice here3: " + getDatabase());
+                    if (getDatabase().equalsIgnoreCase("cashtransactions")) {
+                      pr.printDotMatrix("/Reports/transferslip2.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("palawan")) {
+                      pr.printDotMatrix("/Reports/transferslip2-palawan.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("forex")) {
+                      pr.printDotMatrix("/Reports/transferslip2-forex.jrxml", parameters);
+                    } 
+                  } else {
+                    System.out.println("whats the choice here4: " + getDatabase());
+                    if (getDatabase().equalsIgnoreCase("cashtransactions")) {
+                      pr.printDotMatrix("/Reports/transferslip.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("palawan")) {
+                      pr.printDotMatrix("/Reports/transferslip-palawan.jrxml", parameters);
+                    } else if (getDatabase().equalsIgnoreCase("forex")) {
+                      pr.printDotMatrix("/Reports/transferslip-forex.jrxml", parameters);
+                    } 
+                  } 
+                } 
                 setVisible(false);
-            } catch (SQLException ex) {
+              } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Cash Breakdown Save Error.");
-                Logger.getLogger(TransferBreakdown.class.getName()).log(Level.SEVERE, (String) null, ex);
-            }
-        }
-    }
+                Logger.getLogger(TransferBreakdown.class.getName()).log(Level.SEVERE, (String)null, ex);
+              } 
+            }  
+    }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void thouKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void thouKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_thouKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_thouKeyTyped
 
-    private void fhunKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void fhunKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fhunKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_fhunKeyTyped
 
-    private void thunKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void thunKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_thunKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_thunKeyTyped
 
-    private void hunKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void hunKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_hunKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_hunKeyTyped
 
-    private void fifKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void fifKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fifKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_fifKeyTyped
 
-    private void twenKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void twenKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_twenKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_twenKeyTyped
 
-    private void tenKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void tenKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tenKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_tenKeyTyped
 
-    private void fiveKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void fiveKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fiveKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_fiveKeyTyped
 
-    private void oneKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void oneKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_oneKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_oneKeyTyped
 
-    private void centKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void centKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_centKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_centKeyTyped
 
-    private void gtotActionPerformed(ActionEvent evt) {
-    }
+    private void tencKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tencKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_tencKeyTyped
 
-    private void thouFocusLost(FocusEvent evt) {
+    private void fivcKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fivcKeyTyped
+        if (!Character.isDigit(evt.getKeyChar()))
+      evt.consume(); 
+    }//GEN-LAST:event_fivcKeyTyped
+
+    private void thouFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_thouFocusLost
         this.tthou.setText(this.formatter.format(Double.parseDouble(this.thou.getText().replace(",", "")) * 1000.0D));
         this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
 
-    private void fhunFocusLost(FocusEvent evt) {
+    }//GEN-LAST:event_thouFocusLost
+
+    private void fhunFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fhunFocusLost
         this.tfhun.setText(this.formatter.format(Double.parseDouble(this.fhun.getText().replace(",", "")) * 500.0D));
         this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    }//GEN-LAST:event_fhunFocusLost
 
-    private void thunFocusLost(FocusEvent evt) {
+    private void thunFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_thunFocusLost
         this.tthun.setText(this.formatter.format(Double.parseDouble(this.thun.getText().replace(",", "")) * 200.0D));
         this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+  
+    }//GEN-LAST:event_thunFocusLost
 
-    private void hunFocusLost(FocusEvent evt) {
+    private void hunFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_hunFocusLost
         this.tohun.setText(this.formatter.format(Double.parseDouble(this.hun.getText().replace(",", "")) * 100.0D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+  
+    }//GEN-LAST:event_hunFocusLost
 
-    private void fifFocusLost(FocusEvent evt) {
+    private void fifFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fifFocusLost
         this.tfif.setText(this.formatter.format(Double.parseDouble(this.fif.getText().replace(",", "")) * 50.0D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+  
+    }//GEN-LAST:event_fifFocusLost
 
-    private void twenFocusLost(FocusEvent evt) {
+    private void twenFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_twenFocusLost
         this.ttwen.setText(this.formatter.format(Double.parseDouble(this.twen.getText().replace(",", "")) * 20.0D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+  
+    }//GEN-LAST:event_twenFocusLost
 
-    private void tenFocusLost(FocusEvent evt) {
+    private void tenFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tenFocusLost
         this.tten.setText(this.formatter.format(Double.parseDouble(this.ten.getText().replace(",", "")) * 10.0D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+ 
+    }//GEN-LAST:event_tenFocusLost
 
-    private void fiveFocusLost(FocusEvent evt) {
+    private void fiveFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fiveFocusLost
         this.tfive.setText(this.formatter.format(Double.parseDouble(this.five.getText().replace(",", "")) * 5.0D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+ 
+    }//GEN-LAST:event_fiveFocusLost
 
-    private void oneFocusLost(FocusEvent evt) {
+    private void oneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_oneFocusLost
         this.tone.setText(this.formatter.format(Double.parseDouble(this.one.getText().replace(",", ""))));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
 
-    private void centFocusLost(FocusEvent evt) {
-        this.tcent.setText(this.formatter.format(Double.parseDouble(this.cent.getText().replace(",", "")) * 0.25D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    }//GEN-LAST:event_oneFocusLost
 
-    private void thouFocusGained(FocusEvent evt) {
-        this.thou.selectAll();
-    }
+    private void centFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_centFocusLost
+       this.tcent.setText(this.formatter.format(Double.parseDouble(this.cent.getText().replace(",", "")) * 0.25D));
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+  
+    }//GEN-LAST:event_centFocusLost
 
-    private void fhunFocusGained(FocusEvent evt) {
-        this.fhun.selectAll();
-    }
-
-    private void thunFocusGained(FocusEvent evt) {
-        this.thun.selectAll();
-    }
-
-    private void hunFocusGained(FocusEvent evt) {
-        this.hun.selectAll();
-    }
-
-    private void fifFocusGained(FocusEvent evt) {
-        this.fif.selectAll();
-    }
-
-    private void twenFocusGained(FocusEvent evt) {
-        this.twen.selectAll();
-    }
-
-    private void tenFocusGained(FocusEvent evt) {
-        this.ten.selectAll();
-    }
-
-    private void fiveFocusGained(FocusEvent evt) {
-        this.five.selectAll();
-    }
-
-    private void oneFocusGained(FocusEvent evt) {
-        this.one.selectAll();
-    }
-
-    private void centFocusGained(FocusEvent evt) {
-        this.cent.selectAll();
-    }
-
-    private void tencFocusGained(FocusEvent evt) {
-        this.tenc.selectAll();
-    }
-
-    private void tencFocusLost(FocusEvent evt) {
+    private void tencFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tencFocusLost
         this.ttce.setText(this.formatter.format(Double.parseDouble(this.tenc.getText().replace(",", "")) * 0.1D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+  
+    }//GEN-LAST:event_tencFocusLost
 
-    private void tencKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
-
-    private void ttceActionPerformed(ActionEvent evt) {
-    }
-
-    private void fivcFocusGained(FocusEvent evt) {
-        this.fivc.selectAll();
-    }
-
-    private void fivcFocusLost(FocusEvent evt) {
+    private void fivcFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fivcFocusLost
         this.tfce.setText(this.formatter.format(Double.parseDouble(this.fivc.getText().replace(",", "")) * 0.05D));
-        this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
-    }
+    this.gtot.setText(this.formatter.format(Double.parseDouble(this.tthou.getText().replace(",", "")) + Double.parseDouble(this.tfhun.getText().replace(",", "")) + Double.parseDouble(this.tthun.getText().replace(",", "")) + Double.parseDouble(this.tohun.getText().replace(",", "")) + Double.parseDouble(this.tfif.getText().replace(",", "")) + Double.parseDouble(this.ttwen.getText().replace(",", "")) + Double.parseDouble(this.tten.getText().replace(",", "")) + Double.parseDouble(this.tfive.getText().replace(",", "")) + Double.parseDouble(this.tone.getText().replace(",", "")) + Double.parseDouble(this.tcent.getText().replace(",", "")) + Double.parseDouble(this.ttce.getText().replace(",", "")) + Double.parseDouble(this.tfce.getText().replace(",", ""))));
+  
+    }//GEN-LAST:event_fivcFocusLost
 
-    private void fivcKeyTyped(KeyEvent evt) {
-        if (!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-        }
-    }
+    private void thouFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_thouFocusGained
+        thou.selectAll();
+    }//GEN-LAST:event_thouFocusGained
 
-    private void tfceActionPerformed(ActionEvent evt) {
-    }
+    private void fhunFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fhunFocusGained
+        fhun.selectAll();
+    }//GEN-LAST:event_fhunFocusGained
 
-    private void formWindowClosing(WindowEvent evt) {
-    }
+    private void thunFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_thunFocusGained
+        thun.selectAll();
+    }//GEN-LAST:event_thunFocusGained
 
-    private void thouKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            thouFocusLost((FocusEvent) null);
-        }
-    }
+    private void hunFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_hunFocusGained
+        hun.selectAll();
+    }//GEN-LAST:event_hunFocusGained
 
-    private void fhunKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            fhunFocusLost((FocusEvent) null);
-        }
-    }
+    private void fifFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fifFocusGained
+        fif.selectAll();
+    }//GEN-LAST:event_fifFocusGained
 
-    private void thunKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            thunFocusLost((FocusEvent) null);
-        }
-    }
+    private void twenFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_twenFocusGained
+        twen.selectAll();
+    }//GEN-LAST:event_twenFocusGained
 
-    private void hunKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            hunFocusLost((FocusEvent) null);
-        }
-    }
+    private void tenFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tenFocusGained
+        ten.selectAll();
+    }//GEN-LAST:event_tenFocusGained
 
-    private void fifKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            fifFocusLost((FocusEvent) null);
-        }
-    }
+    private void fiveFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fiveFocusGained
+        five.selectAll();
+    }//GEN-LAST:event_fiveFocusGained
 
-    private void twenKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            twenFocusLost((FocusEvent) null);
-        }
-    }
+    private void oneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_oneFocusGained
+        one.selectAll();
+    }//GEN-LAST:event_oneFocusGained
 
-    private void tenKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            tenFocusLost((FocusEvent) null);
-        }
-    }
+    private void centFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_centFocusGained
+        cent.selectAll();
+    }//GEN-LAST:event_centFocusGained
 
-    private void fiveKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            fiveFocusLost((FocusEvent) null);
-        }
-    }
+    private void tencFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tencFocusGained
+        tenc.selectAll();
+    }//GEN-LAST:event_tencFocusGained
 
-    private void oneKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            oneFocusLost((FocusEvent) null);
-        }
-    }
+    private void fivcFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fivcFocusGained
+        fivc.selectAll();
+    }//GEN-LAST:event_fivcFocusGained
 
-    private void centKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            centFocusLost((FocusEvent) null);
-        }
-    }
+    private void thouKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_thouKeyPressed
+        if (evt.getKeyCode() == 10)
+            thouFocusLost(null);
+    }//GEN-LAST:event_thouKeyPressed
 
-    private void tencKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            tencFocusLost((FocusEvent) null);
-        }
-    }
+    private void fhunKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fhunKeyPressed
+        if (evt.getKeyCode() == 10)
+            fhunFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_fhunKeyPressed
 
-    private void fivcKeyPressed(KeyEvent evt) {
-        if (evt.getKeyCode() == 10) {
-            fivcFocusLost((FocusEvent) null);
-        }
-    }
+    private void thunKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_thunKeyPressed
+        if (evt.getKeyCode() == 10)
+      thunFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_thunKeyPressed
 
-    public static void main(String[] args) {
+    private void hunKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_hunKeyPressed
+        if (evt.getKeyCode() == 10)
+      hunFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_hunKeyPressed
+
+    private void fifKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fifKeyPressed
+        if (evt.getKeyCode() == 10)
+      fifFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_fifKeyPressed
+
+    private void twenKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_twenKeyPressed
+        if (evt.getKeyCode() == 10)
+      twenFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_twenKeyPressed
+
+    private void tenKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tenKeyPressed
+        if (evt.getKeyCode() == 10)
+      tenFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_tenKeyPressed
+
+    private void fiveKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fiveKeyPressed
+        if (evt.getKeyCode() == 10)
+      fiveFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_fiveKeyPressed
+
+    private void oneKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_oneKeyPressed
+        if (evt.getKeyCode() == 10)
+      oneFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_oneKeyPressed
+
+    private void centKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_centKeyPressed
+        if (evt.getKeyCode() == 10)
+      centFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_centKeyPressed
+
+    private void tencKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tencKeyPressed
+        if (evt.getKeyCode() == 10)
+      tencFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_tencKeyPressed
+
+    private void fivcKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fivcKeyPressed
+        if (evt.getKeyCode() == 10)
+      fivcFocusLost((FocusEvent)null); 
+    }//GEN-LAST:event_fivcKeyPressed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
         try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(TransferBreakdown.class.getName()).log(Level.SEVERE, (String) null, ex);
+            java.util.logging.Logger.getLogger(TransferBreakdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            Logger.getLogger(TransferBreakdown.class.getName()).log(Level.SEVERE, (String) null, ex);
+            java.util.logging.Logger.getLogger(TransferBreakdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(TransferBreakdown.class.getName()).log(Level.SEVERE, (String) null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(TransferBreakdown.class.getName()).log(Level.SEVERE, (String) null, ex);
+            java.util.logging.Logger.getLogger(TransferBreakdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(TransferBreakdown.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        EventQueue.invokeLater(new Runnable() {
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                TransferBreakdown dialog = new TransferBreakdown(new JFrame(), true);
-                dialog.addWindowListener(new WindowAdapter() {
-                    public void windowClosing(WindowEvent e) {
+                TransferBreakdown dialog = new TransferBreakdown(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }
                 });
@@ -1005,67 +1298,47 @@ public class TransferBreakdown extends JDialog {
         });
     }
 
-    public boolean isValuesEntered() {
-        return this.valuesEntered;
-    }
-
-    public void setValuesEntered(boolean valuesEntered) {
-        this.valuesEntered = valuesEntered;
-    }
-
-    public double getTransfer() {
-        return this.transfer;
-    }
-
-    public void setTransfer(double transfer) {
-        this.transfer = transfer;
-    }
-
-    public String getXnum() {
-        return this.xnum;
-    }
-
-    public void setXnum(String xnum) {
-        this.xnum = xnum;
-    }
-
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
-
-    public String getRefNo() {
-        return this.refNo;
-    }
-
-    public void setRefNo(String refNo) {
-        this.refNo = refNo;
-    }
-
-    public String getFromFundName() {
-        return this.fromFundName;
-    }
-
-    public void setFromFundName(String fromFundName) {
-        this.fromFundName = fromFundName;
-    }
-
-    public String getToFundName() {
-        return this.toFundName;
-    }
-
-    public void setToFundName(String toFundName) {
-        this.toFundName = toFundName;
-    }
-
-    public String getDatabase() {
-        return this.database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField cent;
+    private javax.swing.JTextField fhun;
+    private javax.swing.JTextField fif;
+    private javax.swing.JTextField fivc;
+    private javax.swing.JTextField five;
+    private javax.swing.JTextField gtot;
+    private javax.swing.JTextField hun;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTextField one;
+    private javax.swing.JTextField tcent;
+    private javax.swing.JTextField ten;
+    private javax.swing.JTextField tenc;
+    private javax.swing.JTextField tfce;
+    private javax.swing.JTextField tfhun;
+    private javax.swing.JTextField tfif;
+    private javax.swing.JTextField tfive;
+    private javax.swing.JTextField thou;
+    private javax.swing.JTextField thun;
+    private javax.swing.JTextField tohun;
+    private javax.swing.JTextField tone;
+    private javax.swing.JTextField ttce;
+    private javax.swing.JTextField tten;
+    private javax.swing.JTextField tthou;
+    private javax.swing.JTextField tthun;
+    private javax.swing.JTextField ttwen;
+    private javax.swing.JTextField twen;
+    // End of variables declaration//GEN-END:variables
 }

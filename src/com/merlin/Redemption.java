@@ -37,6 +37,9 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Sides;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 
 /**
  *
@@ -296,6 +299,24 @@ public class Redemption extends javax.swing.JPanel {
         System.out.println(oldPapNoLRenew.getText() + branchSearchRenew.getSelectedItem().toString());
         retrieveInfoActionPerformed((ActionEvent)null);
    }
+    
+    public void renewLoanFromSearch(String papNo, String branch) {
+     this.oldPapNoLRenew.setText(papNo);
+     this.branchSearchRenew.setSelectedItem(branch);
+     retrieveInfoActionPerformed((ActionEvent)null);
+    }
+    
+    private Double extractAmount(JTextField textfld) {
+        return Double.parseDouble(textfld.getText().replace(",", ""));
+    }
+    
+    private Double extractValue(JSlider slider) {
+        return Double.valueOf(slider.getValue());
+    } 
+    
+    private Integer extractInt(JSpinner spinner) {
+        return Integer.parseInt(spinner.getValue().toString());
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -1524,13 +1545,13 @@ public class Redemption extends javax.swing.JPanel {
 //                discDia.setLocationRelativeTo(null);
 //                discDia.setVisible(true);
 
-                this.oldSangla.setInterest(Double.parseDouble(this.interestRdm.getText().replace(",", "")));
-                this.oldSangla.setInterest_rate(Double.valueOf(this.intRateSlider.getValue()));
-                this.oldSangla.setStamp(Double.parseDouble(this.stamp.getText().replace(",", "")));
-                this.oldSangla.setLiq_dam(Double.parseDouble(this.liqDam.getText().replace(",", "")));
-                this.oldSangla.setAff(Double.parseDouble(this.affLoss.getText().replace(",", "")));
-                this.oldSangla.setUnpaid(Double.parseDouble(this.unpaidAI.getText().replace(",", "")));
-                this.oldSangla.setNet_proceeds(Double.parseDouble(this.totalOutBalRdm.getText().replace(",", "")));
+                this.oldSangla.setInterest(extractAmount(interestRdm));
+                this.oldSangla.setInterest_rate(extractValue(intRateSlider));
+                this.oldSangla.setStamp(extractAmount(stamp));
+                this.oldSangla.setLiq_dam(extractAmount(liqDam));
+                this.oldSangla.setAff(extractAmount(affLoss));
+                this.oldSangla.setUnpaid(extractAmount(unpaidAI));
+                this.oldSangla.setNet_proceeds(extractAmount(totalOutBalRdm));
                 this.oldSangla.setTransaction_date(this.dateFormatter.format(this.transDateRet.getDate()));
                 System.out.println("dayn diff = " + this.dateHelp.getDayDifference(Calendar.getInstance().getTime(), this.dateHelp.formatStringToDate(getExp_date())));
                 if (this.dateHelp.formatStringToDate(getExp_date()).getMonth() - Calendar.getInstance().getTime().getMonth() <= 0) {
@@ -1559,9 +1580,9 @@ public class Redemption extends javax.swing.JPanel {
                     parameters.put("ITEM_CODE", this.papNumRet.getText().concat(this.oldSangla.getBranchCode(this.branchRet.getSelectedItem().toString())));
                     parameters.put("SC", Double.valueOf(0.0D));
                     parameters.put("AI", Double.valueOf(0.0D));
-                    parameters.put("NO_OF_MONTHS", Integer.valueOf(Integer.parseInt(this.numOfMonths.getValue().toString())));
+                    parameters.put("NO_OF_MONTHS", Integer.valueOf(extractInt(numOfMonths)));
                     parameters.put("CODE", "T");
-                    parameters.put("PARTIAL", Double.valueOf(Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+                    parameters.put("PARTIAL", Double.valueOf(extractAmount(partialPaymentBox)));
                     parameters.put("TRANX_DATE", getTranx_date());
                     parameters.put("STATUS", "Redeemed");
                     parameters.put("INSURANCE", Double.valueOf(0.0D));
@@ -1581,7 +1602,7 @@ public class Redemption extends javax.swing.JPanel {
                         redeem.setTransaction_remarks("Redeem (");
                         redeem.setLoans_item_code(this.oldSangla.getItem_code_a());
                         redeem.setLoans_name(this.nameRet.getText());
-                        redeem.setTransaction_amount(Double.parseDouble(this.totalOutBalRdm.getText().replace(",", "")));
+                        redeem.setTransaction_amount(extractAmount(totalOutBalRdm));
                         int tableRowCount = 0;
                         try {
                             Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
@@ -1611,9 +1632,9 @@ public class Redemption extends javax.swing.JPanel {
                         additional.setCash_transaction_type("ADD");
                         additional.setPetty_cast_type("Tubos Subasta");
                         additional.setTransaction_remarks("Tubos Subasta Pap#" + this.oldSangla.getPap_num() + "( Received from: " + this.oldSangla.getClient_name() + ")");
-                        additional.setTransaction_amount(Double.parseDouble(this.principalRdm.getText().replace(",", "")) + Double.parseDouble(this.interestRdm.getText().replace(",", ""))
-                                + Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                                + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")));
+                        additional.setTransaction_amount(extractAmount(principalRdm) + extractAmount(interestRdm)
+                                + extractAmount(stamp) + extractAmount(affLoss)
+                                + extractAmount(unpaidAI) + extractAmount(liqDam));
                         additional.setAddsub(0.0D);
                         additional.setLoans_name(this.oldSangla.getClient_name());
                         int tableRowCount = 0;
@@ -1646,7 +1667,7 @@ public class Redemption extends javax.swing.JPanel {
                         redeem.setTransaction_remarks("Redeem (");
                         redeem.setLoans_item_code(this.oldSangla.getItem_code_a());
                         redeem.setLoans_name(this.nameRet.getText());
-                        redeem.setTransaction_amount(Double.parseDouble(this.totalOutBalRdm.getText().replace(",", "")));
+                        redeem.setTransaction_amount(extractAmount(totalOutBalRdm));
                         int tableRowCount = 0;
                         try {
                             Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
@@ -1792,18 +1813,18 @@ public class Redemption extends javax.swing.JPanel {
 
     private void interestRdmFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_interestRdmFocusLost
         if (isIntMonthRateAutoAdj()) {
-            if (Double.parseDouble(this.interestRdm.getText().replace(",", "")) > 0.0D) {
-            this.intRateSlider.setValue(Integer.parseInt(this.calculate.computeInterestRate(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                    Double.parseDouble(this.interestRdm.getText().replace(",", "")), Integer.parseInt(this.numOfMonths.getValue().toString()))));
+            if (extractAmount(interestRdm) > 0.0D) {
+            this.intRateSlider.setValue(Integer.parseInt(this.calculate.computeInterestRate(extractAmount(principalRdm),
+                    extractAmount(interestRdm), extractInt(numOfMonths))));
             }
         } else {
-            this.interestRdm.setText(this.decHelp.FormatNumber(Double.parseDouble(this.interestRdm.getText().replace(",", ""))));
-            this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                    Double.parseDouble(this.interestRdm.getText().replace(",", "")),
-                    (Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                        + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", ""))),
+            this.interestRdm.setText(this.decHelp.FormatNumber(extractAmount(interestRdm)));
+            this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm),
+                    extractAmount(interestRdm),
+                    (extractAmount(stamp) + extractAmount(affLoss)
+                        + extractAmount(unpaidAI) + extractAmount(liqDam)),
                     0.0D,
-                    Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+                    extractAmount(partialPaymentBox)));
         }
     }//GEN-LAST:event_interestRdmFocusLost
 
@@ -1828,28 +1849,28 @@ public class Redemption extends javax.swing.JPanel {
     private void intRateSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_intRateSliderStateChanged
         intLabel.setText(Integer.toString(intRateSlider.getValue()).concat("%"));
         if (isIntMonthRateAutoAdj()) {
-            this.interestRdm.setText(this.calculate.computeInterest(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString())));
+            this.interestRdm.setText(this.calculate.computeInterest(extractAmount(principalRdm),
+                extractValue(intRateSlider), extractInt(numOfMonths)));
         } else {
-            this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                     Double.valueOf(this.intRateSlider.getValue()),
-                    Integer.parseInt(this.numOfMonths.getValue().toString()),
-                (Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                    + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", ""))),
+            this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm),
+                     extractValue(intRateSlider),
+                    extractInt(numOfMonths),
+                (extractAmount(stamp) + extractAmount(affLoss)
+                    + extractAmount(unpaidAI) + extractAmount(liqDam)),
                     0.0D,
-                    Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+                    extractAmount(partialPaymentBox)));
         }
     }//GEN-LAST:event_intRateSliderStateChanged
 
     private void numOfMonthsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_numOfMonthsStateChanged
         if (isIntMonthRateAutoAdj()) {
-            this.interestRdm.setText(this.calculate.computeInterest(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                    Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString())));
-        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")),
-                0.0D, Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.interestRdm.setText(this.calculate.computeInterest(extractAmount(principalRdm),
+                    extractValue(intRateSlider), extractInt(numOfMonths)));
+        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm),
+                extractValue(intRateSlider), extractInt(numOfMonths),
+                extractAmount(stamp) + extractAmount(affLoss)
+                + extractAmount(unpaidAI) + extractAmount(liqDam),
+                0.0D, extractAmount(partialPaymentBox)));
         } 
     }//GEN-LAST:event_numOfMonthsStateChanged
 
@@ -1858,14 +1879,14 @@ public class Redemption extends javax.swing.JPanel {
     }//GEN-LAST:event_stampFocusGained
 
     private void stampFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_stampFocusLost
-        this.stamp.setText(this.decHelp.FormatNumber(Double.parseDouble(this.stamp.getText().replace(",", ""))));
+        this.stamp.setText(this.decHelp.FormatNumber(extractAmount(stamp)));
         if (isIntMonthRateAutoAdj()) {
         this.totalOutBalRdm.setText(
-                this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                        Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()),
-                        Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                        + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")),
-                            0.0D, Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+                this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm),
+                        extractValue(intRateSlider), extractInt(numOfMonths),
+                        extractAmount(stamp) + extractAmount(affLoss)
+                        + extractAmount(unpaidAI) + extractAmount(liqDam),
+                            0.0D, extractAmount(partialPaymentBox)));
         }
     }//GEN-LAST:event_stampFocusLost
 
@@ -1888,8 +1909,8 @@ public class Redemption extends javax.swing.JPanel {
     }//GEN-LAST:event_affLossFocusGained
 
     private void affLossFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_affLossFocusLost
-        this.affLoss.setText(this.decHelp.FormatNumber(Double.parseDouble(this.affLoss.getText().replace(",", ""))));
-        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), 0.0D, Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        this.affLoss.setText(this.decHelp.FormatNumber(extractAmount(affLoss)));
+        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm), extractValue(intRateSlider), extractInt(numOfMonths), extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam), 0.0D, extractAmount(partialPaymentBox)));
    
     }//GEN-LAST:event_affLossFocusLost
 
@@ -1912,15 +1933,15 @@ public class Redemption extends javax.swing.JPanel {
     }//GEN-LAST:event_liqDamFocusGained
 
     private void liqDamFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_liqDamFocusLost
-        this.liqDam.setText(this.decHelp.FormatNumber(Double.parseDouble(this.liqDam.getText().replace(",", ""))));
+        this.liqDam.setText(this.decHelp.FormatNumber(extractAmount(liqDam)));
         if (isIntMonthRateAutoAdj()) {
-            this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                    Double.valueOf(this.intRateSlider.getValue()),
-                    Integer.parseInt(this.numOfMonths.getValue().toString()),
-                    Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                    + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")),
+            this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm),
+                    extractValue(intRateSlider),
+                    extractInt(numOfMonths),
+                    extractAmount(stamp) + extractAmount(affLoss)
+                    + extractAmount(unpaidAI) + extractAmount(liqDam),
                     0.0D,
-                    Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+                    extractAmount(partialPaymentBox)));
         }
     }//GEN-LAST:event_liqDamFocusLost
 
@@ -1947,8 +1968,8 @@ public class Redemption extends javax.swing.JPanel {
     }//GEN-LAST:event_unpaidAIFocusGained
 
     private void unpaidAIFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_unpaidAIFocusLost
-         this.unpaidAI.setText(this.decHelp.FormatNumber(Double.parseDouble(this.unpaidAI.getText().replace(",", ""))));
-     this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), 0.0D, Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+         this.unpaidAI.setText(this.decHelp.FormatNumber(extractAmount(unpaidAI)));
+     this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm), extractValue(intRateSlider), extractInt(numOfMonths), extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam), 0.0D, extractAmount(partialPaymentBox)));
    
     }//GEN-LAST:event_unpaidAIFocusLost
 
@@ -1970,8 +1991,8 @@ public class Redemption extends javax.swing.JPanel {
     }//GEN-LAST:event_partialPaymentBoxFocusGained
 
     private void partialPaymentBoxFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_partialPaymentBoxFocusLost
-        this.partialPaymentBox.setText(this.decHelp.FormatNumber(Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), 0.0D, Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        this.partialPaymentBox.setText(this.decHelp.FormatNumber(extractAmount(partialPaymentBox)));
+        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm), extractValue(intRateSlider), extractInt(numOfMonths), extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam), 0.0D, extractAmount(partialPaymentBox)));
    
     }//GEN-LAST:event_partialPaymentBoxFocusLost
 
@@ -2000,7 +2021,7 @@ public class Redemption extends javax.swing.JPanel {
         if (interestRdm.isEditable()) {
             if (oldSangla.getStatus().equalsIgnoreCase("Expired")) {
                 if (isIntMonthRateAutoAdj()) {
-                    linkToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com.merlin/link (10).png")));  //TOGGLE ICON TO GRAY
+                    linkToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/link (10).png")));  //TOGGLE ICON TO GRAY
                     setIntMonthRateAutoAdj(false);
                     intRateSlider.setValue(0);
                     numOfMonths.setValue(0);
@@ -2008,7 +2029,7 @@ public class Redemption extends javax.swing.JPanel {
                     numOfMonths.setEnabled(false);
                     interestRdm.requestFocusInWindow();
                 } else {
-                    linkToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com.merlin/link (11).png"))); 
+                    linkToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/link (11).png"))); 
                     setIntMonthRateAutoAdj(true);
                     this.intRateSlider.setValue(7);
                     this.numOfMonths.setValue(Integer.parseInt(getMonthDiffDisplayed()));
@@ -2156,14 +2177,14 @@ public class Redemption extends javax.swing.JPanel {
             this.procByRet.setText(this.con.getProp("last_username"));
             this.principalRdm.setText(this.principalRet.getText().replace(",", ""));
             this.intRateSlider.setValue(7);
-            this.interestRdm.setText(this.calculate.computeInterest(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString())));
+            this.interestRdm.setText(this.calculate.computeInterest(extractAmount(principalRdm),
+                extractValue(intRateSlider), extractInt(numOfMonths)));
         setInterestDisplayed(interestRdm.getText());
-        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(Double.parseDouble(this.principalRdm.getText().replace(",", "")),
-            Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()),
-            Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-            + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), 0.0D,
-            Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        this.totalOutBalRdm.setText(this.calculate.computeTotalOutstandingBalance(extractAmount(principalRdm),
+            extractValue(intRateSlider), extractInt(numOfMonths),
+            extractAmount(stamp) + extractAmount(affLoss)
+            + extractAmount(unpaidAI) + extractAmount(liqDam), 0.0D,
+            extractAmount(partialPaymentBox)));
     this.statusRenew.setSelectedItem("Closed");
     this.finalizeRedemptionBtn.setEnabled(true);
     this.updateStatus.setEnabled(false);
@@ -2178,7 +2199,7 @@ public class Redemption extends javax.swing.JPanel {
         Sangla forRp = new Sangla();
         if (conf == 0) {
             Config con = new Config();
-            if (con.getProp("branch").equalsIgnoreCase("Tangos")) {
+//            if (con.getProp("branch").equalsIgnoreCase("Tangos")) {
 
                 try {
                     DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PAGEABLE;
@@ -2221,12 +2242,12 @@ public class Redemption extends javax.swing.JPanel {
                     con.saveProp("mpis_last_error", String.valueOf(ex));
                     Logger.getLogger(ReprintTransfer.class.getName()).log(Level.SEVERE, (String) null, ex);
                 }
-            } else {
-
-                PrintExcel px = new PrintExcel();
-                String destination = "C:\\MPIS\\daytranx\\" + this.oldPapNoLRenew.getText() + forRp.getBranchCode(this.branchSearchRenew.getSelectedItem().toString()) + ".xls";
-                px.printFile(new File(destination));
-            }
+//            } else {
+//
+//                PrintExcel px = new PrintExcel();
+//                String destination = "C:\\MPIS\\daytranx\\" + this.oldPapNoLRenew.getText() + forRp.getBranchCode(this.branchSearchRenew.getSelectedItem().toString()) + ".xls";
+//                px.printFile(new File(destination));
+//            }
         }
     }//GEN-LAST:event_reprintCompShtActionPerformed
 

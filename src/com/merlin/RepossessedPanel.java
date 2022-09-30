@@ -12,11 +12,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -27,6 +31,20 @@ import javax.swing.table.TableCellRenderer;
  * @author Lucky
  */
 public class RepossessedPanel extends javax.swing.JPanel {
+
+    /**
+     * @return the combosUpdated
+     */
+    public boolean isCombosUpdated() {
+        return combosUpdated;
+    }
+
+    /**
+     * @param combosUpdated the combosUpdated to set
+     */
+    public void setCombosUpdated(boolean combosUpdated) {
+        this.combosUpdated = combosUpdated;
+    }
 
     /**
      * @return the whereVIList
@@ -59,25 +77,29 @@ public class RepossessedPanel extends javax.swing.JPanel {
     private DecimalHelper decHelp = new DecimalHelper();
     private DateHelper dateHelp = new DateHelper();
     private Sangla oldSangla = new Sangla();
+    private boolean combosUpdated = false;
+    private ReportPrinter pr = new ReportPrinter();
+    private String reportFilePath = "/Reports/vault_inventory_listing.jrxml";
     
     public void updateCombo(JComboBox<String> combo) {
-/*     */     try {
-/*  55 */       combo.removeAllItems();
-/*  56 */       Connection connect = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
-/*  57 */       Statement state = connect.createStatement();
-/*  58 */       String query = "Select branch_name from merlininventorydatabase.branch_info";
-/*  60 */       ResultSet rset = state.executeQuery(query);
-/*  61 */       while (rset.next()) {
-/*  62 */         combo.addItem(rset.getString(1));
-/*     */       }
-/*  64 */       state.close();
-/*  65 */       connect.close();
-/*  66 */       combo.setSelectedItem(this.con.getProp("branch"));
-/*  67 */     } catch (SQLException ex) {
-/*  68 */       this.con.saveProp("mpis_last_error", String.valueOf(ex));
-/*  69 */       Logger.getLogger(Additionals.class.getName()).log(Level.SEVERE, (String)null, ex);
-/*     */     } 
-/*     */   }
+     try {
+       combo.removeAllItems();
+       Connection connect = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
+       Statement state = connect.createStatement();
+       String query = "Select branch_name from merlininventorydatabase.branch_info";
+       ResultSet rset = state.executeQuery(query);
+       while (rset.next()) {
+         combo.addItem(rset.getString(1));
+       }
+       state.close();
+       connect.close();
+         setCombosUpdated(true);
+       combo.setSelectedItem(this.con.getProp("branch"));
+     } catch (SQLException ex) {
+       this.con.saveProp("mpis_last_error", String.valueOf(ex));
+       Logger.getLogger(Additionals.class.getName()).log(Level.SEVERE, (String)null, ex);
+     } 
+   }
     
     public void updateStatusCombo() {
         try {
@@ -88,6 +110,7 @@ public class RepossessedPanel extends javax.swing.JPanel {
             while (rset.next()) {
                 statusComboBox.addItem(rset.getString(1));
             }
+            setCombosUpdated(true);
             state.close();
             connect.close();
         } catch (SQLException ex) {
@@ -95,47 +118,47 @@ public class RepossessedPanel extends javax.swing.JPanel {
         }
             
     }
-/*     */   
-/*     */   public void updateCombos() {
+   
+   public void updateCombos() {
 /*  74 */     updateCombo(this.branchVIL);
-/*     */   }
-/*     */ 
-/*     */ 
-/*     */   
-/*     */   private void updateRepossessedListing(String query) throws SQLException {
+   }
+ 
+ 
+   
+   private void updateRepossessedListing(String query) throws SQLException {
 /*  80 */     DefaultTableModel defVilTab = (DefaultTableModel)this.repossessedListing.getModel();
 /*  81 */     while (defVilTab.getRowCount() > 0) {
 /*  82 */       defVilTab.removeRow(0);
-/*     */     }
-/*     */     
+     }
+     
 /*  85 */     Connection connect = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
 /*  86 */     Statement state = connect.createStatement();
 /*  87 */     ResultSet rset = state.executeQuery(query);
-/*     */ 
-/*     */     
+ 
+     
 /*  90 */     Object[] row = new Object[6];
 /*  91 */     while (rset.next()) {
 /*  92 */       for (int i = 0; i < 6; i++) {
 /*  93 */         row[i] = rset.getString(i + 1);
-/*     */       }
+       }
 /*  95 */       defVilTab.addRow(row);
-/*     */     } 
+     } 
 /*  97 */     state.close();
 /*  98 */     connect.close();
-/*     */   }
-/*     */ 
-/*     */ 
-/*     */   
-/*     */   public void designTable() {
+   }
+ 
+ 
+   
+   public void designTable() {
 /* 104 */     TableCellRenderer renderer = new TableCellRenderer()
-/*     */       {
+       {
 /* 106 */         JLabel label = new JLabel();
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */ 
-/*     */         
-/*     */         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+ 
+ 
+ 
+ 
+         
+         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 /* 113 */           this.label.setOpaque(true);
 /* 114 */           this.label.setText("" + value);
                 label.setVerticalAlignment(JLabel.TOP);
@@ -145,28 +168,28 @@ public class RepossessedPanel extends javax.swing.JPanel {
 /* 116 */           if (isSelected) {
 /* 117 */             this.label.setBackground(Color.DARK_GRAY);
 /* 118 */             this.label.setForeground(Color.WHITE);
-/*     */           } else {
+           } else {
 /* 120 */             this.label.setForeground(Color.black);
 /* 121 */             if (row % 2 == 1) {
 /* 122 */               this.label.setBackground(alternate);
-/*     */             } else {
+             } else {
 /* 124 */               this.label.setBackground(Color.WHITE);
-/*     */             } 
-/*     */           } 
+             } 
+           } 
 /* 127 */           if (column == 5) {
 /* 128 */             this.label.setHorizontalAlignment(4);
 /* 129 */           } else if (column == 0 || column == 4) {
 /* 130 */             this.label.setHorizontalAlignment(0);
-/*     */           } else {
+           } else {
 /* 132 */             this.label.setHorizontalAlignment(2);
-/*     */           } 
+           } 
 /* 134 */           return this.label;
-/*     */         }
-/*     */       };
+         }
+       };
 repossessedListing.getColumnModel().getColumn(2).setCellRenderer(new TextAreaCellRenderer());
 /* 137 */     this.repossessedListing.setDefaultRenderer(Object.class, renderer);
 /* 138 */     ((DefaultTableCellRenderer)this.repossessedListing.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(0);
-/*     */   }
+   }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -224,6 +247,11 @@ repossessedListing.getColumnModel().getColumn(2).setCellRenderer(new TextAreaCel
         jButton3.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         jButton3.setForeground(new java.awt.Color(79, 119, 141));
         jButton3.setText("Print Listing");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         jButton4.setForeground(new java.awt.Color(79, 119, 141));
@@ -351,15 +379,17 @@ repossessedListing.getColumnModel().getColumn(2).setCellRenderer(new TextAreaCel
 
     private void generateVIListingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateVIListingActionPerformed
         try {
-/* 309 */       String query = "select a.pap_num, a.client_name, a.item_description, a.remarks, a.transaction_date, b.principal from merlininventorydatabase.client_info a inner join merlininventorydatabase.loan_info b on a.item_code_a = b.item_code_b";
-/* 310 */       setWhereVIList(" WHERE a.branch = '" + this.branchVIL.getSelectedItem().toString() + "' and a.status = '" + statusComboBox.getSelectedItem().toString() + "'");
+/* 309 */       String query = "select a.pap_num, a.client_name, a.item_description, a.remarks, a.transaction_date, b.principal from merlininventorydatabase.client_info a inner join merlininventorydatabase.empeno b on a.item_code_a = b.pap_num";
+/* 310 */       setWhereVIList(" WHERE a.branch = '" + this.branchVIL.getSelectedItem().toString() + "' and a.status = '" + statusComboBox.getSelectedItem().toString() + "' order by transaction_date desc");
+
 /* 311 */       query = query.concat(getWhereVIList());
+            System.out.println(query);
 /* 312 */       updateRepossessedListing(query);
 /* 313 */       designTable();
 /* 314 */     } catch (SQLException ex) {
 /* 315 */       this.con.saveProp("mpis_last_error", String.valueOf(ex));
 /* 316 */       Logger.getLogger(RepossessedPanel.class.getName()).log(Level.SEVERE, (String)null, ex);
-/*     */     } 
+     } 
     }//GEN-LAST:event_generateVIListingActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -376,6 +406,19 @@ repossessedListing.getColumnModel().getColumn(2).setCellRenderer(new TextAreaCel
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if (this.repossessedListing.getRowCount() > 0) {
+            pr.setReport_name("Vault Inventory Listing Report");
+            Map<String, Object> param = new HashMap<>();
+            param.put("END_DATE", Calendar.getInstance().getTime());
+            param.put("BRANCH_PARAM", this.branchVIL.getSelectedItem().toString());
+            pr.printReport(reportFilePath, param);
+//            printSubastaReport("/Reports/vault_inventory_listing.jrxml", Calendar.getInstance().getTime(), this.branchVIL.getSelectedItem().toString());
+        } else { 
+            JOptionPane.showMessageDialog(null, "No file to print. Please generate a report first.", "Vault Inventory", 0); 
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

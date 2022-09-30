@@ -106,7 +106,6 @@ public class LogInPanel extends javax.swing.JPanel {
 
         tempUsername.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         tempUsername.setForeground(new java.awt.Color(51, 51, 51));
-        tempUsername.setText("admin");
         tempUsername.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         tempUsername.setMargin(new java.awt.Insets(2, 15, 2, 15));
         tempUsername.addActionListener(new java.awt.event.ActionListener() {
@@ -122,7 +121,6 @@ public class LogInPanel extends javax.swing.JPanel {
 
         tempPassword.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         tempPassword.setForeground(new java.awt.Color(51, 51, 51));
-        tempPassword.setText("admin123");
         tempPassword.setMargin(new java.awt.Insets(2, 15, 2, 15));
         tempPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {

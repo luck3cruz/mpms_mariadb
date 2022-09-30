@@ -1,0 +1,286 @@
+Update merlininventorydatabase.client_info set status = 'Repossessed', remarks = '' where item_code_a = '24452TA'Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+update merlininventorydatabase.client_info set status = 'Expired' where new_pap_num = 'null' and transaction_date <= '2022-05-07' and status = 'Open';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-07';
+
+Update cashtransactions.running_balance set ending_balance = -11843.5 where date = '2022-09-07';
+

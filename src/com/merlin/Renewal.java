@@ -39,6 +39,9 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Sides;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -182,12 +185,15 @@ public class Renewal extends javax.swing.JPanel {
         this.unpaidAI.setEditable(status);
         this.liqDam.setEditable(status);
         this.statusRenew.setEnabled(status);
-          this.stamp.setEditable(status);
-
+        this.stamp.setEditable(status);
+        this.advIntRnw.setEditable(status);
         this.newPapNumRet.setEditable(status);
         this.transDateRet.setEditable(status);
         this.matDateRet.setEditable(status);
         this.expDateRet.setEditable(status);
+        interestRnw.setEditable(status);
+        unpaidAiCheckbox.setEnabled(status);
+        partialPaymentCheckbox.setEnabled(status);
     }
 
     private void printReport(String filePath, String item, String destination, Date trans) {
@@ -198,27 +204,27 @@ public class Renewal extends javax.swing.JPanel {
          JasperDesign jasperDesign = JRXmlLoader.load(getClass().getResourceAsStream(filePath));
          Map<String, Object> parameters = new HashMap<>();
          parameters.put("ITEM_CODE", item);
-         parameters.put("SC", Double.valueOf(Double.parseDouble(this.svcChgRnw.getText().replace(",", ""))));
-         parameters.put("AI", Double.valueOf(Double.parseDouble(this.advIntRnw.getText().replace(",", ""))));
+         parameters.put("SC", Double.valueOf(extractAmount(svcChgRnw)));
+         parameters.put("AI", Double.valueOf(extractAmount(advIntRnw)));
          parameters.put("NO_OF_MONTHS", this.numOfMonths.getValue());
          parameters.put("TRANX_DATE", trans);
-         parameters.put("PARTIAL", Double.valueOf(Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+         parameters.put("PARTIAL", Double.valueOf(extractAmount(partialPaymentBox)));
 
          parameters.put("CODE", "R");
          parameters.put("STATUS", "Renewed");
-         parameters.put("INSURANCE", Double.valueOf(Double.parseDouble(this.insuFeeRnw.getText().replace(",", ""))));
+         parameters.put("INSURANCE", Double.valueOf(extractAmount(insuFeeRnw)));
 
-         if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-           parameters.put("BC", Double.valueOf(Double.parseDouble(this.netDecRnw.getText().replace(",", "")) * -1.0D));
+         if (extractAmount(netDecRnw) > 0.0D) {
+           parameters.put("BC", Double.valueOf(extractAmount(netDecRnw) * -1.0D));
            parameters.put("CAP_STAT", "Bawas");
-         } else if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-           parameters.put("BC", Double.valueOf(Double.parseDouble(this.netIncRnw.getText().replace(",", ""))));
+         } else if (extractAmount(netIncRnw) > 0.0D) {
+           parameters.put("BC", Double.valueOf(extractAmount(netIncRnw)));
            parameters.put("CAP_STAT", "Dagdag");
             } else {
            parameters.put("BC", Double.valueOf(0.0D));
            parameters.put("CAP_STAT", "");
            }
-         parameters.put("BC", Double.valueOf(Double.parseDouble(this.netDecRnw.getText().replace(",", ""))));
+         parameters.put("BC", Double.valueOf(extractAmount(netDecRnw)));
          JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
          JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
          JasperPrintManager.printReport(jasperPrint, false);
@@ -308,6 +314,50 @@ public class Renewal extends javax.swing.JPanel {
      this.oldPapNoLRenew.setText(papNo);
      this.branchSearchRenew.setSelectedItem(branch);
      retrieveInfoActionPerformed((ActionEvent)null);
+    }
+    
+    private Double extractAmount(JTextField textfld) {
+        return Double.parseDouble(textfld.getText().replace(",", ""));
+    }
+    
+    private Double extractValue(JSlider slider) {
+        return Double.valueOf(slider.getValue());
+    } 
+    
+    private Integer extractInt(JSpinner spinner) {
+        return Integer.parseInt(spinner.getValue().toString());
+    }
+    
+    private String getComputedAmtDue() {
+        return calculate.computeAmountDue(extractAmount(principalRnw)
+                , extractAmount(interestRnw)
+                , extractAmount(advIntRnw)
+                , extractAmount(svcChgRnw)
+                , extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam)
+                , extractAmount(insuFeeRnw)
+                , extractAmount(partialPaymentBox));
+    }
+    
+    private String getComputedAmtDueInc() {
+        return calculate.computeNetDueOrProceeds(extractAmount(principalRnw)
+                ,extractAmount(interestRnw)
+                , extractAmount(netIncRnw)
+                , extractAmount(advIntRnw)
+                , extractAmount(svcChgRnw)
+                , extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam)
+                , extractAmount(insuFeeRnw)
+                , extractAmount(partialPaymentBox));
+    }
+    
+    private String getComputedAmtDueDec() {
+        return calculate.computeAmountDueWithNetDecrease(extractAmount(principalRnw)
+                , extractAmount(interestRnw)
+                , extractAmount(netDecRnw)
+                , extractAmount(advIntRnw)
+                , extractAmount(svcChgRnw)
+                , extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam)
+                , extractAmount(insuFeeRnw)
+                , extractAmount(partialPaymentBox));
     }
 
     /**
@@ -768,6 +818,11 @@ public class Renewal extends javax.swing.JPanel {
                 intRateSliderStateChanged(evt);
             }
         });
+        intRateSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                intRateSliderMouseClicked(evt);
+            }
+        });
 
         numOfMonths.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -992,6 +1047,11 @@ public class Renewal extends javax.swing.JPanel {
         aiRateSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 aiRateSliderStateChanged(evt);
+            }
+        });
+        aiRateSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                aiRateSliderMouseClicked(evt);
             }
         });
 
@@ -1336,6 +1396,7 @@ public class Renewal extends javax.swing.JPanel {
             }
         });
 
+        papNumRet.setEditable(false);
         papNumRet.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         papNumRet.setForeground(new java.awt.Color(102, 102, 102));
         papNumRet.setToolTipText("Old Papelete No.");
@@ -1544,11 +1605,11 @@ public class Renewal extends javax.swing.JPanel {
             }
         });
 
-        expDateRet.setForeground(new java.awt.Color(102, 102, 102));
+        expDateRet.setForeground(new java.awt.Color(51, 51, 51));
         expDateRet.setToolTipText("YYYY-MM-DD");
         expDateRet.setFormats(dateFormatter);
 
-        matDateRet.setForeground(new java.awt.Color(102, 102, 102));
+        matDateRet.setForeground(new java.awt.Color(51, 51, 51));
         matDateRet.setToolTipText("YYYY-MM-DD");
         matDateRet.setFormats(dateFormatter);
 
@@ -1591,6 +1652,10 @@ public class Renewal extends javax.swing.JPanel {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(conNumRet, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)))
+                    .addComponent(reprintCompSht, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.LEADING)
@@ -1615,13 +1680,9 @@ public class Renewal extends javax.swing.JPanel {
                             .addComponent(netProRet, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(svcChgRet, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(renewThisItem, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(renewThisItem, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(undoChangesRnw, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(reprintCompSht, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1721,7 +1782,7 @@ public class Renewal extends javax.swing.JPanel {
                     .addComponent(othChgRet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(netProRet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(14, 14, 14)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(renewThisItem, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(undoChangesRnw, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1930,17 +1991,17 @@ public class Renewal extends javax.swing.JPanel {
             this.procByRet.setText(this.con.getProp("last_username"));
             this.matDateRet.setDate(this.dateHelp.oneMonth(cal));
             this.expDateRet.setDate(this.dateHelp.threeMonths(cal));
-            this.principalRnw.setText(this.decHelp.FormatNumber(Double.parseDouble(this.principalRet.getText().replace(",", ""))));
+            this.principalRnw.setText(this.decHelp.FormatNumber(extractAmount(principalRet)));
             this.principalRnw.setEditable(false);
             this.svcChgRnw.setText("5.00");
             this.statusRenew.setSelectedItem("Renewed");
-            this.insuFeeRnw.setText(this.calculate.computeInsurance(Double.parseDouble(this.principalRet.getText().replace(",", ""))));
+            this.insuFeeRnw.setText(this.calculate.computeInsurance(extractAmount(principalRet)));
             this.stamp.setText("0.00");
             this.finalizeButton.setEnabled(true);
             this.newPapNumRet.requestFocusInWindow();
             this.newPapNumRet.selectAll();
             this.undoChangesRnw.setEnabled(true);
-            this.interestRnw.setText(this.calculate.computeInterest(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString())));
+            this.interestRnw.setText(this.calculate.computeInterest(extractAmount(principalRnw), extractValue(intRateSlider), extractInt(numOfMonths)));
 
             this.renewThisItem.setEnabled(false);
         }
@@ -1951,7 +2012,7 @@ public class Renewal extends javax.swing.JPanel {
         Sangla forRp = new Sangla();
         if (conf == 0) {
             Config con = new Config();
-            if (con.getProp("branch").equalsIgnoreCase("Tangos")) {
+//            if (con.getProp("branch").equalsIgnoreCase("Tangos")) {
 
                 try {
                     DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PAGEABLE;
@@ -1987,12 +2048,12 @@ public class Renewal extends javax.swing.JPanel {
                         con.saveProp("mpis_last_error", String.valueOf(ex));
                         Logger.getLogger(ReprintTransfer.class.getName()).log(Level.SEVERE, (String)null, ex);
                     }
-                } else {
-
-                    PrintExcel px = new PrintExcel();
-                    String destination = "C:\\MPIS\\daytranx\\" + this.oldPapNoLRenew.getText() + forRp.getBranchCode(this.branchSearchRenew.getSelectedItem().toString()) + ".xls";
-                    px.printFile(new File(destination));
-                }
+//                } else {
+//
+//                    PrintExcel px = new PrintExcel();
+//                    String destination = "C:\\MPIS\\daytranx\\" + this.oldPapNoLRenew.getText() + forRp.getBranchCode(this.branchSearchRenew.getSelectedItem().toString()) + ".xls";
+//                    px.printFile(new File(destination));
+//                }
             }
     }//GEN-LAST:event_reprintCompShtActionPerformed
 
@@ -2019,21 +2080,21 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_partialPaymentBoxActionPerformed
 
     private void partialPaymentBoxFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_partialPaymentBoxFocusLost
-        this.partialPaymentBox.setText(this.decHelp.FormatNumber(Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-            if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.partialPaymentBox.setText(this.decHelp.FormatNumber(extractAmount(partialPaymentBox)));
+        if ((extractAmount(netIncRnw)) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+            if (extractAmount(netProRnw) > 0.0D) {
                 this.amountDueLabel.setText("Total Net Proceeds");
             } else {
-                double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+                double absNetProRnw = Math.abs(extractAmount(netProRnw));
                 this.netProRnw.setText(String.valueOf(absNetProRnw));
                 this.amountDueLabel.setText("Total Amount Due");
             }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
             this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
             this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_partialPaymentBoxFocusLost
@@ -2061,28 +2122,21 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_unpaidAIActionPerformed
 
     private void unpaidAIFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_unpaidAIFocusLost
-        this.unpaidAI.setText(this.decHelp.FormatNumber(Double.parseDouble(this.unpaidAI.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.parseDouble(this.netIncRnw.getText().replace(",", "")),
-                Double.valueOf(this.aiRateSlider.getValue()),
-                Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.unpaidAI.setText(this.decHelp.FormatNumber(extractAmount(unpaidAI)));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_unpaidAIFocusLost
@@ -2096,27 +2150,29 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_unpaidAiCheckboxActionPerformed
 
     private void aiRateSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_aiRateSliderStateChanged
-        aiLable.setText(Integer.toString(aiRateSlider.getValue()).concat("%"));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetIncrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue())));
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        if (calculate.isAiRateRounded()) {
+            aiLable.setText("≈" + Integer.toString(aiRateSlider.getValue()).concat("%"));
+        } else {
+            aiLable.setText(Integer.toString(aiRateSlider.getValue()).concat("%"));
+        }
+//        aiLable.setText(Integer.toString(aiRateSlider.getValue()).concat("%"));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetIncrease(extractAmount(principalRnw), extractAmount(netIncRnw), extractValue(aiRateSlider)));
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue())));
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetDecrease(extractAmount(principalRnw), extractAmount(netDecRnw), extractValue(aiRateSlider)));
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.advIntRnw.setText(this.calculate.computeAdvanceInterest(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue())));
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.advIntRnw.setText(this.calculate.computeAdvanceInterest(extractAmount(principalRnw), extractValue(aiRateSlider)));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_aiRateSliderStateChanged
@@ -2135,24 +2191,26 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_advIntRnwKeyPressed
 
     private void advIntRnwFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_advIntRnwFocusLost
-        this.advIntRnw.setText(this.decHelp.FormatNumber(Double.parseDouble(this.advIntRnw.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.aiRateSlider.setValue(Integer.parseInt(this.calculate.computeAdvanceInterestRateWithNetIncrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.parseDouble(this.advIntRnw.getText().replace(",", "")))));
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-            if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.advIntRnw.setText(this.decHelp.FormatNumber(extractAmount(advIntRnw)));
+        
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.aiRateSlider.setValue(this.calculate.computeRoundedAdvIntRateWithNetInc(extractAmount(principalRnw), extractAmount(netIncRnw), extractAmount(advIntRnw)));
+            this.netProRnw.setText(getComputedAmtDueInc());
+            if (extractAmount(netProRnw) > 0.0D) {
                 this.amountDueLabel.setText("Total Net Proceeds");
             } else {
-                double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+                double absNetProRnw = Math.abs(extractAmount(netProRnw));
                 this.netProRnw.setText(String.valueOf(absNetProRnw));
                 this.amountDueLabel.setText("Total Amount Due");
             }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.aiRateSlider.setValue(Integer.parseInt(this.calculate.computeAdvanceInterestRateWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.parseDouble(this.advIntRnw.getText().replace(",", "")))));
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.aiRateSlider.setValue((this.calculate.computeRoundedAdvIntRateWithNetDec(extractAmount(principalRnw), extractAmount(netDecRnw), extractAmount(advIntRnw))));
+            this.netProRnw.setText(getComputedAmtDueDec());
             this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.aiRateSlider.setValue(Integer.parseInt(this.calculate.computeAdvanceInterestRate(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.advIntRnw.getText().replace(",", "")))));
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.aiRateSlider.setValue(this.calculate.computeRoundedAdvIntRate(extractAmount(principalRnw), extractAmount(advIntRnw)));
+            System.out.println("is it rounded? " + calculate.isAiRateRounded());
+            this.netProRnw.setText(getComputedAmtDue());
             this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_advIntRnwFocusLost
@@ -2176,25 +2234,21 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_liqDamKeyPressed
 
     private void liqDamFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_liqDamFocusLost
-        this.liqDam.setText(this.decHelp.FormatNumber(Double.parseDouble(this.liqDam.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.liqDam.setText(this.decHelp.FormatNumber(extractAmount(liqDam)));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString())
-                , Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_liqDamFocusLost
@@ -2218,24 +2272,21 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_affLossKeyPressed
 
     private void affLossFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_affLossFocusLost
-        this.affLoss.setText(this.decHelp.FormatNumber(Double.parseDouble(this.affLoss.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.affLoss.setText(this.decHelp.FormatNumber(extractAmount(affLoss)));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_affLossFocusLost
@@ -2259,22 +2310,21 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_stampKeyPressed
 
     private void stampFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_stampFocusLost
-        this.stamp.setText(this.decHelp.FormatNumber(Double.parseDouble(this.stamp.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.stamp.setText(this.decHelp.FormatNumber(extractAmount(stamp)));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
             this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
             this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_stampFocusLost
@@ -2284,81 +2334,47 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_stampFocusGained
 
     private void numOfMonthsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_numOfMonthsStateChanged
-        interestRnw.setText(this.calculate.computeInterest(Double.parseDouble(principalRnw.getText().replace(",", "")), Double.valueOf(intRateSlider.getValue()), Integer.parseInt(numOfMonths.getValue().toString())));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()),
-                Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.parseDouble(this.netIncRnw.getText().replace(",", "")),
-                Double.valueOf(this.aiRateSlider.getValue()),
-                Double.parseDouble(this.svcChgRnw.getText().replace(",", "")),
-                Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")),
-                Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")),
-                Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        interestRnw.setText(this.calculate.computeInterest(extractAmount(principalRnw), extractValue(intRateSlider), extractInt(numOfMonths)));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()),
-                Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.parseDouble(this.netDecRnw.getText().replace(",", "")),
-                Double.valueOf(this.aiRateSlider.getValue()),
-                Double.parseDouble(this.svcChgRnw.getText().replace(",", "")),
-                Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")),
-                Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")),
-                Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()),
-                Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.valueOf(this.aiRateSlider.getValue()),
-                Double.parseDouble(this.svcChgRnw.getText().replace(",", "")),
-                Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", ""))
-                + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")),
-                Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")),
-                Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_numOfMonthsStateChanged
 
     private void intRateSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_intRateSliderStateChanged
-        intLabel.setText(Integer.toString(intRateSlider.getValue()).concat("%"));
-        this.interestRnw.setText(this.calculate.computeInterest(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-            Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString())));
-    if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-        this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-            Double.valueOf(this.intRateSlider.getValue()),
-            Integer.parseInt(this.numOfMonths.getValue().toString()),
-            Double.parseDouble(this.netIncRnw.getText().replace(",", "")),
-            Double.valueOf(this.aiRateSlider.getValue()),
-            Double.parseDouble(this.svcChgRnw.getText().replace(",", "")),
-            Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-    if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        if (calculate.isIntRateRounded()) {
+            intLabel.setText("≈" + Integer.toString(intRateSlider.getValue()).concat("%"));
+        } else {
+            intLabel.setText(Integer.toString(intRateSlider.getValue()).concat("%"));
+        }
+        this.interestRnw.setText(this.calculate.computeInterest(extractAmount(principalRnw),
+            extractValue(intRateSlider), extractInt(numOfMonths)));
+    if (extractAmount(netIncRnw) > 0.0D) {
+        this.netProRnw.setText(getComputedAmtDueInc());
+    if (extractAmount(netProRnw) > 0.0D) {
         this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()),
-                Double.parseDouble(this.svcChgRnw.getText().replace(",", "")),
-                Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()),
-                Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_intRateSliderStateChanged
@@ -2382,25 +2398,25 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_interestRnwActionPerformed
 
     private void interestRnwFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_interestRnwFocusLost
-        this.interestRnw.setText(this.decHelp.FormatNumber(Double.parseDouble(this.interestRnw.getText().replace(",", ""))));
-        if (Double.valueOf(this.intRateSlider.getValue()) > 0.0D && Double.parseDouble(this.interestRnw.getText().replace(",", "")) > 0.0D) {
-            this.intRateSlider.setValue(Integer.parseInt(this.calculate.computeInterestRate(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.parseDouble(this.interestRnw.getText().replace(",", "")), Integer.valueOf(this.numOfMonths.getValue().toString()))));
-    }
-    if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-        this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.interestRnw.setText(this.decHelp.FormatNumber(extractAmount(interestRnw)));
+        if (extractValue(intRateSlider) > 0.0D && extractAmount(interestRnw) > 0.0D) {
+            this.intRateSlider.setValue(this.calculate.computeRoundedInterestRate(extractAmount(principalRnw),
+                extractAmount(interestRnw), Integer.valueOf(this.numOfMonths.getValue().toString())));
+        }
+    if (extractAmount(netIncRnw) > 0.0D) {
+        this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
             this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
             this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_interestRnwFocusLost
@@ -2440,14 +2456,15 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_newPapNumRetFocusLost
 
     private void finalizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finalizeButtonActionPerformed
-        String newPrincipal = this.calculate.computeNewPrincipal(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-            Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", "")));
+        String newPrincipal = this.calculate.computeNewPrincipal(extractAmount(principalRnw),
+            extractAmount(netIncRnw), extractAmount(netDecRnw));
 
-        double netProForDB = Double.parseDouble(this.calculate.computeNetProceeds(Double.parseDouble(newPrincipal.replace(",", "")),
-            Double.valueOf(this.aiRateSlider.getValue()),
-            Double.parseDouble(this.svcChgRet.getText().replace(",", "")),
-            Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")),
-            Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))).replace(",", ""));
+        double netProForDB = calculate.computeNetProceeds(extractAmount(principalRnw)
+                ,extractAmount(advIntRnw)
+                , extractAmount(svcChgRnw)
+                , extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam)
+                , extractAmount(insuFeeRnw)
+                , extractAmount(partialPaymentBox));
 
     if (this.newPapNumRet.getText().isEmpty()
         || this.procByRet.getText().isEmpty()
@@ -2484,26 +2501,26 @@ public class Renewal extends javax.swing.JPanel {
                 renewedLoan.setRemarks(this.remarksRet.getText());
                 renewedLoan.setNew_pap_num(null);
                 renewedLoan.setPrincipal(Double.parseDouble(newPrincipal.replace(",", "")));
-                renewedLoan.setAdvance_interest(Double.parseDouble(this.advIntRnw.getText().replace(",", "")));
-                renewedLoan.setInterest(Double.parseDouble(this.interestRet.getText().replace(",", "")));
-                renewedLoan.setService_charge(Double.parseDouble(this.svcChgRnw.getText().replace(",", "")));
-                renewedLoan.setInsurance(Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")));
-                renewedLoan.setOther_charges(Double.parseDouble(this.othChgRet.getText().replace(",", "")));
+                renewedLoan.setAdvance_interest(extractAmount(advIntRnw));
+                renewedLoan.setInterest(extractAmount(interestRet));
+                renewedLoan.setService_charge(extractAmount(svcChgRnw));
+                renewedLoan.setInsurance(extractAmount(insuFeeRnw));
+                renewedLoan.setOther_charges(extractAmount(othChgRet));
                 renewedLoan.setNet_proceeds(netProForDB);
                 renewedLoan.setOld_branch(this.branchSearchRenew.getSelectedItem().toString());
-                renewedLoan.setNet_increase(Double.parseDouble(this.netIncRnw.getText().replace(",", "")));
-                renewedLoan.setNet_decrease(Double.parseDouble(this.netDecRnw.getText().replace(",", "")));
+                renewedLoan.setNet_increase(extractAmount(netIncRnw));
+                renewedLoan.setNet_decrease(extractAmount(netDecRnw));
 
                 Sangla tubosSangla = new Sangla();
                 tubosSangla.setPap_num(this.oldPapNoLRenew.getText());
                 tubosSangla.setBranch(this.branchRet.getSelectedItem().toString());
                 tubosSangla.setTransaction_date(this.dateHelp.formatDate(this.transDateRet.getDate()));
-                tubosSangla.setPrincipal(Double.parseDouble(this.principalRet.getText().replace(",", "")));
-                tubosSangla.setInterest(Double.parseDouble(this.interestRnw.getText().replace(",", "")));
-                tubosSangla.setUnpaid(Double.parseDouble(this.unpaidAI.getText().replace(",", "")));
-                tubosSangla.setLiq_dam(Double.parseDouble(this.liqDam.getText().replace(",", "")));
-                tubosSangla.setStamp(Double.parseDouble(this.stamp.getText().replace(",", "")));
-                tubosSangla.setAff(Double.parseDouble(this.affLoss.getText().replace(",", "")));
+                tubosSangla.setPrincipal(extractAmount(principalRet));
+                tubosSangla.setInterest(extractAmount(interestRnw));
+                tubosSangla.setUnpaid(extractAmount(unpaidAI));
+                tubosSangla.setLiq_dam(extractAmount(liqDam));
+                tubosSangla.setStamp(extractAmount(stamp));
+                tubosSangla.setAff(extractAmount(affLoss));
                 tubosSangla.setOther_charges(tubosSangla.computeOtherCharges().doubleValue());
 
                 ViewRenewedItem viewRenew = new ViewRenewedItem(null, true, renewedLoan);
@@ -2572,15 +2589,15 @@ public class Renewal extends javax.swing.JPanel {
 
                     Map<Object, Object> parameters = new HashMap<>();
                     parameters.put("ITEM_CODE", this.papNumRet.getText().concat(this.oldSangla.getBranchCode(this.branchRet.getSelectedItem().toString())));
-                    parameters.put("SC", Double.valueOf(Double.parseDouble(this.svcChgRnw.getText().replace(",", ""))));
-                    parameters.put("AI", Double.valueOf(Double.parseDouble(this.advIntRnw.getText().replace(",", ""))));
-                    parameters.put("NO_OF_MONTHS", Integer.valueOf(Integer.parseInt(this.numOfMonths.getValue().toString())));
+                    parameters.put("SC", Double.valueOf(extractAmount(svcChgRnw)));
+                    parameters.put("AI", Double.valueOf(extractAmount(advIntRnw)));
+                    parameters.put("NO_OF_MONTHS", Integer.valueOf(extractInt(numOfMonths)));
                     parameters.put("TRANX_DATE", this.dateHelp.formatStringToDate(this.oldSangla.getTransaction_date()));
-                    parameters.put("PARTIAL", Double.valueOf(Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+                    parameters.put("PARTIAL", Double.valueOf(extractAmount(partialPaymentBox)));
 
                     parameters.put("CODE", "R");
                     parameters.put("STATUS", "Renewed");
-                    parameters.put("INSURANCE", Double.valueOf(Double.parseDouble(this.insuFeeRnw.getText().replace(",", ""))));
+                    parameters.put("INSURANCE", Double.valueOf(extractAmount(insuFeeRnw)));
                     String insString = this.insuFeeRnw.getText().replaceAll(",", "");
                     String wordedInsurance = EnglishNumberToWords.convert(Long.parseLong(insString.substring(0, insString.lastIndexOf("."))));
                     if (Double.parseDouble(insString.substring(insString.lastIndexOf(".") + 1)) > 0) {
@@ -2590,17 +2607,17 @@ public class Renewal extends javax.swing.JPanel {
                     System.out.println(wordedInsurance);
                     parameters.put("INSURANCE_WORD", wordedInsurance);
 
-                    if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-                        parameters.put("BC", Double.valueOf(Double.parseDouble(this.netDecRnw.getText().replace(",", "")) * -1.0D));
+                    if (extractAmount(netDecRnw) > 0.0D) {
+                        parameters.put("BC", Double.valueOf(extractAmount(netDecRnw) * -1.0D));
                         parameters.put("CAP_STAT", "Bawas");
-                    } else if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-                        parameters.put("BC", Double.valueOf(Double.parseDouble(this.netIncRnw.getText().replace(",", ""))));
+                    } else if (extractAmount(netIncRnw) > 0.0D) {
+                        parameters.put("BC", Double.valueOf(extractAmount(netIncRnw)));
                         parameters.put("CAP_STAT", "Dagdag");
                     } else {
                         parameters.put("BC", Double.valueOf(0.0D));
                         parameters.put("CAP_STAT", "");
                     }
-                    parameters.put("BC", Double.valueOf(Double.parseDouble(this.netDecRnw.getText().replace(",", ""))));
+                    parameters.put("BC", Double.valueOf(extractAmount(netDecRnw)));
 
                     pr.setDestination(this.con.getProp("tranx_folder").concat(this.oldSangla.getItem_code_a()).concat(".pdf"));
                     pr.printReport("/Reports/compusheet.jrxml", parameters);
@@ -2626,8 +2643,8 @@ public class Renewal extends javax.swing.JPanel {
                             System.out.println("error in count search");
                         }
                         rnwEntry.setTransaction_no(trc);
-                        double increase = Double.parseDouble(this.netIncRnw.getText().replace(",", ""));
-                        double decrease = Double.parseDouble(this.netDecRnw.getText().replace(",", ""));
+                        double increase = extractAmount(netIncRnw);
+                        double decrease = extractAmount(netDecRnw);
 
                         if (increase > 0.0D) {
                             rnwEntry.setCash_transaction_type("RDC");
@@ -2642,7 +2659,7 @@ public class Renewal extends javax.swing.JPanel {
                         rnwEntry.generateTransaction_id();
                         rnwEntry.setLoans_item_code(this.oldSangla.getItem_code_a());
                         rnwEntry.setLoans_name(this.nameRet.getText());
-                        rnwEntry.setTransaction_amount(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+                        rnwEntry.setTransaction_amount(extractAmount(netProRnw));
 
                         rnwEntry.generateTransaction_remarks();
                         rnwEntry.addRenewalTransactionToDB();
@@ -2676,14 +2693,14 @@ public class Renewal extends javax.swing.JPanel {
                             this.con.saveProp("mpis_last_error", String.valueOf(ex));
                             System.out.println("error in count search");
                         }
-                        addEntry.setAddsub(Double.parseDouble(this.principalRnw.getText().replace(",", "")));
+                        addEntry.setAddsub(extractAmount(principalRnw));
                         addEntry.setTransaction_no(tableRowCount);
                         addEntry.setCash_transaction_type("ADD");
                         addEntry.setLoans_name(this.nameRet.getText());
                         addEntry.generateTransaction_id();
                         addEntry.setPetty_cast_type("Renew Subasta");
                         addEntry.setTransaction_remarks("Renew-Subasta Pap#" + this.oldSangla.getPap_num() + "( Received from: " + this.oldSangla.getClient_name() + ")");
-                        addEntry.setTransaction_amount(Double.parseDouble(this.interestRnw.getText().replace(",", "")) + Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")) + Double.parseDouble(this.netDecRnw.getText().replace(",", "")) - Double.parseDouble(this.netIncRnw.getText().replace(",", "")));
+                        addEntry.setTransaction_amount(extractAmount(interestRnw) + extractAmount(stamp) + extractAmount(affLoss) + extractAmount(unpaidAI) + extractAmount(liqDam) + extractAmount(netDecRnw) - extractAmount(netIncRnw));
 
                         addEntry.addAdditionalTransactionToDB();
                         if (!addEntry.isAdditionals_inserted()) {
@@ -2711,8 +2728,8 @@ public class Renewal extends javax.swing.JPanel {
                             System.out.println("error in count search");
                         }
                         rnwEntry.setTransaction_no(trc);
-                        double increase = Double.parseDouble(this.netIncRnw.getText().replace(",", ""));
-                        double decrease = Double.parseDouble(this.netDecRnw.getText().replace(",", ""));
+                        double increase = extractAmount(netIncRnw);
+                        double decrease = extractAmount(netDecRnw);
 
                         if (increase > 0.0D) {
                             rnwEntry.setCash_transaction_type("RDC");
@@ -2727,7 +2744,7 @@ public class Renewal extends javax.swing.JPanel {
                         rnwEntry.generateTransaction_id();
                         rnwEntry.setLoans_item_code(this.oldSangla.getItem_code_a());
                         rnwEntry.setLoans_name(this.nameRet.getText());
-                        rnwEntry.setTransaction_amount(Double.parseDouble(this.advIntRnw.getText().replace(",", "")) + Double.parseDouble(this.svcChgRnw.getText().replace(",", "")) + Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")));
+                        rnwEntry.setTransaction_amount(extractAmount(advIntRnw) + extractAmount(svcChgRnw) + extractAmount(insuFeeRnw));
                         rnwEntry.generateTransaction_remarks();
                         rnwEntry.addRenewalTransactionToDB();
                         if (!rnwEntry.isRenewal_inserted()) {
@@ -2757,8 +2774,8 @@ public class Renewal extends javax.swing.JPanel {
                             System.out.println("error in count search");
                         }
                         rnwEntry.setTransaction_no(tableRowCount);
-                        double increase = Double.parseDouble(this.netIncRnw.getText().replace(",", ""));
-                        double decrease = Double.parseDouble(this.netDecRnw.getText().replace(",", ""));
+                        double increase = extractAmount(netIncRnw);
+                        double decrease = extractAmount(netDecRnw);
 
                         if (increase > 0.0D) {
                             rnwEntry.setCash_transaction_type("RDC");
@@ -2773,7 +2790,7 @@ public class Renewal extends javax.swing.JPanel {
                         rnwEntry.generateTransaction_id();
                         rnwEntry.setLoans_item_code(this.oldSangla.getItem_code_a());
                         rnwEntry.setLoans_name(this.nameRet.getText());
-                        rnwEntry.setTransaction_amount(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+                        rnwEntry.setTransaction_amount(extractAmount(netProRnw));
 
                         rnwEntry.generateTransaction_remarks();
                         rnwEntry.addRenewalTransactionToDB();
@@ -2825,24 +2842,21 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_insuFeeRnwKeyPressed
 
     private void insuFeeRnwFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_insuFeeRnwFocusLost
-        this.insuFeeRnw.setText(this.decHelp.FormatNumber(Double.parseDouble(this.insuFeeRnw.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.insuFeeRnw.setText(this.decHelp.FormatNumber(extractAmount(insuFeeRnw)));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_insuFeeRnwFocusLost
@@ -2866,32 +2880,29 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_netDecRnwKeyPressed
 
     private void netDecRnwFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_netDecRnwFocusLost
-        this.netDecRnw.setText(this.decHelp.FormatNumber(Double.parseDouble(this.netDecRnw.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) == 0.0D)
+        this.netDecRnw.setText(this.decHelp.FormatNumber(extractAmount(netDecRnw)));
+        if (extractAmount(netDecRnw) == 0.0D)
         this.netIncRnw.setEditable(true);
-        this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.insuFeeRnw.setText( this.calculate.computeInsuranceWithNetDecrease ( extractAmount(principalRnw), extractAmount(netDecRnw) ) );
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
+        } else if (extractAmount(netDecRnw) > 0.0D) {
             this.netIncRnw.setEditable(false);
             this.netIncRnw.setText("0.00");
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue())));
-        this.aiRateSlider.setValue(Integer.parseInt(this.calculate.computeAdvanceInterestRateWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.parseDouble(this.advIntRnw.getText().replace(",", "")))));
-        this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDueDec());
+        this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetDecrease(extractAmount(principalRnw), extractAmount(netDecRnw), extractValue(aiRateSlider)));
+        this.aiRateSlider.setValue(this.calculate.computeRoundedAdvIntRateWithNetDec(extractAmount(principalRnw), extractAmount(netDecRnw), extractAmount(advIntRnw)));
+        this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetDecrease(extractAmount(principalRnw), extractAmount(netDecRnw)));
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_netDecRnwFocusLost
@@ -2915,31 +2926,31 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_netIncRnwKeyPressed
 
     private void netIncRnwFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_netIncRnwFocusLost
-        this.netIncRnw.setText(this.decHelp.FormatNumber(Double.parseDouble(this.netIncRnw.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) == 0.0D)
+        this.netIncRnw.setText(this.decHelp.FormatNumber(extractAmount(netIncRnw)));
+        if (extractAmount(netIncRnw) == 0.0D)
         this.netDecRnw.setEditable(true);
-        this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetIncrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netIncRnw.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
+        this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetIncrease(extractAmount(principalRnw), extractAmount(netIncRnw)));
+        if (extractAmount(netIncRnw) > 0.0D) {
             this.netDecRnw.setEditable(false);
             this.netDecRnw.setText("0.00");
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDueInc());
 
-            this.aiRateSlider.setValue(Integer.parseInt(this.calculate.computeAdvanceInterestRateWithNetIncrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.parseDouble(this.advIntRnw.getText().replace(",", "")))));
-            this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetIncrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue())));
-            this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetIncrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netIncRnw.getText().replace(",", ""))));
-            if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+            this.aiRateSlider.setValue(this.calculate.computeRoundedAdvIntRateWithNetInc(extractAmount(principalRnw), extractAmount(netIncRnw), extractAmount(advIntRnw)));
+            this.advIntRnw.setText(this.calculate.computeAdvanceInterestWithNetIncrease(extractAmount(principalRnw), extractAmount(netIncRnw), extractValue(aiRateSlider)));
+            this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetIncrease(extractAmount(principalRnw), extractAmount(netIncRnw)));
+            if (extractAmount(netProRnw) > 0.0D) {
                 this.amountDueLabel.setText("Total Net Proceeds");
             } else {
-                double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+                double absNetProRnw = Math.abs(extractAmount(netProRnw));
                 this.netProRnw.setText(String.valueOf(absNetProRnw));
                 this.amountDueLabel.setText("Total Amount Due");
             }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-            this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.parseDouble(this.netDecRnw.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
+            this.insuFeeRnw.setText(this.calculate.computeInsuranceWithNetDecrease(extractAmount(principalRnw), extractAmount(netDecRnw)));
             this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")), Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDue());
             this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_netIncRnwFocusLost
@@ -2967,24 +2978,21 @@ public class Renewal extends javax.swing.JPanel {
     }//GEN-LAST:event_svcChgRnwActionPerformed
 
     private void svcChgRnwFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_svcChgRnwFocusLost
-        this.svcChgRnw.setText(this.decHelp.FormatNumber(Double.parseDouble(this.svcChgRnw.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netIncRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeNetDueOrProceeds(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netIncRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
-        if (Double.parseDouble(this.netProRnw.getText().replace(",", "")) > 0.0D) {
+        this.svcChgRnw.setText(this.decHelp.FormatNumber(extractAmount(svcChgRnw)));
+        if (extractAmount(netIncRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueInc());
+        if (extractAmount(netProRnw) > 0.0D) {
             this.amountDueLabel.setText("Total Net Proceeds");
         } else {
-            double absNetProRnw = Math.abs(Double.parseDouble(this.netProRnw.getText().replace(",", "")));
+            double absNetProRnw = Math.abs(extractAmount(netProRnw));
             this.netProRnw.setText(String.valueOf(absNetProRnw));
             this.amountDueLabel.setText("Total Amount Due");
         }
-        } else if (Double.parseDouble(this.netDecRnw.getText().replace(",", "")) > 0.0D) {
-            this.netProRnw.setText(this.calculate.computeAmountDueWithNetDecrease(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.parseDouble(this.netDecRnw.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+        } else if (extractAmount(netDecRnw) > 0.0D) {
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         } else {
-            this.netProRnw.setText(this.calculate.computeAmountDue(Double.parseDouble(this.principalRnw.getText().replace(",", "")),
-                Double.valueOf(this.intRateSlider.getValue()), Integer.parseInt(this.numOfMonths.getValue().toString()), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.svcChgRnw.getText().replace(",", "")), Double.parseDouble(this.stamp.getText().replace(",", "")) + Double.parseDouble(this.affLoss.getText().replace(",", "")) + Double.parseDouble(this.unpaidAI.getText().replace(",", "")) + Double.parseDouble(this.liqDam.getText().replace(",", "")), Double.parseDouble(this.insuFeeRnw.getText().replace(",", "")), Double.parseDouble(this.partialPaymentBox.getText().replace(",", ""))));
+            this.netProRnw.setText(getComputedAmtDueDec());
         this.amountDueLabel.setText("Total Amount Due");
         }
     }//GEN-LAST:event_svcChgRnwFocusLost
@@ -3029,20 +3037,19 @@ public class Renewal extends javax.swing.JPanel {
             } else {
                 this.reprintCompSht.setEnabled(false);
             }
+            setExp_date(oldSangla.getExpiration_date());
         } else {
             JOptionPane.showMessageDialog(null, "No item found.\n", "Message", 0);
             this.oldPapNoLRenew.setEnabled(true);
             this.branchSearchRenew.setEnabled(true);
             this.retrieveInfo.setEnabled(true);
-            this.undoChangesRnw.setEnabled(true);
+//            this.undoChangesRnw.setEnabled(false);
             this.oldPapNoLRenew.requestFocusInWindow();
             this.oldPapNoLRenew.setEditable(true);
-            this.branchSearchRenew.setEnabled(true);
-            this.retrieveInfo.setEnabled(true);
         }
-                setExp_date(oldSangla.getExpiration_date());
-                System.out.println("GRACE PERIOD" + this.dateHelp.getDayDifference(Calendar.getInstance().getTime(), this.dateHelp.formatStringToDate(getExp_date())));
-                System.out.println("DATE" + this.dateHelp.formatStringToDate(getExp_date()).getDate());
+                
+//                System.out.println("GRACE PERIOD" + this.dateHelp.getDayDifference(Calendar.getInstance().getTime(), this.dateHelp.formatStringToDate(getExp_date())));
+//                System.out.println("DATE" + this.dateHelp.formatStringToDate(getExp_date()).getDate());
     }//GEN-LAST:event_retrieveInfoActionPerformed
 
     private void branchSearchRenewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_branchSearchRenewActionPerformed
@@ -3066,6 +3073,14 @@ public class Renewal extends javax.swing.JPanel {
             motorInCheckbox.setEnabled(false);
         }
     }//GEN-LAST:event_classificationRetActionPerformed
+
+    private void intRateSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_intRateSliderMouseClicked
+        calculate.setIntRateRounded(false);
+    }//GEN-LAST:event_intRateSliderMouseClicked
+
+    private void aiRateSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aiRateSliderMouseClicked
+                // TODO add your handling code here:
+    }//GEN-LAST:event_aiRateSliderMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

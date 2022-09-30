@@ -27,7 +27,7 @@
 /*  27 */   private Double interest = Double.valueOf(0.0D);
 /*  28 */   private Double sc = Double.valueOf(0.0D);
 /*  29 */   private Double insurance = Double.valueOf(0.0D);
-/*     */ 
+/*     */   private DatabaseUpdater dbu = new DatabaseUpdater();
 /*     */   
 /*     */   public void feed() throws SQLException {
 /*  33 */     int x = 0;
@@ -46,7 +46,7 @@
 /*  46 */       x++;
 /*  47 */       System.out.println(x);
 /*  48 */       state2.executeUpdate(insert);
-/*     */       
+/*     */       dbu.editFile(query, dbu.getCurDateBackUpFilename());
 /*  50 */       state2.close();
 /*  51 */       connect2.close();
 /*     */     } 
@@ -72,7 +72,7 @@
 /*  72 */       x++;
 /*     */       
 /*  74 */       state2.executeUpdate(insert);
-/*     */       
+/*     */       dbu.editFile(query, dbu.getCurDateBackUpFilename());
 /*  76 */       state2.close();
 /*  77 */       connect2.close();
 /*     */     } 

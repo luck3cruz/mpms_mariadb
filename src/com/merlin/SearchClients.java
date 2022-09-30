@@ -1,20 +1,116 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
 package com.merlin;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
 /**
  *
- * @author Lucky
+ * @author luckycruz
  */
-public class SearchClients extends javax.swing.JPanel {
+public class SearchClients extends javax.swing.JDialog {
+
+    /**
+     * @return the chosen
+     */
+    public String getChosen() {
+        return chosen;
+    }
+
+    /**
+     * @param chosen the chosen to set
+     */
+    public void setChosen(String chosen) {
+        this.chosen = chosen;
+    }
 
     /**
      * Creates new form SearchClients
      */
-    public SearchClients() {
+    public SearchClients(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
+    }
+    
+    private final Config con = new Config();
+    private final String driver = "jdbc:mariadb://" + con.getProp("IP") + ":" + con.getProp("port") + "/merlininventorydatabase";
+    private final String f_user = con.getProp("username");
+    private final String f_pass = con.getProp("password");
+    private String chosen = "";
+    
+    public void updateTable(String searchText) throws SQLException {
+        DefaultTableModel defExpTab = (DefaultTableModel) this.jTable1.getModel();
+        while (defExpTab.getRowCount() > 0) {
+            defExpTab.removeRow(0);
+        }
+
+        Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
+        Statement state = connect.createStatement();
+        String query = "(Select client_name, SUBSTRING_INDEX(client_name, ' ', 1), SUBSTRING_INDEX( client_name, ' ', -1), client_address, contact_no from merlininventorydatabase.client_info where client_name like '%" 
+                + searchText.replace(' ', '%') + "%') union (Select CONCAT(fname, ' ', lname), fname, lname, CONCAT(brgy, ', ', town, ', ', prov), con_num from merlininventorydatabase.kyc where fname like '%" 
+                + searchText.replace(' ', '%') + "%' and lname like '%" + searchText.replace(' ', '%') + "%')";
+        System.out.println(query);
+        ResultSet rset = state.executeQuery(query);
+        
+
+        Object[] row = new Object[6];
+        int counter = 1;
+        while (rset.next()) {
+            row[0] = counter;
+            for (int i = 0; i < 5; i++) {
+                row[i+1] = rset.getString(i + 1);
+            }
+            counter++;
+            defExpTab.addRow(row);
+        }
+        state.close();
+        connect.close();
+        designTable();
+    }
+    
+    public void designTable() {
+        TableCellRenderer renderer = new TableCellRenderer() {
+            JLabel label = new JLabel();
+
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                this.label.setOpaque(true);
+                this.label.setText("" + value);
+                this.label.setVerticalAlignment(JLabel.TOP);
+                this.label.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+                Color alternate = new Color(239,246,250);
+                if (isSelected) {
+                    this.label.setBackground(Color.DARK_GRAY);
+                    this.label.setForeground(Color.WHITE);
+                } else {
+                    this.label.setForeground(Color.black);
+                    if (row % 2 == 1) {
+                        this.label.setBackground(alternate);
+                    } else {
+                        this.label.setBackground(Color.WHITE);
+                    }
+                }
+                return this.label;
+            }
+        };
+        jTable1.getColumnModel().getColumn(4).setCellRenderer(new TextAreaCellRenderer());
+        this.jTable1.setDefaultRenderer(Object.class, renderer);
+        ((DefaultTableCellRenderer) this.jTable1.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(0);
+        
+//        new TableHelper().autoResizeColWidth(expiredLoanListingTable, (DefaultTableModel) expiredLoanListingTable.getModel());
     }
 
     /**
@@ -26,25 +122,174 @@ public class SearchClients extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTextField1 = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
-        setLayout(new java.awt.BorderLayout());
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(102, 102, 102));
-        add(jTextField1, java.awt.BorderLayout.CENTER);
+        jLabel1.setText("Please choose from the following Search Results: ");
 
-        jButton1.setBackground(new java.awt.Color(79, 119, 141));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/merlin/magnifying-glass-search.png"))); // NOI18N
-        jButton1.setMinimumSize(new java.awt.Dimension(30, 30));
-        jButton1.setPreferredSize(new java.awt.Dimension(30, 30));
-        add(jButton1, java.awt.BorderLayout.WEST);
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "#", "Given Name", "First Name", "Last Name", "Address", "Contact No"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(3);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(130);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(60);
+            jTable1.getColumnModel().getColumn(4).setResizable(false);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(150);
+            jTable1.getColumnModel().getColumn(5).setResizable(false);
+            jTable1.getColumnModel().getColumn(5).setPreferredWidth(100);
+        }
+
+        jButton1.setText("Select");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Cancel");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addGap(19, 19, 19))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addContainerGap())
+        );
+
+        pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        
+        System.out.println(jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString());
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        setChosen(jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString());
+        setVisible(false);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(SearchClients.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(SearchClients.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(SearchClients.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(SearchClients.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                SearchClients dialog = new SearchClients(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

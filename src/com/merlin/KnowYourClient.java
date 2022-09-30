@@ -4,7 +4,6 @@
  */
 package com.merlin;
 
-import com.mxrck.autocompleter.TextAutoCompleter;
 //import com.mysql.jdbc.Statement;
 import java.awt.Color;
 import java.awt.Component;
@@ -17,10 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -30,17 +27,18 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import org.apache.commons.lang.WordUtils;
 import org.imgscalr.Scalr;
 
 /**
@@ -247,7 +245,7 @@ public class KnowYourClient extends javax.swing.JPanel {
             Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         enableTextsCombos(false);
-        findMatch();
+//        findMatch();
 //        findMatch2();
 //        findMatch3();
         populateTextbox();
@@ -296,7 +294,8 @@ public class KnowYourClient extends javax.swing.JPanel {
     private String clientName = "";
     private String clientNumber = "";
     private String clientAddress = "";
-    
+    private DatabaseUpdater dbu = new DatabaseUpdater();
+            
     public void connectClientToLoans(String idkey, String[] loans) throws SQLException{
         Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
         Statement state = connect.createStatement();
@@ -308,7 +307,10 @@ public class KnowYourClient extends javax.swing.JPanel {
             }
         }
         updateSt = updateSt + "')";
+        System.out.println(updateSt);
         state.executeUpdate(updateSt);
+        
+        dbu.editFile(updateSt, dbu.getCurDateBackUpFilename());
     }
     
     public void initializeProvCombo() throws SQLException{
@@ -407,7 +409,7 @@ public class KnowYourClient extends javax.swing.JPanel {
 //                !mNameText.getText().isEmpty() || 
                 !lNameText.getText().isEmpty() ||
                 !streetText.getText().isEmpty() ||
-                !bDateCal.getDate().equals(null) ||
+//                !bDateCal.getDate().equals(null) ||
                 !pBirthText.getText().isEmpty() || 
                 !natText.getText().isEmpty())
                 &&
@@ -445,8 +447,8 @@ public class KnowYourClient extends javax.swing.JPanel {
         }
 //        rset.close();
 //        return nln;
-        fNameText.setText(fn);
-        lNameText.setText(nln);
+        fNameText.setText(fn.toUpperCase());
+        lNameText.setText(nln.toUpperCase());
     }
     
     
@@ -468,88 +470,88 @@ public class KnowYourClient extends javax.swing.JPanel {
         return q;
     }
     
-    public void loadPhotoImage(String fname, String lname) throws SQLException, IOException{
-        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-        PreparedStatement pst = connect.prepareStatement("Select face from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
-        ResultSet rs = pst.executeQuery();
-        if (rs.next()) {
-            
-        }
-
-        byte[] imagedata = rs.getBytes("face");
-//        ImageIcon format = new ImageIcon(imagedata);
-        InputStream is = new ByteArrayInputStream(imagedata);
-          File photofile = new File(con.getProp("default_photo_folder"));
-        if (!photofile.exists()) {
-            photofile.mkdir();
-        }
-        BufferedImage img = ImageIO.read(is);
-        cl1.setPhotoimg(new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 640,480)));
-        ImageIcon icon = new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 240,180));
-        photo.setIcon(icon);
-        rs.close();
-        pst.close();
-        connect.close();
-    }
+//    public void loadPhotoImage(String fname, String lname) throws SQLException, IOException{
+//        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+//        PreparedStatement pst = connect.prepareStatement("Select face from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
+//        ResultSet rs = pst.executeQuery();
+//        if (rs.next()) {
+//            
+//        }
+//
+//        byte[] imagedata = rs.getBytes("face");
+////        ImageIcon format = new ImageIcon(imagedata);
+//        InputStream is = new ByteArrayInputStream(imagedata);
+//          File photofile = new File(con.getProp("default_photo_folder"));
+//        if (!photofile.exists()) {
+//            photofile.mkdir();
+//        }
+//        BufferedImage img = ImageIO.read(is);
+//        cl1.setPhotoimg(new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 640,480)));
+//        ImageIcon icon = new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 240,180));
+//        photo.setIcon(icon);
+//        rs.close();
+//        pst.close();
+//        connect.close();
+//    }
+//    
+//    public void loadIDImage(String fname, String lname) throws SQLException, IOException{
+//        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+//        PreparedStatement pst = connect.prepareStatement("Select idcard from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
+//        ResultSet rs = pst.executeQuery();
+//        if (rs.next()) {
+//            
+//        }
+//        byte[] iddata = rs.getBytes("idcard");
+//        InputStream is = new ByteArrayInputStream(iddata);
+//        BufferedImage img = ImageIO.read(is);
+//        cl1.setIdimg(new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 640,480)));
+//        ImageIcon icon = new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 240,180));
+////        ImageIcon format2 = new ImageIcon(iddata);
+////        setViewID(format2);
+////        Image mm2 = format2.getImage();
+////        Image idmg2 = mm2.getScaledInstance(240, 180, Image.SCALE_SMOOTH);
+////        ImageIcon image2 = new ImageIcon(idmg2);
+//        idPhoto.setIcon(icon);
+//        rs.close();
+//        pst.close();
+//        connect.close();
+//    }
     
-    public void loadIDImage(String fname, String lname) throws SQLException, IOException{
-        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-        PreparedStatement pst = connect.prepareStatement("Select idcard from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
-        ResultSet rs = pst.executeQuery();
-        if (rs.next()) {
-            
-        }
-        byte[] iddata = rs.getBytes("idcard");
-        InputStream is = new ByteArrayInputStream(iddata);
-        BufferedImage img = ImageIO.read(is);
-        cl1.setIdimg(new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 640,480)));
-        ImageIcon icon = new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, 240,180));
-//        ImageIcon format2 = new ImageIcon(iddata);
-//        setViewID(format2);
-//        Image mm2 = format2.getImage();
-//        Image idmg2 = mm2.getScaledInstance(240, 180, Image.SCALE_SMOOTH);
-//        ImageIcon image2 = new ImageIcon(idmg2);
-        idPhoto.setIcon(icon);
-        rs.close();
-        pst.close();
-        connect.close();
-    }
-    
-    public boolean isPhotoNull(String fname, String lname) throws SQLException {
-        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-        PreparedStatement pst = connect.prepareStatement("Select face from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
-        ResultSet rs = pst.executeQuery();
-        boolean x = false;
-        if (rs.next()) {
-            if (rs.getBlob(1) == null) {
-                x = true;
-            } else {
-                x = false;
-            }
-        }
-        rs.close();
-        pst.close();
-        connect.close();
-        return x;
-    }
-    
-    public boolean isIDNull(String fname, String lname) throws SQLException {
-        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-        PreparedStatement pst = connect.prepareStatement("Select idcard from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
-        ResultSet rs = pst.executeQuery();
-        boolean x = false;
-        if (rs.next()) {
-            if (rs.getBlob(1) == null) {
-                x = true;
-            } else {
-                x = false;
-            }
-        }
-        rs.close();
-        pst.close();
-        connect.close();
-        return x;
-    }
+//    public boolean isPhotoNull(String fname, String lname) throws SQLException {
+//        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+//        PreparedStatement pst = connect.prepareStatement("Select face from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
+//        ResultSet rs = pst.executeQuery();
+//        boolean x = false;
+//        if (rs.next()) {
+//            if (rs.getBlob(1) == null) {
+//                x = true;
+//            } else {
+//                x = false;
+//            }
+//        }
+//        rs.close();
+//        pst.close();
+//        connect.close();
+//        return x;
+//    }
+//    
+//    public boolean isIDNull(String fname, String lname) throws SQLException {
+//        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+//        PreparedStatement pst = connect.prepareStatement("Select idcard from merlininventorydatabase.kyc where fname = '" + fname +"' and lname = '" + lname + "'");
+//        ResultSet rs = pst.executeQuery();
+//        boolean x = false;
+//        if (rs.next()) {
+//            if (rs.getBlob(1) == null) {
+//                x = true;
+//            } else {
+//                x = false;
+//            }
+//        }
+//        rs.close();
+//        pst.close();
+//        connect.close();
+//        return x;
+//    }
     
     
     
@@ -604,48 +606,53 @@ public class KnowYourClient extends javax.swing.JPanel {
         sssText.setEditable(state);
         gsisText.setEditable(state);
         idpresCombo.setEnabled(state);
-        updateID.setEnabled(state);
-        updatePhoto.setEnabled(state);
         authRepBtn.setEnabled(state);
         heightCombo.setEnabled(state);
         complexionCombo.setEnabled(state);
         builtCombo.setEnabled(state);
         jTable1.setEnabled(state);
+        conNumText.setEditable(state);
+    }
+    
+    private void enablePhotoButtons(boolean state) {
         captureIDbtn.setEnabled(state);
         capturePhoto.setEnabled(state);
-        conNumText.setEditable(state);
+        updateID.setEnabled(state);
+        updatePhoto.setEnabled(state);
         createLoanBtn.setEnabled(state);
     }
     
-    private boolean ChangesMadeInKYCinfo () {
-        if (fNameText.getText().equals(cl1.getFirst_name()) ||
-                mNameText.getText().equals(cl1.getMiddle_name()) ||
-                lNameText.getText().equals(cl1.getLast_name()) ||
-                suffixCombo.getSelectedItem().toString().equals(cl1.getSuffix()) ||
-                genderCombo.getSelectedItem().toString().equals(cl1.getGender()) ||
-                riskCombo.getSelectedItem().toString().equals(cl1.getRisk()) || 
-                natText.getText().equals(cl1.getNationality()) || 
-                dateformatter.format(bDateCal.getDate()).equals(cl1.getBirthday()) ||
-                pBirthText.getText().equals(cl1.getBirthplace()) ||
-                streetText.getText().equals(cl1.getStreet()) ||
-                brgyCombo.getSelectedItem().toString().equals(cl1.getBrgy()) || 
-                townCombo.getSelectedItem().toString().equals(cl1.getTown()) ||
-                provCombo.getSelectedItem().toString().equals(cl1.getProv()) ||
-                sssText.getText().equals(cl1.getSss()) ||
- gsisText.getText().equals(cl1.getGsis())
-                ||                tinText.getText().equals(cl1.getTin()) ||
-                employerText.getText().equals(cl1.getEmployer()) ||
-                natureBusText.getText().equals(cl1.getNature_business()) ||
-                soiCombo.getSelectedItem().toString().equals(cl1.getSoi()) ||
-                spsNameText.getText().equals(cl1.getSps_name()) ||
-                idpresCombo.getSelectedItem().toString().equals(cl1.getId_presented()) ||
-                getPhotopath().equals(cl1.getPhoto_loc()) || 
-                getIdPath().equals(cl1.getId_loc())) {
-            return true;
-        } else{
-            return false;
-        }
-    }
+//    private boolean ChangesMadeInKYCinfo () {
+//        if (
+//                   fNameText.getText().equals(cl1.getFirst_name()) 
+//                || mNameText.getText().equals(cl1.getMiddle_name())
+//                || lNameText.getText().equals(cl1.getLast_name())
+////                || suffixCombo.getSelectedItem().toString().equals(cl1.getSuffix()) 
+////                || genderCombo.getSelectedItem().toString().equals(cl1.getGender()) 
+////                || riskCombo.getSelectedItem().toString().equals(cl1.getRisk())  
+//                || natText.getText().equals(cl1.getNationality()) 
+////                || dateformatter.format(bDateCal.getDate()).equals(cl1.getBirthday()) 
+//                || pBirthText.getText().equals(cl1.getBirthplace()) 
+//                || streetText.getText().equals(cl1.getStreet()) 
+////                || brgyCombo.getSelectedItem().toString().equals(cl1.getBrgy())  
+////                || townCombo.getSelectedItem().toString().equals(cl1.getTown()) 
+////                || provCombo.getSelectedItem().toString().equals(cl1.getProv()) 
+//                || sssText.getText().equals(cl1.getSss()) 
+//                || gsisText.getText().equals(cl1.getGsis())
+//                || tinText.getText().equals(cl1.getTin())
+//                || employerText.getText().equals(cl1.getEmployer()) 
+//                || natureBusText.getText().equals(cl1.getNature_business()) 
+//                || soiCombo.getSelectedItem().toString().equals(cl1.getSoi()) 
+//                || spsNameText.getText().equals(cl1.getSps_name()) 
+////                || idpresCombo.getSelectedItem().toString().equals(cl1.getId_presented())
+////                || getPhotopath().equals(cl1.getPhoto_loc()) 
+////                || getIdPath().equals(cl1.getId_loc())
+//                ) {
+//            return true;
+//        } else{
+//            return false;
+//        }
+//    }
     
     private boolean isNamesEmpty() {
         if (fNameText.getText().isEmpty() || lNameText.getText().isEmpty()) {
@@ -661,27 +668,27 @@ public class KnowYourClient extends javax.swing.JPanel {
         java.sql.Statement state = connect.createStatement();
         ResultSet rset = state.executeQuery("Select * from empeno where fname = '" + fNameText.getText() + "' and lname = '" + lNameText.getText() + "'");
         while (rset.next()) {
-            mNameText.setText(rset.getString("mname"));
-            genderCombo.setSelectedItem(rset.getString("gender"));
-            suffixCombo.setSelectedItem(rset.getString("suffix"));
-            riskCombo.setSelectedItem(rset.getString("risk"));
+            mNameText.setText(rset.getString("mname").toUpperCase());
+            genderCombo.setSelectedItem(rset.getString("gender").toUpperCase());
+            suffixCombo.setSelectedItem(rset.getString("suffix").toUpperCase());
+            riskCombo.setSelectedItem(rset.getString("risk").toUpperCase());
             bDateCal.setDate(rset.getDate("bdate"));
-            pBirthText.setText(rset.getString("bplace"));
-            streetText.setText(rset.getString("street"));
-            brgyCombo.setSelectedItem(rset.getString("brgy"));
-            townCombo.setSelectedItem(rset.getString("town"));
-            provCombo.setSelectedItem(rset.getString("prov"));
-            spsNameText.setText(rset.getString("spouse"));
-            employerText.setText(rset.getString("employer"));
-            natureBusText.setText(rset.getString("nat_bus"));
-            soiCombo.setSelectedItem(rset.getString("soi"));
-            tinText.setText(rset.getString("tin"));
-            sssText.setText(rset.getString("sss"));
-            gsisText.setText(rset.getString("gsis"));
-            idpresCombo.setSelectedItem(rset.getString("id_pres"));
-            builtCombo.setSelectedItem(rset.getString("built"));
-            heightCombo.setSelectedItem(rset.getString("height"));
-            complexionCombo.setSelectedItem(rset.getString("complexion"));
+            pBirthText.setText(rset.getString("bplace").toUpperCase());
+            streetText.setText(rset.getString("street").toUpperCase());
+            brgyCombo.setSelectedItem(rset.getString("brgy").toUpperCase());
+            townCombo.setSelectedItem(rset.getString("town").toUpperCase());
+            provCombo.setSelectedItem(rset.getString("prov").toUpperCase());
+            spsNameText.setText(rset.getString("spouse").toUpperCase());
+            employerText.setText(rset.getString("employer").toUpperCase());
+            natureBusText.setText(rset.getString("nat_bus").toUpperCase());
+            soiCombo.setSelectedItem(rset.getString("soi").toUpperCase());
+            tinText.setText(rset.getString("tin").toUpperCase());
+            sssText.setText(rset.getString("sss").toUpperCase());
+            gsisText.setText(rset.getString("gsis").toUpperCase());
+            idpresCombo.setSelectedItem(rset.getString("id_pres").toUpperCase());
+            builtCombo.setSelectedItem(rset.getString("built").toUpperCase());
+            heightCombo.setSelectedItem(rset.getString("height").toUpperCase());
+            complexionCombo.setSelectedItem(rset.getString("complexion").toUpperCase());
         }
         rset.close();
         state.close();
@@ -706,24 +713,34 @@ public class KnowYourClient extends javax.swing.JPanel {
         public Component getTableCellRendererComponent(JTable table,
                 Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
-                label.setOpaque(true);
-                label.setText("" + value);
-                Color alternate = UIManager.getColor("Table.alternateRowColor");
+            
+            this.label.setOpaque(true);
+                this.label.setText("" + value);
+                this.label.setVerticalAlignment(JLabel.TOP);
+                this.label.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+//                label.setLineWrap(true);
+//                label.setWrapStyleWord(true);
+//                label.setEditable(false);
+//                Color alternate = UIManager.getColor("Table.alternateRowColor");
+                Color alternate = new Color(239,246,250);
                 if (isSelected) {
-                    label.setBackground(Color.DARK_GRAY);
-                    label.setForeground(Color.WHITE);
+                    this.label.setBackground(Color.DARK_GRAY);
+                    this.label.setForeground(Color.WHITE);
                 } else {
-                    label.setForeground(Color.black);
+                    this.label.setForeground(Color.black);
                     if (row % 2 == 1) {
-                        label.setBackground(alternate);
+                        this.label.setBackground(alternate);
                     } else {
-                        label.setBackground(Color.WHITE);
+                        this.label.setBackground(Color.WHITE);
                     }
                 }
+            
+  
                 
 //                if (column == 2) {
 //                    label.setHorizontalAlignment(SwingConstants.RIGHT);
 //                } 
+                jTable1.getColumnModel().getColumn(4).setCellRenderer(new TextAreaCellRenderer());
                 
                 return label;
             }
@@ -747,7 +764,7 @@ public class KnowYourClient extends javax.swing.JPanel {
         return amt;
     }
     
-    public void updateLoanTable() throws SQLException {
+    public void updateLoanTable(String givenName1, String givenName2) throws SQLException {
         DefaultTableModel dm = (DefaultTableModel) jTable1.getModel();
         while (dm.getRowCount() >0 ) {
             dm.removeRow(0);
@@ -755,8 +772,13 @@ public class KnowYourClient extends javax.swing.JPanel {
         Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
         java.sql.Statement state = connect.createStatement();
         String qry = "Select pap_num, branch, item_code_a, transaction_date, item_description, status, remarks from merlininventorydatabase.client_info where client_name = '" 
-                + searchText.getText() + "' order by transaction_date desc";
-        String qryC = "Select count(*) from merlininventorydatabase.client_info where client_name = '" + searchText.getText() + "' order by transaction_date desc";
+//                + searchText.getText()
+                + givenName1 + "' || client_name = '" + givenName2 
+                + "' order by transaction_date desc";
+        String qryC = "Select count(*) from merlininventorydatabase.client_info where client_name = '" 
+//                + searchText.getText() 
+                + givenName1 + "' || client_name = '" + givenName2 
+                + "' order by transaction_date desc";
         ResultSet rset = state.executeQuery(qryC);
         int loanCounts = 0;
         while (rset.next()) {
@@ -780,7 +802,13 @@ public class KnowYourClient extends javax.swing.JPanel {
         }
         state.close();
         connect.close();
-        connectClientToLoans(String.valueOf(cl1.getIdkey()), loanList);
+        String suffix = "";
+        if (suffixCombo.getSelectedIndex() > 0) {
+            suffix = suffixCombo.getSelectedItem().toString();
+        }
+        if (cl1.isLoansFoundForThisClient() && cl1.isClientFoundInKYC(fNameText.getText(), lNameText.getText(), suffix)) {
+            connectClientToLoans(String.valueOf(cl1.getIdkey()), loanList);
+        }
     }
     
     public void resetTable() {
@@ -810,22 +838,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         }
     }
     
-//    public void populateClients() {
-//        t = new TreeSet<String>();
-//        try {
-//            Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-//            java.sql.Statement state = connect.createStatement();
-//            ResultSet rset = state.executeQuery("Select distinct(client_name) from merlininventorydatabase.client_info union SELECT CONCAT(fname, ' ', lname) FROM kyc");
-//            while (rset.next()) {
-//                t.add(rset.getString(1));
-//            }
-//            rset.close();
-//            state.close();
-//            connect.close();
-//        } catch (SQLException ex) {
-//            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
     
     public void populateNations() {
         u = new TreeSet<String>();
@@ -845,93 +857,28 @@ public class KnowYourClient extends javax.swing.JPanel {
         }
     }
     
-    public void findMatch(){
-        all.removeAll(all);
-        try {
-            TextAutoCompleter tac = new TextAutoCompleter(searchText);
-            Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-            java.sql.Statement state = connect.createStatement();
-            ResultSet rset = state.executeQuery("Select distinct(client_name) from merlininventorydatabase.client_info union SELECT CONCAT(fname, ' ', lname) FROM kyc");
-            while (rset.next()) {
-                for (int i = 0; i < getNames().length; i++) {
-                    getNames()[i] = rset.getString(i+1);
-                    tac.addItem(getNames()[i]);
-                }
-                all.add(getNames().clone());
-            }
-            state.close();
-            connect.close();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
-            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-//    public void findMatch2(){
+//    public void findMatch(){
+//        all.removeAll(all);
 //        try {
-//            TextAutoCompleter tac = new TextAutoCompleter(natText);
+//            TextAutoCompleter tac = new TextAutoCompleter(searchText);
 //            Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
 //            java.sql.Statement state = connect.createStatement();
-//            ResultSet rset = state.executeQuery("Select distinct(nation) from merlininventorydatabase.kyc");
+//            ResultSet rset = state.executeQuery("Select distinct(client_name) from merlininventorydatabase.client_info union SELECT CONCAT(fname, ' ', lname) FROM kyc");
 //            while (rset.next()) {
-//                for (int i = 0; i < getNations().length; i++) {
-//                    getNations()[i] = rset.getString(i+1);
-//                    tac.addItem(getNations()[i]);
+//                for (int i = 0; i < getNames().length; i++) {
+//                    getNames()[i] = rset.getString(i+1);
+//                    tac.addItem(getNames()[i]);
 //                }
-//                allnations.add(getNations().clone());
+//                all.add(getNames().clone());
 //            }
 //            state.close();
 //            connect.close();
 //        } catch (SQLException ex) {
+//            JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
 //            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
     
-//    public void findMatch3(){
-//        try {
-//            TextAutoCompleter tac = new TextAutoCompleter(natureBusText);
-//            Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-//            java.sql.Statement state = connect.createStatement();
-//            ResultSet rset = state.executeQuery("Select distinct(nat_bus) from merlininventorydatabase.kyc");
-//            while (rset.next()) {
-//                for (int i = 0; i < getNature().length; i++) {
-//                    getNature()[i] = rset.getString(i+1);
-//                    tac.addItem(getNature()[i]);
-//                }
-//                allnatures.add(getNature().clone());
-//            }
-//            state.close();
-//            connect.close();
-//        } catch (SQLException ex) {
-//            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
-    
-    
-    
-    
-//    public void initProvCombo() {
-//        
-//        
-//        while (provCombo.getItemCount() > 0) {
-//            provCombo.removeAllItems();
-//        }
-//        
-//        try ( Connection connect = DriverManager.getConnection(driver, f_user, f_pass)) {
-//            
-//            try (PreparedStatement pState = connect.prepareStatement("select distinct(prov) from sort_add order by prov")) {
-//                
-//                try (ResultSet rset = pState.executeQuery()) {
-//                    while (rset.next()) {
-//                        provCombo.addItem(rset.getString(1));
-//                    }
-//                }
-//            }
-//        } catch (SQLException ex) {
-//            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-//        } 
-//        
-//    }
     
     public void initSOICombo() {
         Connection connect = null;
@@ -961,46 +908,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         }
     }
     
-//    public void initTownCombo() {
-//        while (townCombo.getItemCount() > 0) {
-//            townCombo.removeAllItems();
-//        }
-//        try ( Connection connect = DriverManager.getConnection(driver, f_user, f_pass)) {
-//            
-//            try (PreparedStatement pstate = connect.prepareStatement("select distinct(town) from sort_add where prov = '" + provCombo.getSelectedItem().toString() + "' order by town")) {
-//                
-//                try (ResultSet rset = pstate.executeQuery();) {
-//                    while (rset.next()) {
-//                    townCombo.addItem(rset.getString(1));
-//                    }
-//                }
-//            } 
-//        } catch (SQLException ex) {
-//            JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
-//            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-//        } 
-//    }
-//    
-//    public void initBrgyCombo() {
-//        
-//        while (brgyCombo.getItemCount() > 0) {
-//            brgyCombo.removeAllItems();
-//        }
-//        try ( Connection connect = DriverManager.getConnection(driver, f_user, f_pass)) {
-//            
-//            try (PreparedStatement pstate = connect.prepareStatement("select distinct(brgy) from sort_add where town = '" + townCombo.getSelectedItem().toString() + "' and prov = '" + provCombo.getSelectedItem().toString() + "' order by brgy")) {
-//                
-//                try (ResultSet rset = pstate.executeQuery();) {
-//                    while (rset.next()) {
-//                    brgyCombo.addItem(rset.getString(1));
-//                    }
-//                }
-//            } 
-//        } catch (SQLException ex) {
-//            JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
-//            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-//        }  
-//    }
     
     public void initIDsCombo() {
         Connection connect = null;
@@ -1184,19 +1091,9 @@ public class KnowYourClient extends javax.swing.JPanel {
                 formFocusGained(evt);
             }
         });
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentShown(java.awt.event.ComponentEvent evt) {
-                formComponentShown(evt);
-            }
-        });
         setLayout(new java.awt.BorderLayout());
 
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
-        jPanel1.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                jPanel1FocusGained(evt);
-            }
-        });
 
         jPanel12.setLayout(new java.awt.BorderLayout());
 
@@ -1264,11 +1161,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         gNameText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         gNameText.setForeground(new java.awt.Color(51, 51, 51));
-        gNameText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                gNameTextActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -1310,29 +1202,14 @@ public class KnowYourClient extends javax.swing.JPanel {
         complexionCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         complexionCombo.setForeground(new java.awt.Color(51, 51, 51));
         complexionCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Light", "Fair", "Dark" }));
-        complexionCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                complexionComboActionPerformed(evt);
-            }
-        });
 
         builtCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         builtCombo.setForeground(new java.awt.Color(51, 51, 51));
         builtCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Small", "Medium", "Big" }));
-        builtCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                builtComboActionPerformed(evt);
-            }
-        });
 
         heightCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         heightCombo.setForeground(new java.awt.Color(51, 51, 51));
         heightCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Short", "Medium", "Tall" }));
-        heightCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                heightComboActionPerformed(evt);
-            }
-        });
 
         jLabel15.setForeground(new java.awt.Color(102, 102, 102));
         jLabel15.setText("Height");
@@ -1382,11 +1259,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         tinText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         tinText.setForeground(new java.awt.Color(51, 51, 51));
-        tinText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tinTextActionPerformed(evt);
-            }
-        });
         tinText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tinTextKeyTyped(evt);
@@ -1398,11 +1270,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         sssText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         sssText.setForeground(new java.awt.Color(51, 51, 51));
-        sssText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sssTextActionPerformed(evt);
-            }
-        });
         sssText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 sssTextKeyTyped(evt);
@@ -1411,11 +1278,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         gsisText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         gsisText.setForeground(new java.awt.Color(51, 51, 51));
-        gsisText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                gsisTextActionPerformed(evt);
-            }
-        });
         gsisText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 gsisTextKeyTyped(evt);
@@ -1472,27 +1334,12 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         givenAddText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         givenAddText.setForeground(new java.awt.Color(51, 51, 51));
-        givenAddText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                givenAddTextActionPerformed(evt);
-            }
-        });
 
         spsNameText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         spsNameText.setForeground(new java.awt.Color(51, 51, 51));
-        spsNameText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                spsNameTextActionPerformed(evt);
-            }
-        });
 
         conNumText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         conNumText.setForeground(new java.awt.Color(51, 51, 51));
-        conNumText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                conNumTextActionPerformed(evt);
-            }
-        });
         conNumText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 conNumTextKeyTyped(evt);
@@ -1504,11 +1351,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         streetText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         streetText.setForeground(new java.awt.Color(51, 51, 51));
-        streetText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                streetTextActionPerformed(evt);
-            }
-        });
 
         provCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         provCombo.setForeground(new java.awt.Color(51, 51, 51));
@@ -1537,11 +1379,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         brgyCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         brgyCombo.setForeground(new java.awt.Color(51, 51, 51));
-        brgyCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                brgyComboActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -1635,11 +1472,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         natureBusText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         natureBusText.setForeground(new java.awt.Color(51, 51, 51));
-        natureBusText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                natureBusTextActionPerformed(evt);
-            }
-        });
         natureBusText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 natureBusTextKeyReleased(evt);
@@ -1651,11 +1483,6 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         employerText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         employerText.setForeground(new java.awt.Color(51, 51, 51));
-        employerText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                employerTextActionPerformed(evt);
-            }
-        });
         employerText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 employerTextKeyTyped(evt);
@@ -1664,19 +1491,9 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         idpresCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         idpresCombo.setForeground(new java.awt.Color(51, 51, 51));
-        idpresCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                idpresComboActionPerformed(evt);
-            }
-        });
 
         soiCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         soiCombo.setForeground(new java.awt.Color(51, 51, 51));
-        soiCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                soiComboActionPerformed(evt);
-            }
-        });
 
         jLabel32.setForeground(new java.awt.Color(102, 102, 102));
         jLabel32.setText("Source of Income");
@@ -1737,35 +1554,15 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         fNameText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         fNameText.setForeground(new java.awt.Color(51, 51, 51));
-        fNameText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fNameTextActionPerformed(evt);
-            }
-        });
 
         jLabel35.setForeground(new java.awt.Color(102, 102, 102));
         jLabel35.setText("Last Name");
 
         mNameText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         mNameText.setForeground(new java.awt.Color(51, 51, 51));
-        mNameText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                mNameTextFocusLost(evt);
-            }
-        });
-        mNameText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mNameTextActionPerformed(evt);
-            }
-        });
 
         lNameText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         lNameText.setForeground(new java.awt.Color(51, 51, 51));
-        lNameText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lNameTextActionPerformed(evt);
-            }
-        });
 
         jLabel36.setForeground(new java.awt.Color(102, 102, 102));
         jLabel36.setText("Place of Birth");
@@ -1773,22 +1570,12 @@ public class KnowYourClient extends javax.swing.JPanel {
         bDateCal.setForeground(new java.awt.Color(102, 102, 102));
         bDateCal.setToolTipText("YYYY-MM-DD");
         bDateCal.setFormats(dateformatter);
-        bDateCal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bDateCalActionPerformed(evt);
-            }
-        });
 
         jLabel37.setForeground(new java.awt.Color(102, 102, 102));
         jLabel37.setText("Date of Birth");
 
         pBirthText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         pBirthText.setForeground(new java.awt.Color(51, 51, 51));
-        pBirthText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pBirthTextActionPerformed(evt);
-            }
-        });
         pBirthText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 pBirthTextKeyTyped(evt);
@@ -1801,11 +1588,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         genderCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         genderCombo.setForeground(new java.awt.Color(51, 51, 51));
         genderCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female" }));
-        genderCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                genderComboActionPerformed(evt);
-            }
-        });
 
         jLabel39.setForeground(new java.awt.Color(102, 102, 102));
         jLabel39.setText("Suffix");
@@ -1813,22 +1595,12 @@ public class KnowYourClient extends javax.swing.JPanel {
         suffixCombo.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         suffixCombo.setForeground(new java.awt.Color(51, 51, 51));
         suffixCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "N/A", "Jr.", "Sr.", "II", "III", "IV" }));
-        suffixCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                suffixComboActionPerformed(evt);
-            }
-        });
 
         jLabel40.setForeground(new java.awt.Color(102, 102, 102));
         jLabel40.setText("Nationality");
 
         natText.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         natText.setForeground(new java.awt.Color(51, 51, 51));
-        natText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                natTextActionPerformed(evt);
-            }
-        });
         natText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 natTextKeyReleased(evt);
@@ -1915,6 +1687,7 @@ public class KnowYourClient extends javax.swing.JPanel {
 
         jPanel9Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {fNameText, lNameText, mNameText});
 
+        jTable1.setAutoCreateRowSorter(true);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1948,22 +1721,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         photo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 photoMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                photoMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                photoMouseExited(evt);
-            }
-        });
-        photo.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentShown(java.awt.event.ComponentEvent evt) {
-                photoComponentShown(evt);
-            }
-        });
-        photo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                photoPropertyChange(evt);
             }
         });
 
@@ -2051,9 +1808,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         idPhoto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 idPhotoMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                idPhotoMouseEntered(evt);
             }
         });
 
@@ -2239,50 +1993,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void gNameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gNameTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_gNameTextActionPerformed
-
-    private void builtComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_builtComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_builtComboActionPerformed
-
-    private void heightComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heightComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_heightComboActionPerformed
-
-    private void complexionComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_complexionComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_complexionComboActionPerformed
-
-    private void tinTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tinTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tinTextActionPerformed
-
-    private void sssTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sssTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_sssTextActionPerformed
-
-    private void gsisTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gsisTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_gsisTextActionPerformed
-
-    private void givenAddTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_givenAddTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_givenAddTextActionPerformed
-
-    private void spsNameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spsNameTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_spsNameTextActionPerformed
-
-    private void conNumTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_conNumTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_conNumTextActionPerformed
-
-    private void streetTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_streetTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_streetTextActionPerformed
-
     private void provComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_provComboActionPerformed
             if (provCombo.getItemCount() > 0) {
                 try {
@@ -2305,58 +2015,6 @@ public class KnowYourClient extends javax.swing.JPanel {
                 }
         }
     }//GEN-LAST:event_townComboActionPerformed
-
-    private void brgyComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_brgyComboActionPerformed
-//            initBrgyCombo();
-    }//GEN-LAST:event_brgyComboActionPerformed
-
-    private void natureBusTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natureBusTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_natureBusTextActionPerformed
-
-    private void employerTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employerTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_employerTextActionPerformed
-
-    private void idpresComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idpresComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_idpresComboActionPerformed
-
-    private void soiComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_soiComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_soiComboActionPerformed
-
-    private void fNameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fNameTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fNameTextActionPerformed
-
-    private void mNameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mNameTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mNameTextActionPerformed
-
-    private void lNameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lNameTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_lNameTextActionPerformed
-
-    private void bDateCalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDateCalActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_bDateCalActionPerformed
-
-    private void pBirthTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pBirthTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_pBirthTextActionPerformed
-
-    private void genderComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genderComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_genderComboActionPerformed
-
-    private void suffixComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_suffixComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_suffixComboActionPerformed
-
-    private void natTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_natTextActionPerformed
 
     private void capturePhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_capturePhotoActionPerformed
         JFileChooser chooseFile = new JFileChooser();
@@ -2409,12 +2067,12 @@ public class KnowYourClient extends javax.swing.JPanel {
         if (newCancel.getText().equals("New")) {   //New Button Pressed
             cl1.resetClient();
             fNameText.requestFocus();
-            if (!isNamesEmpty() && ChangesMadeInKYCinfo()) {
-                int replaceFile = JOptionPane.showConfirmDialog(null, "Do you want to save the changes made for this client?", "Save Changes", JOptionPane.YES_NO_OPTION);
-                if (replaceFile == JOptionPane.YES_OPTION) {
-                    //INSERT KYC TABLE
-                }
-            }
+//            if (!isNamesEmpty() && ChangesMadeInKYCinfo()) {
+//                int replaceFile = JOptionPane.showConfirmDialog(null, "Do you want to save the changes made for this client?", "Save Changes", JOptionPane.YES_NO_OPTION);
+//                if (replaceFile == JOptionPane.YES_OPTION) {
+//                    //INSERT KYC TABLE
+//                }
+//            }
             clearTextsCombos();
             resetTable();
             enableTextsCombos(true);
@@ -2431,18 +2089,18 @@ public class KnowYourClient extends javax.swing.JPanel {
                 enableTextsCombos(false);
                 editSave.setEnabled(false);
             } else {
-                if (ChangesMadeInKYCinfo()) {
-                    int replaceFile = JOptionPane.showConfirmDialog(null, "Do you want to save the changes made for this client?", "Save Changes", JOptionPane.YES_NO_OPTION);
-                    if (replaceFile == JOptionPane.YES_OPTION) {
-                        //UPDATE KYC TABLE
-                    }
-                    if (!isRecordRetrieved()) {
-                        clearTextsCombos();
-                        resetTable();
-                    }
-                    enableTextsCombos(false);
-                    editSave.setEnabled(true);
-                }
+//                if (ChangesMadeInKYCinfo()) {
+//                    int replaceFile = JOptionPane.showConfirmDialog(null, "Do you want to save the changes made for this client?", "Save Changes", JOptionPane.YES_NO_OPTION);
+//                    if (replaceFile == JOptionPane.YES_OPTION) {
+//                        //UPDATE KYC TABLE
+//                    }
+//                    if (!isRecordRetrieved()) {
+//                        clearTextsCombos();
+//                        resetTable();
+//                    }
+//                    enableTextsCombos(false);
+//                    editSave.setEnabled(true);
+//                }
             }
             newCancel.setText("New");
             editSave.setText("Edit");
@@ -2484,6 +2142,7 @@ public class KnowYourClient extends javax.swing.JPanel {
             cl1.setBlt(builtCombo.getSelectedItem().toString());
             cl1.setHt(heightCombo.getSelectedItem().toString());
             cl1.setCmplxn(complexionCombo.getSelectedItem().toString());
+            
 //            cl1.setPhoto_loc(getPhotopath());
 //            cl1.setId_loc(getIdPath());
 
@@ -2525,7 +2184,7 @@ public class KnowYourClient extends javax.swing.JPanel {
 //                                    t.add(fNameText.getText().concat(" ").concat(lNameText.getText()));
 //                                }
 //                                all.add();
-                                findMatch();
+//                                findMatch();
                                 JOptionPane.showMessageDialog(null, "Client successfully added to database.", "Add Client", JOptionPane.INFORMATION_MESSAGE);
                             } else {
                                 JOptionPane.showMessageDialog(null, "An error occured while adding this client to database.\n Please report this to your Database Administrator.", "Add Client", JOptionPane.ERROR_MESSAGE);
@@ -2553,132 +2212,196 @@ public class KnowYourClient extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_editSaveActionPerformed
 
-    private void jPanel1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jPanel1FocusGained
-        
-    }//GEN-LAST:event_jPanel1FocusGained
-
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
         cl1.resetClient();
         clearTextsCombos();
         resetTable();
         if (editSave.getText().equalsIgnoreCase("Edit")) {
-            try {
-                
                 //TRY TO SEPARATE GIVEN NAME TO FIRST AND LAST BY FINDING THE LAST INDEX OF SPACE FOR SINGLE WORDED LAST NAMES
-                int idx = searchText.getText().lastIndexOf(' ');
-                gNameText.setText(searchText.getText());
-                // WILL RETURN AN ERROR FOR SINGLE WORDED NAMES (NO FIRST NAME AND LAST NAME)
-                if (idx == -1) throw new IllegalArgumentException(" Single name only: " + searchText.getText());
-                
-                //FIND LAST NAME METHOD WILL TAKE CARE OF SEPARATING THE LAST NAMES OF 2 WORDED LAST NAMES
-                findValidLastName(searchText.getText().substring(0, idx), searchText.getText().substring(idx+1));
-                cl1.setFirst_name(fNameText.getText());
-                cl1.setLast_name(lNameText.getText());
-                cl1.setGiven_name(searchText.getText());
+            int idx = searchText.getText().lastIndexOf(' ');
+            if (idx >= 0) {
+
                 try {
-                    cl1.filldetailsFromClientInfo();
+
+                    gNameText.setText(searchText.getText().toUpperCase());
+                    // WILL RETURN AN ERROR FOR SINGLE WORDED NAMES (NO FIRST NAME AND LAST NAME)
+//                    if (idx == -1) throw new IllegalArgumentException() {
+//
+//                    };ƒ
+
+                    //FIND LAST NAME METHOD WILL TAKE CARE OF SEPARATING THE LAST NAMES OF 2 WORDED LAST NAMES
+                    String suffix = "";
+                    String unsuffixedName = "";
+                    String midIni = "";
+                    if (searchText.getText().substring(idx+1).equalsIgnoreCase("Sr.") || searchText.getText().substring(idx+1).equalsIgnoreCase("Jr.") || 
+                            searchText.getText().substring(idx+1).equalsIgnoreCase("III") || searchText.getText().substring(idx+1).equalsIgnoreCase("II") 
+                            || searchText.getText().substring(idx+1).equalsIgnoreCase("IV")) {
+                        suffix = searchText.getText().substring(idx+1);
+                        suffixCombo.setSelectedItem(suffix);
+                        unsuffixedName = searchText.getText().substring(0, idx);
+                        //CHECK IF UNSUFFIXED NAME CONTAINS MIDDLE INITIALS
+                    } else {
+                        unsuffixedName = searchText.getText();
+                    }
                     
+                    if(unsuffixedName.contains(".")) {
+                        //MIDDLE INITIAL FOUND
+                        int dotIdx = unsuffixedName.indexOf('.');
+
+                        if (unsuffixedName.charAt(dotIdx-2) == ' ' && unsuffixedName.charAt(dotIdx+1) == ' ') {
+                            midIni = unsuffixedName.substring(dotIdx-1, dotIdx);
+                            unsuffixedName = unsuffixedName.substring(0, dotIdx-2).concat(unsuffixedName.substring(dotIdx+1));
+
+                        } else if (unsuffixedName.charAt(dotIdx-3) == ' ' && unsuffixedName.charAt(dotIdx+1) == ' ') {
+                            midIni = unsuffixedName.substring(dotIdx-2, dotIdx);
+                            unsuffixedName  = unsuffixedName.substring(0, dotIdx-3).concat(unsuffixedName.substring(dotIdx+1));
+                            //2 LETTER MIDDLE INITIALS
+                        } else {
+                            // WRONG FORMAT ON MIDDLE INITIAL
+                        }
+                    } 
+                    
+                    suffix = WordUtils.capitalize(suffix);
+                    if (suffix.equalsIgnoreCase("")) {
+                        suffixCombo.setSelectedIndex(0);
+                    } else {
+                        suffixCombo.setSelectedItem(suffix);
+                    }
+//                    mNameText.setText(midIni.toUpperCase());
+//                    System.out.println("suffix: " + suffix);
+//                    System.out.println("middle init:" + midIni);
+//                    System.out.println("Unsuffixed: " + unsuffixedName);
+                    
+                    idx = unsuffixedName.lastIndexOf(' ');
+                    findValidLastName(unsuffixedName.substring(0, idx), unsuffixedName.substring(idx+1));
+                    cl1.setFirst_name(fNameText.getText());
+                    cl1.setLast_name(lNameText.getText());
+                    cl1.setGiven_name(searchText.getText());
+                    if (!suffix.equalsIgnoreCase("")) {
+                        cl1.setSuffix(suffix);
+                    }
+                    try {
+                        cl1.filldetailsFromClientInfo();
+
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
+                        Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    givenAddText.setText(cl1.getAddress().toUpperCase());
+                    conNumText.setText(cl1.getContact_no());
+                    if (cl1.isClientFoundInKYC(fNameText.getText(), lNameText.getText(), suffix)) {
+                        try {
+                            cl1.retrieveFromKYC();
+                            mNameText.setText(cl1.getMiddle_name().toUpperCase());
+                            streetText.setText(cl1.getStreet().toUpperCase());
+                            provCombo.setSelectedItem(cl1.getProv());
+                            //                        initTownCombo();
+                            townCombo.setSelectedItem(cl1.getTown());
+                            conNumText.setText(cl1.getContact_no());
+                            //                        initBrgyCombo();
+                            brgyCombo.setSelectedItem(cl1.getBrgy());
+                            spsNameText.setText(cl1.getSps_name().toUpperCase());
+                            pBirthText.setText(cl1.getBirthplace().toUpperCase());
+                            bDateCal.setDate(cl1.getBirthday());
+                            tinText.setText(cl1.getTin());
+                            sssText.setText(cl1.getSss());
+                            gsisText.setText(cl1.getGsis());
+                            employerText.setText(cl1.getEmployer().toUpperCase());
+                            soiCombo.setSelectedItem(cl1.getSoi());
+                            idpresCombo.setSelectedItem(cl1.getId_presented());
+                            natText.setText(cl1.getNationality().toUpperCase());
+                            genderCombo.setSelectedItem(cl1.getGender());
+                            suffixCombo.setSelectedItem(cl1.getSuffix());
+                            natureBusText.setText(cl1.getNature_business().toUpperCase());
+                            if (!cl1.isPhotoNull()) {
+                               photo.setIcon(cl1.getPhotoimgSmall());
+                            } else {
+                                photo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/avatarmen-200x200.jpg")));
+                            }
+                            if (!cl1.isIDNull()) {
+                                idPhoto.setIcon(cl1.getIdimgSmall());
+                            } else {
+                                idPhoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/idcard_160.jpg")));
+                            }
+                            
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
+                            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null, "Image Output Error! Please contact your database manager.\n" + ex);
+                            Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    } else if(cl1.isClientFoundInCLientInfo(searchText.getText())) {
+                        
+                    
+                        int adx = givenAddText.getText().lastIndexOf(' ');
+                        if (adx == -1) throw new IllegalArgumentException("Single add only " + givenAddText);
+                        for (int i = 0; i < provCombo.getItemCount(); i++) {
+                            if (givenAddText.getText().substring(adx+1).equalsIgnoreCase(provCombo.getItemAt(i))) {
+                                provCombo.setSelectedIndex(i);
+
+                                for (int j = 0; j < townCombo.getItemCount(); j++) {
+                                    if (givenAddText.getText().toLowerCase().contains(townCombo.getItemAt(j).toLowerCase())) {
+                                        townCombo.setSelectedIndex(j);
+                                    }
+                                }
+                                for (int k = 0; k < brgyCombo.getItemCount(); k++) {
+                                    if (givenAddText.getText().toLowerCase().contains(brgyCombo.getItemAt(k).toLowerCase())) {
+                                        brgyCombo.setSelectedIndex(k);
+                                    }
+                                }
+                            }
+                        }
+                        if(cl1.isLoansFoundForThisClient()) {
+                            JOptionPane.showMessageDialog(null, "Loan Records are Found for this client. \n Please complete all the information to create a Client Record for this client.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No Client Record found.");
+                    }
+                    String gname1 = fNameText.getText().concat(' ' + lNameText.getText()).concat( suffixCombo.getSelectedIndex() > 0 ? suffixCombo.getSelectedItem().toString() : "" );
+                    String gname2 = fNameText.getText().concat(' ' + mNameText.getText().substring(0, 1) + ". " + lNameText.getText()).concat( suffixCombo.getSelectedIndex() > 0 ? suffixCombo.getSelectedItem().toString() : "" );
+                    
+                    updateLoanTable(gname1, gname2);
+                    designTable(jTable1);
+                    //                enableTextsCombos(true);
+                    editSave.setEnabled(true);
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
+                    Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE,null, ex);
+                }
+                createLoanBtn.setEnabled(true);
+                setRecordRetrieved(true);
+            } else {
+                SearchClients schCli = new SearchClients(null, true);
+                try {
+                    schCli.updateTable(searchText.getText());
+                    //SHOW DIALOG BOX FOR OPTIONS FOR 1 WORDED SEARCH
+                } catch (SQLException ex) {
                     Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                givenAddText.setText(cl1.getAddress());
-                conNumText.setText(cl1.getContact_no());
-                if (cl1.isClientFoundInKYC(fNameText.getText(), lNameText.getText())) {
-                    try {
-                        cl1.retrieveFromKYC();
-                        mNameText.setText(cl1.getMiddle_name());
-                        streetText.setText(cl1.getStreet());
-                        provCombo.setSelectedItem(cl1.getProv());
-//                        initTownCombo();
-                        townCombo.setSelectedItem(cl1.getTown());
-                        conNumText.setText(cl1.getContact_no());
-//                        initBrgyCombo();
-                        brgyCombo.setSelectedItem(cl1.getBrgy());
-                        spsNameText.setText(cl1.getSps_name());
-                        pBirthText.setText(cl1.getBirthplace());
-                        bDateCal.setDate(cl1.getBirthday());
-                        tinText.setText(cl1.getTin());
-                        sssText.setText(cl1.getSss());
-                        gsisText.setText(cl1.getGsis());
-                        employerText.setText(cl1.getEmployer());
-                        soiCombo.setSelectedItem(cl1.getSoi());
-                        idpresCombo.setSelectedItem(cl1.getId_presented());
-                        natText.setText(cl1.getNationality());
-                        genderCombo.setSelectedItem(cl1.getGender());
-                        suffixCombo.setSelectedItem(cl1.getSuffix());
-                        natureBusText.setText(cl1.getNature_business());
-                        if (!isPhotoNull(fNameText.getText(), lNameText.getText())) {
-                            loadPhotoImage(fNameText.getText(), lNameText.getText());
-                        } else {
-                            photo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kyc_merlin/avatarmen-200x200.jpg")));
-                        }
-                        if (!isIDNull(fNameText.getText(), lNameText.getText())) {
-                            loadIDImage(fNameText.getText(), lNameText.getText());
-                        } else {
-                            idPhoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kyc_merlin/idcard_160.jpg")));
-                        }
-                        updateLoanTable();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
-                        Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, "Image Output Error! Please contact your database manager.\n" + ex);
-                        Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    
-                } else {
-                    int adx = givenAddText.getText().lastIndexOf(' ');
-                    if (adx == -1) throw new IllegalArgumentException("Single add only " + givenAddText);
-                    for (int i = 0; i < provCombo.getItemCount(); i++) {
-                        if (givenAddText.getText().substring(adx+1).equalsIgnoreCase(provCombo.getItemAt(i))) {
-                            provCombo.setSelectedIndex(i);
-                            
-                            for (int j = 0; j < townCombo.getItemCount(); j++) {
-                                if (givenAddText.getText().toLowerCase().contains(townCombo.getItemAt(j).toLowerCase())) {
-                                    townCombo.setSelectedIndex(j);
-                                }
-                            }
-                            for (int k = 0; k < brgyCombo.getItemCount(); k++) {
-                                if (givenAddText.getText().toLowerCase().contains(brgyCombo.getItemAt(k).toLowerCase())) {
-                                    brgyCombo.setSelectedIndex(k);
-                                }
-                            }
-                        }
-                    }
-                }
-                designTable(jTable1);
-//                enableTextsCombos(true);
-                editSave.setEnabled(true);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
-                Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
+                schCli.setLocationRelativeTo(null);
+                schCli.setVisible(true);
+                searchText.setText(schCli.getChosen());
+                searchBtnActionPerformed(null);
             }
         } else {
-            if (ChangesMadeInKYCinfo()) {
-                int replaceFile = JOptionPane.showConfirmDialog(null, "Do you want to save the changes made for this client?", "Save Changes", JOptionPane.YES_NO_OPTION);
-                if (replaceFile == JOptionPane.YES_OPTION) {
-                    try {
-                        //UPDATE KYC TABLE
-                        cl1.insertToKYCdatabase2();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
-                        Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else {
-                }
-            }
+//            if (ChangesMadeInKYCinfo()) {
+//                int replaceFile = JOptionPane.showConfirmDialog(null, "Do you want to save the changes made for this client?", "Save Changes", JOptionPane.YES_NO_OPTION);
+//                if (replaceFile == JOptionPane.YES_OPTION) {
+//                    try {
+//                        //UPDATE KYC TABLE
+//                        cl1.insertToKYCdatabase2();
+//                    } catch (SQLException ex) {
+//                        JOptionPane.showMessageDialog(null, "Database Error! Please contact your database manager.\n" + ex);
+//                        Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                } else {
+//                }
+//            }
             editSave.setText("Save");
         }
-        createLoanBtn.setEnabled(true);
-        setRecordRetrieved(true);
+        
     }//GEN-LAST:event_searchBtnActionPerformed
-
-    private void searchTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextKeyPressed
-//        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-//            searchBtnActionPerformed(null);
-//        }
-    }//GEN-LAST:event_searchTextKeyPressed
 
     private void updatePhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updatePhotoActionPerformed
         Camera cam = new Camera();
@@ -2697,7 +2420,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         cam.addWindowListener(new WindowAdapter() {
             @Override
                     public void windowClosed (WindowEvent e) {
-                        System.out.println("accessing window event");
                         refreshPhoto(cam.isPhotoCaptured(), photofile.exists(), photofile, photo);
                     }
             
@@ -2719,7 +2441,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         cam2.addWindowListener(new WindowAdapter() {
             @Override
                     public void windowClosed (WindowEvent e) {
-                        System.out.println("accessing window event");
                         refreshPhoto(cam2.isIdCaptured(), idFile.exists(), idFile, idPhoto);
                     }
             
@@ -2796,10 +2517,6 @@ public class KnowYourClient extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_newCancelKeyPressed
 
-    private void mNameTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mNameTextFocusLost
-                // TODO add your handling code here:
-    }//GEN-LAST:event_mNameTextFocusLost
-
     private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
         if (isPhotoTaken()) {
             if (new File(cl1.getPhoto_loc()).exists()) {
@@ -2870,53 +2587,53 @@ public class KnowYourClient extends javax.swing.JPanel {
     }//GEN-LAST:event_gsisTextKeyTyped
 
     private void natureBusTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_natureBusTextKeyReleased
-        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE) {
-            
-        } else {
-            String to_check = natureBusText.getText();
-            int to_check_len = to_check.length();
-            for (String data:s) {
-                
-                String check_from_data = "";
-                for (int i = 0; i < to_check_len; i++) {
-                    
-                    if (to_check_len <= data.length()) {
-                        check_from_data = check_from_data + data.charAt(i);
-                    }
-                }
-                if (check_from_data.equals(to_check)) {
-                    natureBusText.setText(data);
-                    natureBusText.setSelectionStart(to_check_len);
-                    natureBusText.setSelectionEnd(data.length());
-                    break;
-                }
-            }
-        }
+//        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE) {
+//            
+//        } else {
+//            String to_check = natureBusText.getText();
+//            int to_check_len = to_check.length();
+//            for (String data:s) {
+//                
+//                String check_from_data = "";
+//                for (int i = 0; i < to_check_len; i++) {
+//                    
+//                    if (to_check_len <= data.length()) {
+//                        check_from_data = check_from_data + data.charAt(i);
+//                    }
+//                }
+//                if (check_from_data.equals(to_check)) {
+//                    natureBusText.setText(data);
+//                    natureBusText.setSelectionStart(to_check_len);
+//                    natureBusText.setSelectionEnd(data.length());
+//                    break;
+//                }
+//            }
+//        }
     }//GEN-LAST:event_natureBusTextKeyReleased
 
     private void natTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_natTextKeyReleased
-        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE) {
-            
-        } else {
-            String to_check = natText.getText();
-            int to_check_len = to_check.length();
-            for (String data:u) {
-                
-                String check_from_data = "";
-                for (int i = 0; i < to_check_len; i++) {
-                    
-                    if (to_check_len <= data.length()) {
-                        check_from_data = check_from_data + data.charAt(i);
-                    }
-                }
-                if (check_from_data.equals(to_check)) {
-                    natText.setText(data);
-                    natText.setSelectionStart(to_check_len);
-                    natText.setSelectionEnd(data.length());
-                    break;
-                }
-            }
-        }
+//        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE) {
+//            
+//        } else {
+//            String to_check = natText.getText();
+//            int to_check_len = to_check.length();
+//            for (String data:u) {
+//                
+//                String check_from_data = "";
+//                for (int i = 0; i < to_check_len; i++) {
+//                    
+//                    if (to_check_len <= data.length()) {
+//                        check_from_data = check_from_data + data.charAt(i);
+//                    }
+//                }
+//                if (check_from_data.equals(to_check)) {
+//                    natText.setText(data);
+//                    natText.setSelectionStart(to_check_len);
+//                    natText.setSelectionEnd(data.length());
+//                    break;
+//                }
+//            }
+//        }
     }//GEN-LAST:event_natTextKeyReleased
 
     private void employerTextKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_employerTextKeyTyped
@@ -2970,55 +2687,11 @@ public class KnowYourClient extends javax.swing.JPanel {
         setVisible(false);
     }//GEN-LAST:event_createLoanBtnActionPerformed
 
-    private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
-        // TODO add your handling code here:
-    }//GEN-LAST:event_formComponentShown
-
-    private void photoPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_photoPropertyChange
-         
-    }//GEN-LAST:event_photoPropertyChange
-
-    private void photoComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_photoComponentShown
-        
-    }//GEN-LAST:event_photoComponentShown
-
-    private void photoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_photoMouseEntered
-        System.out.println("photo location is: " + cl1.getPhoto_loc());
-        if (isPhotoTaken()) {
-            if (new File(cl1.getPhoto_loc()).exists()) {
-                try {
-                    BufferedImage img=ImageIO.read(new File(cl1.getPhoto_loc()));
-                    ImageIcon icon = new ImageIcon(scaleImage(img, photo.getWidth(), photo.getHeight()));
-                    photo.setIcon(icon);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Unable to display captured photo\n" + cl1.getPhoto_loc() + "\n" + ex);
-//                    Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        } 
-        
-        
-    }//GEN-LAST:event_photoMouseEntered
-
-    private void idPhotoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_idPhotoMouseEntered
-        
-//        if (isIdTaken()) {
-//            if (new File(cl1.getId_loc()).exists()) {
-//                try {
-//                    BufferedImage img=ImageIO.read(new File(cl1.getId_loc()));
-//                    ImageIcon icon = new ImageIcon(scaleImage(img, idPhoto.getWidth(), idPhoto.getHeight()));
-//                    idPhoto.setIcon(icon);
-//                } catch (IOException ex) {
-//                    JOptionPane.showMessageDialog(null, "Image Output Error! Please contact your database manager.\n" + ex);
-////                    Logger.getLogger(KnowYourClient.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//        } 
-    }//GEN-LAST:event_idPhotoMouseEntered
-
-    private void photoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_photoMouseExited
-        
-    }//GEN-LAST:event_photoMouseExited
+    private void searchTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            searchBtnActionPerformed(null);
+        }
+    }//GEN-LAST:event_searchTextKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

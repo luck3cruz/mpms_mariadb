@@ -51,7 +51,7 @@ public class DatabaseUpdater {
         File f1 = new File(getCurDateBackUpFilename());
         if (!f1.exists())
         f1.createNewFile();
-        
+        writeToFile("\n", getCurDateBackUpFilename());
     }
 //    
 //    public boolean createNewTextfile(String filename) {

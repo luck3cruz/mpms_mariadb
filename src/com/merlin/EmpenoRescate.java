@@ -13,12 +13,9 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -38,17 +35,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JRDesignQuery;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
+
 
 /**
  *
@@ -297,9 +286,44 @@ Color alternate = new Color(239,246,250);
             Logger.getLogger(EmpenoRescate.class.getName()).log(Level.SEVERE, (String) null, ex);
         }
     }
+    
+    private Map setUpParameters() {
+            Map<String, Object> parameters = new HashMap<>();
+            
+            if (byDayRadio.isSelected()) {
+                parameters.put("EMPENO_DATE", this.dateHelp.formatDate(this.dateCombo.getDate()));
+                parameters.put("EMPENO_DATE2", this.dateHelp.formatDate(this.dateCombo.getDate()));
+            } else if (byMonthRadio.isSelected()) {
+                parameters.put("EMPENO_DATE", yearComboBox.getSelectedItem().toString() + "-" + Integer.toString(monthCombo.getSelectedIndex() + 1) + "-01");
+                try {
+                    parameters.put("EMPENO_DATE2", this.dateHelp.getLastDateOfMonth(new DecimalFormat("00").format(monthCombo.getSelectedIndex() + 1), yearComboBox.getSelectedItem().toString()));
+                } catch (ParseException ex) {
+                    Logger.getLogger(EmpenoRescate.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                parameters.put("EMPENO_DATE", this.dateHelp.formatDate(this.date1.getDate()));
+                parameters.put("EMPENO_DATE2", this.dateHelp.formatDate(this.date2.getDate()));
+            }
 
+            if (con.getProp("branch").equalsIgnoreCase("Tangos")) {
+                parameters.put("AMOUNT_DIVISION", 50000.00);
+                parameters.put("BRACKET1", 100.00);
+                parameters.put("BRACKET2", 5000.00);
+                parameters.put("BRACKET3", 10000.00);
+            } else {
+                parameters.put("AMOUNT_DIVISION", 10000.00);
+                parameters.put("BRACKET1", 100.00);
+                parameters.put("BRACKET2", 1000.00);
+                parameters.put("BRACKET3", 5000.00);
+            }
+            return parameters;
+    }
+
+    /** * OBSOLETE CODE: INCORPORATED SAVEREPORT IN REPORTPRINTER CLASS
+    
     private void saveReport(String filePath, String query, String destination, String report) {
-        OutputStream output = null;
+//        System.out.println(destination);
+//        OutputStream output = null;
         try {
             Connection conn = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
             JasperDesign jasperDesign = JRXmlLoader.load(getClass().getResourceAsStream(filePath));
@@ -349,9 +373,10 @@ Color alternate = new Color(239,246,250);
             JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, conn);
 
-               output = new FileOutputStream(new File(destination));
-            JasperExportManager.exportReportToPdfStream(jasperPrint, output);
-
+//               output = new FileOutputStream(new File(destination));
+//            JasperExportManager.exportReportToPdfStream(jasperPrint, output);
+            JasperExportManager.exportReportToPdfFile(jasperPrint, destination);
+            
             InputStream is = new FileInputStream(new File(destination));
             try {
                 is.close();
@@ -367,19 +392,21 @@ Color alternate = new Color(239,246,250);
                 this.con.saveProp("mpis_last_error", String.valueOf(ex));
                 JOptionPane.showMessageDialog(null, "An error occured while saving your " + report + "\n" + ex, report, 0);
                 Logger.getLogger(org.jfree.data.statistics.Statistics.class.getName()).log(Level.SEVERE, (String) null, ex);
-            } finally {
-               try {
-                   output.close();
+//            } finally {
+//               try {
+//                   System.out.println("closing output");
+//                   output.close();
    //                JOptionPane.showMessageDialog(null, report + " successfully Saved!", report, 1);
-               } catch (IOException ex) {
-                   this.con.saveProp("mpis_last_error", String.valueOf(ex));
-                   JOptionPane.showMessageDialog(null, "An error occured while saving your " + report, report, 0);
-                   Logger.getLogger(org.jfree.data.statistics.Statistics.class.getName()).log(Level.SEVERE, (String) null, ex);
-               }
+//               } catch (IOException ex) {
+//                   this.con.saveProp("mpis_last_error", String.valueOf(ex));
+//                   JOptionPane.showMessageDialog(null, "An error occured while saving your " + report, report, 0);
+//                   Logger.getLogger(org.jfree.data.statistics.Statistics.class.getName()).log(Level.SEVERE, (String) null, ex);
+//               }
         }
     }
 
-
+* 
+* * /
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -421,6 +448,11 @@ Color alternate = new Color(239,246,250);
                 jTabbedPane1HierarchyChanged(evt);
             }
         });
+        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane1StateChanged(evt);
+            }
+        });
         jTabbedPane1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTabbedPane1MouseClicked(evt);
@@ -433,6 +465,7 @@ Color alternate = new Color(239,246,250);
             }
         });
 
+        empeno.setAutoCreateRowSorter(true);
         empeno.setBackground(new java.awt.Color(240, 240, 240));
         empeno.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -455,23 +488,14 @@ Color alternate = new Color(239,246,250);
         empeno.setRowHeight(30);
         jScrollPane2.setViewportView(empeno);
         if (empeno.getColumnModel().getColumnCount() > 0) {
-            empeno.getColumnModel().getColumn(0).setResizable(false);
             empeno.getColumnModel().getColumn(0).setPreferredWidth(15);
-            empeno.getColumnModel().getColumn(1).setResizable(false);
             empeno.getColumnModel().getColumn(1).setPreferredWidth(15);
-            empeno.getColumnModel().getColumn(2).setResizable(false);
             empeno.getColumnModel().getColumn(2).setPreferredWidth(45);
-            empeno.getColumnModel().getColumn(3).setResizable(false);
             empeno.getColumnModel().getColumn(3).setPreferredWidth(25);
-            empeno.getColumnModel().getColumn(4).setResizable(false);
             empeno.getColumnModel().getColumn(4).setPreferredWidth(20);
-            empeno.getColumnModel().getColumn(5).setResizable(false);
             empeno.getColumnModel().getColumn(5).setPreferredWidth(15);
-            empeno.getColumnModel().getColumn(6).setResizable(false);
             empeno.getColumnModel().getColumn(6).setPreferredWidth(20);
-            empeno.getColumnModel().getColumn(7).setResizable(false);
             empeno.getColumnModel().getColumn(7).setPreferredWidth(30);
-            empeno.getColumnModel().getColumn(8).setResizable(false);
             empeno.getColumnModel().getColumn(8).setPreferredWidth(120);
             empeno.getColumnModel().getColumn(9).setPreferredWidth(100);
         }
@@ -910,8 +934,52 @@ Color alternate = new Color(239,246,250);
             if (jTabbedPane1.getSelectedIndex() == 0) {
                 String filePath = "/Reports/empenoreport.jrxml";
                 String filePath2 = "/Reports/empenoreport2.jrxml";
-                saveReport(filePath, getFquery(), con.getProp("temp_folder").concat("empreport1.pdf"), "Empeno Report1");
-                saveReport(filePath2, getFquery(), con.getProp("temp_folder").concat("empreport2.pdf"), "Empeno Report2");
+                
+                
+                Map<Object, Object> parameters = new HashMap<>();
+                Map<Object, Object> parameters2 = new HashMap<>();
+                if (byDayRadio.isSelected()) {
+                    parameters.put("EMPENO_DATE", this.dateHelp.formatDate(this.dateCombo.getDate()));
+                    parameters.put("EMPENO_DATE2", this.dateHelp.formatDate(this.dateCombo.getDate()));
+                    parameters2.put("EMPENO_DATE", this.dateHelp.formatDate(this.dateCombo.getDate()));
+                    parameters2.put("EMPENO_DATE2", this.dateHelp.formatDate(this.dateCombo.getDate()));
+                } else if (byMonthRadio.isSelected()) {
+                    parameters.put("EMPENO_DATE", yearComboBox.getSelectedItem().toString() + "-" + new DecimalFormat("00").format(monthCombo.getSelectedIndex() + 1) + "-01");
+                    parameters2.put("EMPENO_DATE", yearComboBox.getSelectedItem().toString() + "-" + new DecimalFormat("00").format(monthCombo.getSelectedIndex() + 1) + "-01");
+                    System.out.println("empeno date1:" + yearComboBox.getSelectedItem().toString() + "-" + Integer.toString(monthCombo.getSelectedIndex() + 1) + "-01");
+                    try {
+                        parameters.put("EMPENO_DATE2", this.dateHelp.getLastDateOfMonth(new DecimalFormat("00").format(monthCombo.getSelectedIndex() + 1), yearComboBox.getSelectedItem().toString()));
+                        parameters2.put("EMPENO_DATE2", this.dateHelp.getLastDateOfMonth(new DecimalFormat("00").format(monthCombo.getSelectedIndex() + 1), yearComboBox.getSelectedItem().toString()));
+                        System.out.println("empeno date2: " + this.dateHelp.getLastDateOfMonth(new DecimalFormat("00").format(monthCombo.getSelectedIndex() + 1), yearComboBox.getSelectedItem().toString()));
+                    } catch (ParseException ex) {
+                        Logger.getLogger(EmpenoRescate.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    parameters.put("EMPENO_DATE", this.dateHelp.formatDate(this.date1.getDate()));
+                    parameters.put("EMPENO_DATE2", this.dateHelp.formatDate(this.date2.getDate()));
+                    parameters2.put("EMPENO_DATE", this.dateHelp.formatDate(this.date1.getDate()));
+                    parameters2.put("EMPENO_DATE2", this.dateHelp.formatDate(this.date2.getDate()));
+                }
+                
+                if ((new Config()).getProp("branch").equalsIgnoreCase("Tangos")) {
+                    parameters.put("AMOUNT_DIVISION", 50000.00);
+                    parameters2.put("AMOUNT_DIVISION", 50000.00);
+                    parameters.put("BRACKET1", 100.00);
+                    parameters.put("BRACKET2", 5000.00);
+                    parameters.put("BRACKET3", 10000.00);
+                } else {
+                    parameters.put("AMOUNT_DIVISION", 10000.00);
+                    parameters2.put("AMOUNT_DIVISION", 10000.00);
+                    parameters.put("BRACKET1", 100.00);
+                    parameters.put("BRACKET2", 1000.00);
+                    parameters.put("BRACKET3", 5000.00);
+                }
+                
+                pr.setReport_name("Empeno Report");
+                pr.saveReport(filePath, con.getProp("temp_folder").concat("empreport1.pdf"), setUpParameters());
+                pr.saveReport(filePath2, con.getProp("temp_folder").concat("empreport2.pdf"), setUpParameters());
+//                saveReport(filePath, getFquery(), con.getProp("temp_folder").concat("empreport1.pdf"), "Empeno Report1");
+//                saveReport(filePath2, getFquery(), con.getProp("temp_folder").concat("empreport2.pdf"), "Empeno Report2");
 
                 PDFMergerUtility pdm = new PDFMergerUtility();
                 pdm.setDestinationFileName(con.getProp("temp_folder").concat("empenocombined.pdf"));
@@ -949,21 +1017,27 @@ Color alternate = new Color(239,246,250);
                 }
             } else {   //SAVE RESCATE
                 String filePath = "/Reports/rescate.jrxml";
-                saveReport(filePath, getFquery(), fileName, "Rescate Report");
+                
                 Map<Object, Object> parameters = new HashMap<>();
                 parameters.put("DATE", this.dateHelp.formatDate(this.dateCombo.getDate()));
                 if ((new Config()).getProp("branch").equalsIgnoreCase("Tangos")) {
                     parameters.put("AMOUNT_DIVISION", 50000.00);
-                    parameters.put("BRACKET1", 100);
-                    parameters.put("BRACKET2", 5000);
-                    parameters.put("BRACKET3", 10000);
+                    parameters.put("BRACKET1", 100.00);
+                    parameters.put("BRACKET2", 5000.00);
+                    parameters.put("BRACKET3", 10000.00);
                 } else {
                     parameters.put("AMOUNT_DIVISION", 10000.00);
-                    parameters.put("BRACKET1", 100);
-                    parameters.put("BRACKET2", 1000);
-                    parameters.put("BRACKET3", 5000);
+                    parameters.put("BRACKET1", 100.00);
+                    parameters.put("BRACKET2", 1000.00);
+                    parameters.put("BRACKET3", 5000.00);
                 }
+                if (pr.saveReport(filePath, fileName, parameters)) {
+//                    saveReport(filePath, getFquery(), fileName, "Rescate Report");
                 JOptionPane.showMessageDialog(null, "Rescate Report successfully saved!", "Save Rescate", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "There's a problem in saving your Empeno Report. \n Please contact your database administrator about this error.", "Save Rescate", JOptionPane.ERROR_MESSAGE);
+                }
+                
             }
         }
         this.setCursor(Cursor.getDefaultCursor());
@@ -1077,14 +1151,14 @@ Color alternate = new Color(239,246,250);
 
             if ((new Config()).getProp("branch").equalsIgnoreCase("Tangos")) {
                 parameters.put("AMOUNT_DIVISION", 50000.00);
-                parameters.put("BRACKET1", 100);
-                parameters.put("BRACKET2", 5000);
-                parameters.put("BRACKET3", 10000);
+                parameters.put("BRACKET1", 100.00);
+                parameters.put("BRACKET2", 5000.00);
+                parameters.put("BRACKET3", 10000.00);
             } else {
                 parameters.put("AMOUNT_DIVISION", 10000.00);
-                parameters.put("BRACKET1", 100);
-                parameters.put("BRACKET2", 1000);
-                parameters.put("BRACKET3", 5000);
+                parameters.put("BRACKET1", 100.00);
+                parameters.put("BRACKET2", 1000.00);
+                parameters.put("BRACKET3", 5000.00);
             }
             
             this.pr.setReport_name("Rescate Report");
@@ -1092,8 +1166,9 @@ Color alternate = new Color(239,246,250);
             this.pr.printReport("/Reports/rescate.jrxml", parameters);
 //            this.pr.setDestination(this.con.getProp("temp_folder").concat("tempRes2.pdf"));
 //            this.pr.printReport("/Reports/rescate2.jrxml", parameters2);
-            this.setCursor(Cursor.getDefaultCursor());
+            
         } 
+        this.setCursor(Cursor.getDefaultCursor());
     }//GEN-LAST:event_printBtnActionPerformed
 
     private void yearComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yearComboBoxActionPerformed
@@ -1115,6 +1190,16 @@ Color alternate = new Color(239,246,250);
     private void jTabbedPane1HierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_jTabbedPane1HierarchyChanged
         
     }//GEN-LAST:event_jTabbedPane1HierarchyChanged
+
+    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
+        if(dateCombo.getDate() != null) {
+            if (this.jTabbedPane1.getSelectedIndex() == 0) {
+                updateEmpenoTable(" where date = '" + this.dateHelp.formatDate(this.dateCombo.getDate()) + "'" );
+            } else if (this.jTabbedPane1.getSelectedIndex() == 1) {
+                updateRescateTable(" where date = '" + this.dateHelp.formatDate(this.dateCombo.getDate()) + "'  and subasta = 0");
+            }
+        }
+    }//GEN-LAST:event_jTabbedPane1StateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

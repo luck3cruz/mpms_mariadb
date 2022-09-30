@@ -1,0 +1,8 @@
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-09';
+
+Update cashtransactions.running_balance set ending_balance = 0.0 where date = '2022-09-09';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-09';
+
+Update cashtransactions.running_balance set ending_balance = 0.0 where date = '2022-09-09';
+

@@ -47,7 +47,7 @@
         Calendar c = Calendar.getInstance();
         c.setTime(formatter.parse(givenDate));
         c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
-        return year.concat("-").concat(month).concat(Integer.toString(c.getActualMaximum(Calendar.DAY_OF_MONTH)));
+        return year.concat("-").concat(month+"-").concat(Integer.toString(c.getActualMaximum(Calendar.DAY_OF_MONTH)));
     }
    
    public String getMonthDifference(Date currentDate, Date maturityDate) {

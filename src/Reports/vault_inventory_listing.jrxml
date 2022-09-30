@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 4.5.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.1435888100000016"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MariaDB"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="BRANCH_PARAM" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select branch, a.pap_num AS 'Pap. No.', client_name AS 'Client Name', remarks AS 'Remarks', item_description AS 'Item Description', transaction_date AS 'Transaction Date', b.principal AS 'Principal', classification as 'Classification' FROM merlininventorydatabase.client_info a INNER JOIN merlininventorydatabase.empeno b ON a.item_code_a = b.pap_num WHERE a.branch = $P{BRANCH_PARAM} and a.status = 'Open' and (new_pap_num = 'null') order by classification asc, transaction_date desc]]>
@@ -249,13 +252,13 @@
 				</textElement>
 				<textFieldExpression><![CDATA[new StringBuilder(new SimpleDateFormat("MM/dd/yyyy").format($F{Transaction Date}).toUpperCase())]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="#,##0.00;(#,##0.00-)">
 				<reportElement x="428" y="0" width="58" height="32"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Roboto Condensed" size="8"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{Principal})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{Principal}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="0" width="22" height="32"/>
@@ -334,10 +337,10 @@
 			<textField pattern="#,##0.00">
 				<reportElement x="489" y="0" width="80" height="38" forecolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto Condensed" size="9" isBold="true"/>
+					<font fontName="Roboto Condensed" size="9"/>
 					<paragraph leftIndent="5" rightIndent="15"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{TOTAL_EMP})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{TOTAL_EMP}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="398" y="73" width="168" height="20"/>

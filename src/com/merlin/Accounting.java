@@ -38,6 +38,7 @@ public class Accounting {
   private final String finalUsername = this.con.getProp("username");
   
   private final String finalPassword = this.con.getProp("password");
+  private DatabaseUpdater dbu = new DatabaseUpdater();
   
   public String computeRemaining() throws SQLException {
     String cash_on_hand = "";
@@ -77,7 +78,9 @@ public class Accounting {
   public void updateBeginningBalance() throws SQLException {
     Connection connect = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
     Statement state = connect.createStatement();
-    state.executeUpdate("Update cashtransactions.running_balance set beginning_balance = " + getBeginning() + " where date = '" + getCurrentDate() + "'");
+    String uquery = "Update cashtransactions.running_balance set beginning_balance = " + getBeginning() + " where date = '" + getCurrentDate() + "'";
+    state.executeUpdate(uquery);
+    dbu.editFile(uquery, dbu.getCurDateBackUpFilename());
     connect.close();
     state.close();
   }
@@ -85,7 +88,9 @@ public class Accounting {
   public void updateEndingBalance() throws SQLException {
     Connection connect = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
     Statement state = connect.createStatement();
-    state.executeUpdate("Update cashtransactions.running_balance set ending_balance = " + getEnding() + " where date = '" + getCurrentDate() + "'");
+    String uquery = "Update cashtransactions.running_balance set ending_balance = " + getEnding() + " where date = '" + getCurrentDate() + "'";
+    state.executeUpdate(uquery);
+    dbu.editFile(uquery, dbu.getCurDateBackUpFilename());
     connect.close();
     state.close();
   }
@@ -106,7 +111,9 @@ public class Accounting {
       new_end = rset.getDouble("beginning_balance") - rset.getDouble("total_cash_outflow") + rset.getDouble("total_cash_inflow") + shov; 
     Connection connect2 = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
     Statement state2 = connect2.createStatement();
-    state2.executeUpdate("Update cashtransactions.running_balance set ending_balance = " + new_end + " where date = '" + getCurrentDate() + "'");
+    String uquery = "Update cashtransactions.running_balance set ending_balance = " + new_end + " where date = '" + getCurrentDate() + "'";
+    state2.executeUpdate(uquery);
+    dbu.editFile(uquery, dbu.getCurDateBackUpFilename());
     state2.close();
     connect2.close();
     state.close();
@@ -118,7 +125,9 @@ public class Accounting {
   public void updateCashInFlow() throws SQLException {
     Connection connect = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
     Statement state = connect.createStatement();
-    state.executeUpdate("Update cashtransactions.running_balance set total_cash_inflow = " + this.decHelp.FormatNumber(getCash_in()).replace(",", "") + " where date = '" + getCurrentDate() + "'");
+    String uquery = "Update cashtransactions.running_balance set total_cash_inflow = " + this.decHelp.FormatNumber(getCash_in()).replace(",", "") + " where date = '" + getCurrentDate() + "'";
+    state.executeUpdate(uquery);
+    dbu.editFile(uquery, dbu.getCurDateBackUpFilename());
     connect.close();
     state.close();
     updateFinalEndingBalance();
@@ -127,7 +136,9 @@ public class Accounting {
   public void updateCashOutFlow() throws SQLException {
     Connection connect = DriverManager.getConnection(this.driver, this.finalUsername, this.finalPassword);
     Statement state = connect.createStatement();
-    state.executeUpdate("Update cashtransactions.running_balance set total_cash_outflow = " + this.decHelp.FormatNumber(getCash_out()).replace(",", "") + " where date = '" + getCurrentDate() + "'");
+    String uquery = "Update cashtransactions.running_balance set total_cash_outflow = " + this.decHelp.FormatNumber(getCash_out()).replace(",", "") + " where date = '" + getCurrentDate() + "'";
+    state.executeUpdate(uquery);
+    dbu.editFile(uquery, dbu.getCurDateBackUpFilename());
     connect.close();
     state.close();
     updateFinalEndingBalance();

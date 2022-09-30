@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 
 
 
@@ -124,6 +127,18 @@ public class NewPledge extends javax.swing.JPanel {
      this.maturityDatePicker.setDate(this.dateHelp.oneMonth(cal));
      this.expiryDatePicker.setDate(this.dateHelp.threeMonths(cal));
      this.tempContactNo.setText("");
+    }
+    
+    private Double extractAmount(JTextField textfld) {
+        return Double.parseDouble(textfld.getText().replace(",", ""));
+    }
+    
+    private Double extractValue(JSlider slider) {
+        return Double.valueOf(slider.getValue());
+    } 
+    
+    private Integer extractInt(JSpinner spinner) {
+        return Integer.parseInt(spinner.getValue().toString());
     }
 
     /**
@@ -1061,21 +1076,14 @@ public class NewPledge extends javax.swing.JPanel {
     }//GEN-LAST:event_tempItemDescKeyPressed
 
     private void tempPrincipalFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tempPrincipalFocusLost
-        this.tempPrincipal.setText(this.decHelp.FormatNumber(Double.parseDouble(this.tempPrincipal.getText().replace(",", ""))));
-        if (Double.parseDouble(this.tempPrincipal.getText().replace(",", "")) > 0.0D && Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")) < 0.0D) {
+        this.tempPrincipal.setText(this.decHelp.FormatNumber(extractAmount(tempPrincipal)));
+        if ((extractAmount(tempPrincipal)) > 0.0D && (extractAmount(tempServiceCharge)) < 0.0D) {
             this.tempServiceCharge.setText("5.00");
         }
         this.insuranceFee.setText(this.calculate.computeInsurance(Double.parseDouble
             (this.tempPrincipal.getText().replace(",", ""))));
-        this.tempInterest.setText(this.calculate.computeAdvanceInterest
-            (Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), 
-                Double.valueOf(this.aiRateSlider.getValue())));
-        this.tempNetProceeds.setText(this.calculate.computeNetProceeds
-            (Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), 
-                Double.valueOf(this.aiRateSlider.getValue()), 
-                Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")), 
-                Double.parseDouble(this.tempOtherCharges.getText().replace(",", "")), 
-                Double.parseDouble(this.insuranceFee.getText().replace(",", ""))));
+        this.tempInterest.setText(this.calculate.computeAdvanceInterest((extractAmount(tempPrincipal)), extractValue(aiRateSlider)));
+        this.tempNetProceeds.setText(decHelp.FormatNumber(calculate.computeNetProceeds(extractAmount(tempPrincipal), extractAmount(tempInterest), extractAmount(tempServiceCharge), extractAmount(tempOtherCharges), extractAmount(insuranceFee), 0.00)));
     }//GEN-LAST:event_tempPrincipalFocusLost
 
     private void tempPrincipalFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tempPrincipalFocusGained
@@ -1088,11 +1096,9 @@ public class NewPledge extends javax.swing.JPanel {
                 this.tempServiceCharge.requestFocusInWindow();
                 this.tempServiceCharge.selectAll();
 
-            this.tempPrincipal.setText(this.decHelp.FormatNumber(Double.parseDouble(this.tempPrincipal.getText().replace(",", ""))));
-            this.tempInterest.setText(this.calculate.computeAdvanceInterest(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), 
-                    Double.valueOf(this.aiRateSlider.getValue())));
-            this.tempNetProceeds.setText(this.calculate.computeNetProceeds(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), 
-                    Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")), Double.parseDouble(this.insuranceFee.getText().replace(",", "")), 0.0D));
+            this.tempPrincipal.setText(this.decHelp.FormatNumber(extractAmount(tempPrincipal)));
+            this.tempInterest.setText(this.calculate.computeAdvanceInterest(extractAmount(tempPrincipal), extractValue(aiRateSlider)));
+            this.tempNetProceeds.setText(decHelp.FormatNumber(calculate.computeNetProceeds(extractAmount(tempPrincipal), extractAmount(tempInterest), extractAmount(tempServiceCharge), extractAmount(tempOtherCharges), extractAmount(insuranceFee), 0.00)));
         } 
     }//GEN-LAST:event_tempPrincipalKeyPressed
 
@@ -1150,25 +1156,31 @@ public class NewPledge extends javax.swing.JPanel {
     }//GEN-LAST:event_tempOtherChargesKeyPressed
 
     private void tempInterestFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tempInterestFocusLost
-        this.tempInterest.setText(this.decHelp.FormatNumber(Double.parseDouble(this.tempInterest.getText().replace(",", ""))));
-/* 1057 */     this.aiRateSlider.setValue(Integer.parseInt(this.calculate.computeAdvanceInterestRate(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), Double.parseDouble(this.tempInterest.getText().replace(",", "")))));
-/* 1058 */     this.tempNetProceeds.setText(this.calculate.computeNetProceeds(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")), Double.parseDouble(this.tempOtherCharges.getText().replace(",", "")), Double.parseDouble(this.insuranceFee.getText().replace(",", ""))));
+        this.tempInterest.setText(this.decHelp.FormatNumber(extractAmount(tempInterest)));
+        this.aiRateSlider.setValue(this.calculate.computeRoundedAdvIntRate(extractAmount(tempPrincipal), extractAmount(tempInterest)));
+        if (calculate.isAiRateRounded()) {
+            aiLable.setText("≈" + Integer.toString(aiRateSlider.getValue()).concat("%"));
+        } else {
+            aiLable.setText(Integer.toString(aiRateSlider.getValue()).concat("%"));
+        }
+//        this.aiRateSlider.setValue(Integer.parseInt(this.calculate.computeAdvanceInterestRate(extractAmount(tempPrincipal)), extractAmount(tempInterest))));
+        this.tempNetProceeds.setText(decHelp.FormatNumber(calculate.computeNetProceeds(extractAmount(tempPrincipal), extractAmount(tempInterest), extractAmount(tempServiceCharge), extractAmount(tempOtherCharges), extractAmount(insuranceFee), 0.00)));
     }//GEN-LAST:event_tempInterestFocusLost
 
     private void tempServiceChargeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tempServiceChargeFocusLost
-        this.tempServiceCharge.setText(this.decHelp.FormatNumber(Double.parseDouble(this.tempServiceCharge.getText().replace(",", ""))));
-/* 1063 */     this.tempNetProceeds.setText(this.calculate.computeNetProceeds(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")), Double.parseDouble(this.tempOtherCharges.getText().replace(",", "")), Double.parseDouble(this.insuranceFee.getText().replace(",", ""))));
+        this.tempServiceCharge.setText(this.decHelp.FormatNumber(extractAmount(tempServiceCharge)));
+        this.tempNetProceeds.setText(decHelp.FormatNumber(calculate.computeNetProceeds(extractAmount(tempPrincipal), extractAmount(tempInterest), extractAmount(tempServiceCharge), extractAmount(tempOtherCharges), extractAmount(insuranceFee), 0.00)));
     }//GEN-LAST:event_tempServiceChargeFocusLost
 
     private void insuranceFeeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_insuranceFeeFocusLost
-        this.insuranceFee.setText(this.decHelp.FormatNumber(Double.parseDouble(this.insuranceFee.getText().replace(",", ""))));
-/* 1068 */     this.tempNetProceeds.setText(this.calculate.computeNetProceeds(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")), Double.parseDouble(this.tempOtherCharges.getText().replace(",", "")), Double.parseDouble(this.insuranceFee.getText().replace(",", ""))));
+        this.insuranceFee.setText(this.decHelp.FormatNumber(extractAmount(insuranceFee)));
+        this.tempNetProceeds.setText(decHelp.FormatNumber(calculate.computeNetProceeds(extractAmount(tempPrincipal), extractAmount(tempInterest), extractAmount(tempServiceCharge), extractAmount(tempOtherCharges), extractAmount(insuranceFee), 0.00)));
    
     }//GEN-LAST:event_insuranceFeeFocusLost
 
     private void tempOtherChargesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tempOtherChargesFocusLost
-        this.tempOtherCharges.setText(this.decHelp.FormatNumber(Double.parseDouble(this.tempOtherCharges.getText().replace(",", ""))));
-/* 1073 */     this.tempNetProceeds.setText(this.calculate.computeNetProceeds(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), Double.valueOf(this.aiRateSlider.getValue()), Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")), Double.parseDouble(this.tempOtherCharges.getText().replace(",", "")), Double.parseDouble(this.insuranceFee.getText().replace(",", ""))));
+        this.tempOtherCharges.setText(this.decHelp.FormatNumber(extractAmount(tempOtherCharges)));
+        this.tempNetProceeds.setText(decHelp.FormatNumber(calculate.computeNetProceeds(extractAmount(tempPrincipal), extractAmount(tempInterest), extractAmount(tempServiceCharge), extractAmount(tempOtherCharges), extractAmount(insuranceFee), 0.00)));
    
     }//GEN-LAST:event_tempOtherChargesFocusLost
 
@@ -1209,14 +1221,14 @@ public class NewPledge extends javax.swing.JPanel {
         getNewLoan().setNew_pap_num(null);
         getNewLoan().setStatus("Open");
         getNewLoan().setRemarks(this.tempRemarks.getText());
-        getNewLoan().setPrincipal(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")));
-        getNewLoan().setAdvance_interest(Double.parseDouble(this.tempInterest.getText().replace(",", "")));
-        getNewLoan().setAdvance_interest_rate(Double.valueOf(this.aiRateSlider.getValue()));
+        getNewLoan().setPrincipal(extractAmount(tempPrincipal));
+        getNewLoan().setAdvance_interest(extractAmount(tempInterest));
+        getNewLoan().setAdvance_interest_rate(extractValue(aiRateSlider));
         getNewLoan().setInterest(0.0D);
         getNewLoan().setInterest_rate(0.0D);
-        getNewLoan().setInsurance(Double.parseDouble(this.insuranceFee.getText().replace(",", "")));
-        getNewLoan().setService_charge(Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")));
-        getNewLoan().setOther_charges(Double.parseDouble(this.tempOtherCharges.getText().replace(",", "")));
+        getNewLoan().setInsurance(extractAmount(insuranceFee));
+        getNewLoan().setService_charge(extractAmount(tempServiceCharge));
+        getNewLoan().setOther_charges(extractAmount(tempOtherCharges));
         getNewLoan().setNet_proceeds(Double.parseDouble(this.tempNetProceeds.getText().replace(",", "")));
         ViewNewAddedItem showNewItemDialogue = new ViewNewAddedItem(null, true, getNewLoan());
         showNewItemDialogue.setVisible(true);
@@ -1298,13 +1310,9 @@ public class NewPledge extends javax.swing.JPanel {
 
     private void aiRateSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_aiRateSliderStateChanged
         aiLable.setText(Integer.toString(aiRateSlider.getValue()).concat("%"));
-        this.tempInterest.setText(this.calculate.computeAdvanceInterest(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), 
-                Double.valueOf(this.aiRateSlider.getValue())));
-        this.tempNetProceeds.setText(this.calculate.computeNetProceeds(Double.parseDouble(this.tempPrincipal.getText().replace(",", "")), 
-                Double.valueOf(this.aiRateSlider.getValue()), 
-                Double.parseDouble(this.tempServiceCharge.getText().replace(",", "")), 
-                Double.parseDouble(this.tempOtherCharges.getText().replace(",", "")), 
-                Double.parseDouble(this.insuranceFee.getText().replace(",", ""))));
+        this.tempInterest.setText(this.calculate.computeAdvanceInterest(extractAmount(tempPrincipal), 
+                extractValue(aiRateSlider)));
+        this.tempNetProceeds.setText(decHelp.FormatNumber(calculate.computeNetProceeds(extractAmount(tempPrincipal), extractAmount(tempInterest), extractAmount(tempServiceCharge), extractAmount(tempOtherCharges), extractAmount(insuranceFee), 0.00)));
     }//GEN-LAST:event_aiRateSliderStateChanged
 
     private void tempClientNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tempClientNameActionPerformed

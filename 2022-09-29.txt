@@ -1,0 +1,258 @@
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 0.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 0.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update merlininventorydatabase.client_info set client_no = '76' where item_code_a IN ('18043CB', '17857CB', '17398CB', '15779CB', '15084CB', '14376CB', '13565CB', '13335CB', '13129CB', '11794CB', '11563CB', '9912CB', '7319CB', '6195CB', '5282CB', '5064CB', '4854CB', '4620CB', '4399CB', '4178CB', '3965CB', '3940CB', '3742CB', '3545CB', '3363CB', '16918CB');
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update merlininventorydatabase.client_info set client_no = '76' where item_code_a IN ('18043CB', '17857CB', '17398CB', '15779CB', '15084CB', '14376CB', '13565CB', '13335CB', '13129CB', '11794CB', '11563CB', '9912CB', '7319CB', '6195CB', '5282CB', '5064CB', '4854CB', '4620CB', '4399CB', '4178CB', '3965CB', '3940CB', '3742CB', '3545CB', '3363CB', '16918CB');
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update merlininventorydatabase.client_info set client_no = '50' where item_code_a IN ('23347CB', '23319CB', '23240CB', '23210CB', '23133CB', '23105CB', '23074CB', '22805CB', '22616CB', '22419CB', '22373CB', '22157CB', '21983CB');
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update merlininventorydatabase.client_info set client_no = '50' where item_code_a IN ('23347CB', '23319CB', '23240CB', '23210CB', '23133CB', '23105CB', '23074CB', '22805CB', '22616CB', '22419CB', '22373CB', '22157CB', '21983CB');
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-29';
+
+Update cashtransactions.running_balance set ending_balance = 6834.0 where date = '2022-09-29';
+
+Update merlininventorydatabase.client_info set client_no = '76' where item_code_a IN ('23456CB', '23453CB', '23199CB', '23194CB', '23190CB', '23186CB', '23175CB', '23158CB', '23152CB', '18783CB', '18774CB', '18766CB', '18758CB', '18720CB', '18711CB', '18701CB', '18684CB', '18672CB', '18658CB', '18643CB', '18599CB', '18043CB', '17857CB', '17398CB', '15779CB', '15084CB', '14376CB', '13565CB', '13335CB', '13129CB', '11794CB', '11563CB', '9912CB', '7319CB', '6195CB', '5282CB', '5064CB', '4854CB', '4620CB', '4399CB', '4178CB', '3965CB', '3940CB', '3742CB', '3545CB', '3363CB', '16918CB');
+

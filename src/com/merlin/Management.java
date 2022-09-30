@@ -98,7 +98,7 @@ public class Management extends javax.swing.JPanel {
     private final String driver = "jdbc:mariadb://" + this.con.getProp("IP") + ":" + this.con.getProp("port") + "/merlininventorydatabase";
     private final String username = this.con.getProp("username");
     private final String password = this.con.getProp("password");
-    
+    private DatabaseUpdater dbu = new DatabaseUpdater();
     private boolean editMode = false;
     private DefaultTableModel defTable;
     private String oldPW = "";

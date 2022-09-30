@@ -7,14 +7,8 @@ package com.merlin;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -35,18 +29,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 /**
  *
@@ -73,6 +55,9 @@ public class Expired extends javax.swing.JPanel {
     private final String subastaRepName = this.con.getProp("subastaRepName");
     private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
     private String whereExpiry = "";
+    private DatabaseUpdater dbu = new DatabaseUpdater();
+    private ReportPrinter pr = new ReportPrinter();
+    
     
     public void updateCombo(JComboBox<String> combo) {
         try {
@@ -109,6 +94,7 @@ public class Expired extends javax.swing.JPanel {
             Connection connectUpdate = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
             Statement queryUpdate = connectUpdate.createStatement();
             queryUpdate.executeUpdate(updateStatusExp);
+            dbu.editFile(updateStatusExp, dbu.getCurDateBackUpFilename());
 //            System.out.println(presentDate + " successful status updates");
 //            System.out.println(updateStatusExp);
         } catch (SQLException ex) {
@@ -185,7 +171,10 @@ public class Expired extends javax.swing.JPanel {
 //        new TableHelper().autoResizeColWidth(expiredLoanListingTable, (DefaultTableModel) expiredLoanListingTable.getModel());
     }
     
-
+     /**
+     * 
+     * OBSOLETE CODE: INCORPORATED SAVEREPORT IN REPORTPRINTER CLASS
+     * 
     public boolean saveSubastaReport(String filePath, String destination, String report, Date date, String branch, Date disp_date) {
                 boolean saveSuccessful = false;
                 OutputStream output = null;
@@ -291,6 +280,8 @@ public class Expired extends javax.swing.JPanel {
             }
         }
     }
+    
+    **/
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -540,7 +531,13 @@ public class Expired extends javax.swing.JPanel {
                         return;
                     } 
                 } 
-                if (saveSubastaReport("/Reports/subasta.jrxml", fileName, "Expired Loan Listing (Subasta Report)", (dateHelp.lessFourMonths(this.toDateExpLoan.getDate())), this.branchExpLoan.getSelectedItem().toString(), this.toDateExpLoan.getDate()) == true) {
+                Map<String, Object> param = new HashMap<>() {};
+                param.put("END_DATE", (dateHelp.lessFourMonths(this.toDateExpLoan.getDate())));
+                param.put("BRANCH_PARAM", this.branchExpLoan.getSelectedItem().toString());
+                param.put("DISPLAY_DATE", this.toDateExpLoan.getDate());
+                pr.setReport_name("Subasta Report");
+                if (pr.saveReport("/Reports/subasta.jrxml", fileName, param)) {
+//                if (saveSubastaReport("/Reports/subasta.jrxml", fileName, "Expired Loan Listing (Subasta Report)", (dateHelp.lessFourMonths(this.toDateExpLoan.getDate())), this.branchExpLoan.getSelectedItem().toString(), this.toDateExpLoan.getDate()) == true) {
                 JOptionPane.showMessageDialog(null, "Expired Loan Listing (Subasta Report) successfully Saved!", "Expired Loan Listing (Subasta Report)", 1);
             } else {
                 JOptionPane.showMessageDialog(null, "An error occured while saving your Expired Loan Listing (Subasta Report)", "Expired Loan Listing (Subasta Report)", 0);
@@ -554,7 +551,14 @@ public class Expired extends javax.swing.JPanel {
 
     private void printBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printBtnActionPerformed
         if (this.expiredLoanListingTable.getRowCount() > 0) {
-            printSubastaReport("/Reports/subasta.jrxml", (dateHelp.lessFourMonths(this.toDateExpLoan.getDate())), this.branchExpLoan.getSelectedItem().toString(), this.toDateExpLoan.getDate());
+            Map<String, Object> param = new HashMap<>() {};
+                    param.put("END_DATE", (dateHelp.lessFourMonths(this.toDateExpLoan.getDate())));
+                    param.put("BRANCH_PARAM", this.branchExpLoan.getSelectedItem().toString());
+                    param.put("DISPLAY_DATE", this.toDateExpLoan.getDate());
+                    pr.setReport_name("Subasta Report");
+                    pr.printReport("/Reports/subasta.jrxml", param);
+            
+//            printSubastaReport("/Reports/subasta.jrxml", (dateHelp.lessFourMonths(this.toDateExpLoan.getDate())), this.branchExpLoan.getSelectedItem().toString(), this.toDateExpLoan.getDate());
         } else {
             JOptionPane.showMessageDialog(null, "No file to print. Please generate a report first.", "Expired Loan", 0);
         } 

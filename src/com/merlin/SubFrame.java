@@ -8,6 +8,11 @@ package com.merlin;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,6 +28,14 @@ public class SubFrame extends javax.swing.JPanel {
      * Creates new form SubFrame
      */
     public SubFrame() {
+        try {
+            this.robotoCondensedBold = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/font/RobotoCondensed-Bold.ttf"));
+            this.robotoBold = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/font/Roboto-Bold.ttf"));
+        } catch (FontFormatException ex) {
+            Logger.getLogger(SubFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SubFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         newLoanActivated = false;
         initComponents();
     }
@@ -34,6 +47,9 @@ public class SubFrame extends javax.swing.JPanel {
         
     private boolean newLoanActivated;
 //    private CardLayout cl = (CardLayout)this.leftPanel.getLayout();
+    Font robotoCondensedBold;
+    Font robotoBold;
+
     
     
     
@@ -59,11 +75,11 @@ public class SubFrame extends javax.swing.JPanel {
     public void hideShow (JPanel menuShowHide, boolean dashboard, JLabel button) {
         if (dashboard == true) {
             menuShowHide.setPreferredSize(new Dimension(50, menuShowHide.getHeight()));
-            changeIconImage(button, "/com.merlin/forward.png");
+            changeIconImage(button, "/images/forward.png");
             
         } else {
             menuShowHide.setPreferredSize(new Dimension(210, menuShowHide.getHeight()));
-            changeIconImage(button, "/com.merlin/back.png");
+            changeIconImage(button, "/images/back.png");
         }
         
     }
@@ -85,7 +101,7 @@ public class SubFrame extends javax.swing.JPanel {
             cl.show(this.middlePanel, "redemption_card");
             break;
           case 4:
-            this.search.updateCombos();
+//            this.search.updateCombos();
             this.search.requestFocusOnSearchField();
             cl.show(this.middlePanel, "search_card");
             break;
@@ -98,8 +114,11 @@ public class SubFrame extends javax.swing.JPanel {
             cl.show(this.middlePanel, "vault_inventory_card");
             break;
           case 7:
-            this.repossessedPanel.updateCombos();
-            this.repossessedPanel.updateStatusCombo();
+              if (!repossessedPanel.isCombosUpdated()) {
+                  this.repossessedPanel.updateCombos();
+                  this.repossessedPanel.updateStatusCombo();
+              }
+            
             cl.show(this.middlePanel, "repossessed_card"); 
                      break;
           case 8:
@@ -277,10 +296,22 @@ public class SubFrame extends javax.swing.JPanel {
         middlePanel.setMinimumSize(new java.awt.Dimension(840, 768));
         middlePanel.setPreferredSize(new java.awt.Dimension(840, 768));
         middlePanel.setLayout(new java.awt.CardLayout());
+
+        knowYourClient.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                knowYourClientComponentHidden(evt);
+            }
+        });
         middlePanel.add(knowYourClient, "kyc_card");
         middlePanel.add(newPledge, "new_pledge_card");
         middlePanel.add(renewal, "renewal_card");
         middlePanel.add(redemption, "redemption_card");
+
+        search.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                searchComponentHidden(evt);
+            }
+        });
         middlePanel.add(search, "search_card");
         middlePanel.add(expired, "expired_listing_card");
         middlePanel.add(vaultInvPanel, "vault_inventory_card");
@@ -295,6 +326,8 @@ public class SubFrame extends javax.swing.JPanel {
         submenuPanel.setMinimumSize(new java.awt.Dimension(210, 768));
         submenuPanel.setPreferredSize(new java.awt.Dimension(210, 768));
         submenuPanel.setLayout(new java.awt.BorderLayout());
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         jPanel5.setLayout(new java.awt.BorderLayout());
 
@@ -600,7 +633,7 @@ public class SubFrame extends javax.swing.JPanel {
         newPledgePanel.setBackground(new java.awt.Color(239, 246, 250));
         newPledgePanel.setLayout(new java.awt.BorderLayout());
 
-        newpledgelabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        newpledgelabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         newpledgelabel.setForeground(new java.awt.Color(51, 51, 51));
         newpledgelabel.setText("NEW PLEDGE LOAN");
         newpledgelabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -620,7 +653,7 @@ public class SubFrame extends javax.swing.JPanel {
         renewalPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         renewalPanel.setLayout(new java.awt.BorderLayout());
 
-        renewallabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        renewallabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         renewallabel.setForeground(new java.awt.Color(51, 51, 51));
         renewallabel.setText("LOAN RENEWAL");
         renewallabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -640,7 +673,7 @@ public class SubFrame extends javax.swing.JPanel {
         redeemPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         redeemPanel.setLayout(new java.awt.BorderLayout());
 
-        redeemlabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        redeemlabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         redeemlabel.setForeground(new java.awt.Color(51, 51, 51));
         redeemlabel.setText("LOAN REDEMPTION");
         redeemlabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -660,7 +693,7 @@ public class SubFrame extends javax.swing.JPanel {
         searchPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         searchPanel.setLayout(new java.awt.BorderLayout());
 
-        searchlabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        searchlabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         searchlabel.setForeground(new java.awt.Color(51, 51, 51));
         searchlabel.setText("CLIENT SEARCH");
         searchlabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -680,7 +713,7 @@ public class SubFrame extends javax.swing.JPanel {
         expiredPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         expiredPanel.setLayout(new java.awt.BorderLayout());
 
-        expiredlabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        expiredlabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         expiredlabel.setForeground(new java.awt.Color(51, 51, 51));
         expiredlabel.setText("EXPIRED LOANS");
         expiredlabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -700,7 +733,7 @@ public class SubFrame extends javax.swing.JPanel {
         vaultPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         vaultPanel.setLayout(new java.awt.BorderLayout());
 
-        vaultlabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        vaultlabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         vaultlabel.setForeground(new java.awt.Color(51, 51, 51));
         vaultlabel.setText("VAULT INVENTORY");
         vaultlabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -720,7 +753,7 @@ public class SubFrame extends javax.swing.JPanel {
         repoPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         repoPanel.setLayout(new java.awt.BorderLayout());
 
-        repolabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        repolabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         repolabel.setForeground(new java.awt.Color(51, 51, 51));
         repolabel.setText("REPOSSESSED / SOLD");
         repolabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -740,7 +773,7 @@ public class SubFrame extends javax.swing.JPanel {
         statPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         statPanel.setLayout(new java.awt.BorderLayout());
 
-        statlabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        statlabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         statlabel.setForeground(new java.awt.Color(51, 51, 51));
         statlabel.setText("STATISTICS");
         statlabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -760,7 +793,7 @@ public class SubFrame extends javax.swing.JPanel {
         empenoPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         empenoPanel.setLayout(new java.awt.BorderLayout());
 
-        empenolabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        empenolabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         empenolabel.setForeground(new java.awt.Color(51, 51, 51));
         empenolabel.setText("EMPENO / RESCATE");
         empenolabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -780,7 +813,7 @@ public class SubFrame extends javax.swing.JPanel {
         settingPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         settingPanel.setLayout(new java.awt.BorderLayout());
 
-        settinglabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        settinglabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         settinglabel.setForeground(new java.awt.Color(51, 51, 51));
         settinglabel.setText("SETTINGS");
         settinglabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -800,7 +833,7 @@ public class SubFrame extends javax.swing.JPanel {
         helpPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         helpPanel.setLayout(new java.awt.BorderLayout());
 
-        helplabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        helplabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         helplabel.setForeground(new java.awt.Color(51, 51, 51));
         helplabel.setText("KNOW YOUR CUSTOMER");
         helplabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -820,7 +853,7 @@ public class SubFrame extends javax.swing.JPanel {
         logoutPanel.setPreferredSize(new java.awt.Dimension(160, 40));
         logoutPanel.setLayout(new java.awt.BorderLayout());
 
-        logoutlabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        logoutlabel.setFont(robotoBold.deriveFont(Font.BOLD, 12f));
         logoutlabel.setForeground(new java.awt.Color(51, 51, 51));
         logoutlabel.setText("LOG OUT");
         logoutlabel.setPreferredSize(new java.awt.Dimension(40, 16));
@@ -837,12 +870,12 @@ public class SubFrame extends javax.swing.JPanel {
         });
         logoutPanel.add(logoutlabel, java.awt.BorderLayout.CENTER);
 
-        jLabel3.setFont(new java.awt.Font("Roboto Condensed", 1, 13)); // NOI18N
+        jLabel3.setFont(robotoCondensedBold.deriveFont(Font.BOLD, 13f));
         jLabel3.setForeground(new java.awt.Color(51, 51, 51));
         jLabel3.setText("MERLIN PAWNSHOP, INC.");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        jLabel4.setFont(new java.awt.Font("Roboto Condensed", 1, 11)); // NOI18N
+        jLabel4.setFont(robotoCondensedBold.deriveFont(Font.BOLD, 11f));
         jLabel4.setForeground(new java.awt.Color(51, 51, 51));
         jLabel4.setText("PAWN MANAGEMENT SYSTEM");
         jLabel4.setVerticalAlignment(javax.swing.SwingConstants.TOP);
@@ -1424,11 +1457,11 @@ public class SubFrame extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel5MouseClicked
 
     private void knowYourClientComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_knowYourClientComponentHidden
-//        if (knowYourClient.isCreateLoan()) {
-//            knowYourClient.setCreateLoan(false);
-//            this.newPledge.fill_constants(this.knowYourClient.getClientName(), knowYourClient.getClientAddress(), knowYourClient.getClientNumber());
-//            newpledgelabelMouseClicked(null);
-//        }
+        if (knowYourClient.isCreateLoan()) {
+            knowYourClient.setCreateLoan(false);
+            this.newPledge.fill_constants(this.knowYourClient.getClientName(), knowYourClient.getClientAddress(), knowYourClient.getClientNumber());
+            newpledgelabelMouseClicked(null);
+        }
     }//GEN-LAST:event_knowYourClientComponentHidden
 
 

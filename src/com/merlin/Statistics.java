@@ -258,7 +258,7 @@ public class Statistics extends javax.swing.JPanel {
         DefaultTableModel defTabMod = (DefaultTableModel) this.monRes.getModel();
         Connection connect = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
         Statement state = connect.createStatement();
-        String query = "select MONTH(date) as 'date', count(principal), sum(principal) as 'total principal', sum(interest) as 'total int.', (sum(principal)+sum(interest)) as 'total' from merlininventorydatabase.rescate where pap_num like '%" + this.sangla.getBranchCode(this.branch.getSelectedItem().toString()) + "' and YEAR(date) = " + this.yearCombo.getSelectedItem().toString() + " group by MONTH(date)";
+        String query = "select MONTH(date) as 'date', count(principal), sum(principal) as 'total principal', sum(interest) as 'total int.', (sum(principal)+sum(interest)) as 'total' from merlininventorydatabase.rescate where pap_num like '%" + this.sangla.getBranchCode(this.branch.getSelectedItem().toString()) + "' and YEAR(date) = " + this.yearCombo.getSelectedItem().toString() + " and subasta = 0 group by MONTH(date)";
         ResultSet rset = state.executeQuery(query);
         while (defTabMod.getRowCount() > 0) {
             defTabMod.removeRow(0);

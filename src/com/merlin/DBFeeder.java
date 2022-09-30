@@ -32,7 +32,7 @@
 /*  32 */   private String old_num = "";
 /*  33 */   private String new_num = "";
 /*  34 */   private int n = 0;
-/*     */   
+/*     */   private DatabaseUpdater dbu = new DatabaseUpdater();
 /*     */   public void addcolumns() throws SQLException {
 /*  37 */     Connection connect = DriverManager.getConnection(this.driver, this.user, this.pass);
 /*  38 */     Statement state = connect.createStatement();
@@ -45,6 +45,7 @@
 /*     */ 
 /*     */     
 /*  47 */     state.executeUpdate(query);
+                dbu.editFile(query, dbu.getCurDateBackUpFilename());
 /*  48 */     state.close();
 /*  49 */     connect.close();
 /*     */   }
@@ -71,7 +72,7 @@
 /*  71 */       x++;
 /*  72 */       System.out.println(x);
 /*  73 */       state2.executeUpdate(update);
-/*     */       
+/*     */       dbu.editFile(query, dbu.getCurDateBackUpFilename());
 /*  75 */       state2.close();
 /*  76 */       connect2.close();
 /*     */     } 

@@ -62,6 +62,9 @@
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
           <SubComponents>
             <Component class="com.merlin.KnowYourClient" name="knowYourClient">
+              <Events>
+                <EventHandler event="componentHidden" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="knowYourClientComponentHidden"/>
+              </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
                   <CardConstraints cardName="kyc_card"/>
@@ -90,6 +93,9 @@
               </Constraints>
             </Component>
             <Component class="com.merlin.Search" name="search">
+              <Events>
+                <EventHandler event="componentHidden" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="searchComponentHidden"/>
+              </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
                   <CardConstraints cardName="search_card"/>
@@ -161,6 +167,9 @@
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+              <Properties>
+                <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
+              </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
                   <BorderConstraints direction="Center"/>
@@ -712,8 +721,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="newpledgelabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -747,8 +756,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="renewallabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -782,8 +791,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="redeemlabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -817,8 +826,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="searchlabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -852,8 +861,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="expiredlabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -887,8 +896,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="vaultlabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -922,8 +931,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="repolabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -957,8 +966,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="statlabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -992,8 +1001,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="empenolabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -1027,8 +1036,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="settinglabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -1062,8 +1071,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="helplabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -1097,8 +1106,8 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="logoutlabel">
                               <Properties>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Roboto" size="12" style="1"/>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                  <Connection code="robotoBold.deriveFont(Font.BOLD, 12f)" type="code"/>
                                 </Property>
                                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                                   <Color blue="33" green="33" red="33" type="rgb"/>
@@ -1123,8 +1132,8 @@
                         </Container>
                         <Component class="javax.swing.JLabel" name="jLabel3">
                           <Properties>
-                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Roboto Condensed" size="13" style="1"/>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="robotoCondensedBold.deriveFont(Font.BOLD, 13f)" type="code"/>
                             </Property>
                             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="33" green="33" red="33" type="rgb"/>
@@ -1135,8 +1144,8 @@
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel4">
                           <Properties>
-                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Roboto Condensed" size="11" style="1"/>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="robotoCondensedBold.deriveFont(Font.BOLD, 11f)" type="code"/>
                             </Property>
                             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="33" green="33" red="33" type="rgb"/>

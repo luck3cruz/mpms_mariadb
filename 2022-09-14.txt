@@ -1,0 +1,114 @@
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 43108.65 where date = '2022-09-14';
+
+Insert into forex.additionals (add_id, add_date, add_branch, add_amount, add_from, add_remarks, add_dest, ref_no, add_by, add_sub, add_type) values ( '2022ADD11374', '2022-09-14 03:35:43', 'Money Changer', 20000.0, 'Lucky Cruz', 'Transfer 20000.0 from (Tangos) Merlin to Money Changer', 'Merlin', '0922TAXTA0034', 'DB Admin', 0.0, 'Transfer Fund');
+
+Insert into forex.daily_transactions (transaction_name, date, amount, remarks) values ( '2022ADD11374', '2022-09-14 03:35:43', 20000.0, 'Transfer 20000.0 from (Tangos) Merlin to Money Changer');
+
+Insert into cashtransactions.transfer (x_id, x_amount, x_branch, x_dest, x_prepared, x_received, x_date, x_no) values ('091422XFRTA03708', 20000.0, 'Merlin', 'Money Changer', 'DB Admin', 'Lucky Cruz', '2022-09-14 03:35:15', '0922TAXTA0034');
+
+Insert into cashtransactions.daily_transactions (transaction_name, date, amount, remarks) values ( '091422XFRTA03708', '2022-09-14 03:35:15', 20000.0, 'Transfer 20000.00 from Merlin to Money Changer');
+
+Insert into cashtransactions.x_breakdown (bd_date, v_no, bd_thou, bd_fhun, bd_thun, bd_hund, bd_fift, bd_twen, bd_ten, bd_five, bd_one, bd_cen, bd_tenc, bd_fivc, bd_total) values ('2022-09-14 15:35:43', '0922TAXTA0034', 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20000.00);
+
+Update cashtransactions.running_balance set total_cash_outflow = 20000.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 20000.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 20000.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 20000.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 20000.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_outflow = 20000.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set total_cash_inflow = 0.00 where date = '2022-09-14';
+
+Update cashtransactions.running_balance set ending_balance = 23108.65 where date = '2022-09-14';
+

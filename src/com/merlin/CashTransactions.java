@@ -225,6 +225,7 @@ public class CashTransactions {
             }
             if (count <= 0) {
                 insert.executeUpdate(alter);
+                dbu.editFile(alter, dbu.getCurDateBackUpFilename());
             }
             connexion.close();
             insert.close();

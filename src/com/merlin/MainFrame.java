@@ -84,7 +84,7 @@ public class MainFrame extends javax.swing.JFrame {
         subFrame = new com.merlin.SubFrame();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("MPI Pawn Management System version 2022_v1.2 (July 2022)");
+        setTitle("MPI Pawn Management System version 2022");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -107,6 +107,9 @@ public class MainFrame extends javax.swing.JFrame {
         subFrame.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
                 subFrameComponentHidden(evt);
+            }
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                subFrameComponentShown(evt);
             }
         });
         mainPanel.add(subFrame, "subframe_card");
@@ -143,6 +146,10 @@ public class MainFrame extends javax.swing.JFrame {
 ///* 143 */       System.out.println("backup successful"); 
 ///* 144 */     this.con.saveProp("last_logout", dateHelp.getDateTime());
     }//GEN-LAST:event_formWindowClosing
+
+    private void subFrameComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_subFrameComponentShown
+        // TODO add your handling code here:
+    }//GEN-LAST:event_subFrameComponentShown
 
     /**
      * @param args the command line arguments

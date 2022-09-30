@@ -2,6 +2,34 @@ package com.merlin;
 
 public class Computation {
 
+    /**
+     * @return the intRateRounded
+     */
+    public boolean isIntRateRounded() {
+        return intRateRounded;
+    }
+
+    /**
+     * @param intRateRounded the intRateRounded to set
+     */
+    public void setIntRateRounded(boolean intRateRounded) {
+        this.intRateRounded = intRateRounded;
+    }
+
+    /**
+     * @return the aiRateRounded
+     */
+    public boolean isAiRateRounded() {
+        return aiRateRounded;
+    }
+
+    /**
+     * @param aiRateRounded the aiRateRounded to set
+     */
+    public void setAiRateRounded(boolean aiRateRounded) {
+        this.aiRateRounded = aiRateRounded;
+    }
+
     private DecimalHelper decimalChanger = new DecimalHelper();
 
     private double principal = 0.0D;
@@ -43,6 +71,8 @@ public class Computation {
     private int numberOfMonths = 0;
 
     private double totalBalance = 0.0D;
+    private boolean intRateRounded = false;
+    private boolean aiRateRounded = false;
 
     public String computeInsurance(double principal) {
         this.insurance = Math.ceil(principal * 0.004D);
@@ -62,6 +92,16 @@ public class Computation {
     public String computeInterest(double principal, double interestRate, int numberOfMonths) {
         this.interest = principal * interestRate / 100.0D * numberOfMonths;
         return this.decimalChanger.FormatNumber(this.interest);
+    }
+    
+    public Integer computeRoundedInterestRate(double principal, double interest, int numberOfMonths) {
+        int newInterestRate = (int) Math.round(interest * 100.0D / principal * numberOfMonths);
+        if ((Math.round(interest * 100.0D / principal * numberOfMonths)) == (interest * 100.0D / principal * numberOfMonths)) {
+            setIntRateRounded(false);
+        } else {
+            setIntRateRounded(true);
+        }
+        return newInterestRate;
     }
 
     public String computeInterestRate(double principal, double interest, int numberOfMonths) {
@@ -88,6 +128,37 @@ public class Computation {
         this.advanceInterestRate = advanceInterest * 100.0D / principal;
         return this.decimalChanger.FormatPercent(this.advanceInterestRate);
     }
+    
+    public Integer computeRoundedAdvIntRate(double principal, double advanceInterest) {
+        int newAdvInttRate = (int) Math.round(advanceInterest * 100.0D / principal);
+        if ((Math.round(advanceInterest * 100.0D / principal)) == (advanceInterest * 100.0D / principal)) {
+            setAiRateRounded(false);
+        } else {
+            setAiRateRounded(true);
+        }
+        return newAdvInttRate;
+    }
+    
+    
+    public Integer computeRoundedAdvIntRateWithNetInc(double principal, double netIncrease, double advanceInterest) {
+        int newAdvInttRate = (int) Math.round(advanceInterest * 100.0D / (principal + netIncrease));
+        if ((Math.round(advanceInterest * 100.0D / principal)) == (advanceInterest * 100.0D / principal)) {
+            setAiRateRounded(false);
+        } else {
+            setAiRateRounded(true);
+        }
+        return newAdvInttRate;
+    }
+    
+    public Integer computeRoundedAdvIntRateWithNetDec(double principal, double netDecrease, double advanceInterest) {
+        int newAdvInttRate = (int) Math.round(advanceInterest * 100.0D / (principal - netDecrease));
+        if ((Math.round(advanceInterest * 100.0D / principal)) == (advanceInterest * 100.0D / principal)) {
+            setAiRateRounded(false);
+        } else {
+            setAiRateRounded(true);
+        }
+        return newAdvInttRate;
+    }
 
     public String computeAdvanceInterestRateWithNetIncrease(double principal, double netIncrease, double advanceInterest) {
         this.advanceInterestRate = Math.ceil(advanceInterest * 100.0D / (principal + netIncrease));
@@ -99,37 +170,64 @@ public class Computation {
         return this.decimalChanger.FormatPercent(this.advanceInterestRate);
     }
 
-    public String computeAmountDue(double principal, double interestRate, int numberOfMonths, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
-        this.totalAmountDue = principal * interestRate / 100.0D * numberOfMonths + principal * advanceInterestRate / 100.0D + serviceCharge + otherCharges + insurance - partials;
+    public String computeAmountDue(double principal, double interest, double advanceInterest, double serviceCharge, double otherCharges, double insurance, double partials) {
+        this.totalAmountDue = interest + advanceInterest + serviceCharge + otherCharges + insurance - partials;
         return this.decimalChanger.FormatNumber(this.totalAmountDue);
     }
+    
+//    public String computeAmountDue(double principal, double interestRate, int numberOfMonths, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
+//        this.totalAmountDue = principal * interestRate / 100.0D * numberOfMonths + principal * advanceInterestRate / 100.0D + serviceCharge + otherCharges + insurance - partials;
+//        return this.decimalChanger.FormatNumber(this.totalAmountDue);
+//    }
 
-    public String computeAmountDueWithNetDecrease(double principal, double interestRate, int numberOfMonths, double netDecrease, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
-        this.totalAmountDue = netDecrease + (principal - netDecrease) * advanceInterestRate / 100.0D + principal * interestRate / 100.0D * numberOfMonths + serviceCharge + otherCharges + insurance - partials;
+    public String computeAmountDueWithNetDecrease(double principal, double interest, double netDecrease, double advanceInterest, double serviceCharge, double otherCharges, double insurance, double partials) {
+        this.totalAmountDue = netDecrease + advanceInterest + interest + serviceCharge + otherCharges + insurance - partials;
         return this.decimalChanger.FormatNumber(this.totalAmountDue);
     }
+    
+//    public String computeAmountDueWithNetDecrease(double principal, double interestRate, int numberOfMonths, double netDecrease, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
+//        this.totalAmountDue = netDecrease + (principal - netDecrease) * advanceInterestRate / 100.0D + principal * interestRate / 100.0D * numberOfMonths + serviceCharge + otherCharges + insurance - partials;
+//        return this.decimalChanger.FormatNumber(this.totalAmountDue);
+//    }
 
     public String computeAmountDue(double interest, double serviceCharge, double otherCharges, double insurance, double partials) {
         this.totalAmountDue = interest + serviceCharge + otherCharges + insurance - partials;
         return this.decimalChanger.FormatNumber(this.totalAmountDue);
     }
 
-    public String computeNetProceeds(double principal, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
-        this.netProceeds = principal - principal * advanceInterestRate / 100.0D - serviceCharge - otherCharges - insurance - partials;
-        return this.decimalChanger.FormatNumber(this.netProceeds);
+    public Double computeNetProceeds(double principal, double advanceInterest, double serviceCharge, double otherCharges, double insurance, double partials) {
+        this.netProceeds = principal - advanceInterest - serviceCharge - otherCharges - insurance - partials;
+        return this.netProceeds;
     }
+    
+//    public String computeNetProceeds(double principal, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
+//        this.netProceeds = principal - principal * advanceInterestRate / 100.0D - serviceCharge - otherCharges - insurance - partials;
+//        return this.decimalChanger.FormatNumber(this.netProceeds);
+//    }
 
-    public String computeNetProceeds(double principal, double advanceInterestRate, double serviceCharge, double insurance, double partials) {
-        this.netProceeds = principal - principal * advanceInterestRate / 100.0D - serviceCharge - insurance - partials;
-        return this.decimalChanger.FormatNumber(this.netProceeds);
-    }
+//    public String computeNetProceeds(double principal, double advanceInterestRate, double serviceCharge, double insurance, double partials) {
+//        this.netProceeds = principal - principal * advanceInterestRate / 100.0D - serviceCharge - insurance - partials;
+//        return this.decimalChanger.FormatNumber(this.netProceeds);
+//    }
+    
+//    public String computeNetProceeds(double principal, double advanceInterest, double serviceCharge, double insurance, double partials) {
+//        this.netProceeds = principal - advanceInterest - serviceCharge - insurance - partials;
+//        return this.decimalChanger.FormatNumber(this.netProceeds);
+//    }
 
-    public String computeNetDueOrProceeds(double principal, double interestRate, int numberOfMonths, double netIncrease, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
-        this.totalAmountDue = principal + principal * interestRate / 100.0D * numberOfMonths + otherCharges + insurance;
-        this.netProceeds = principal + netIncrease - (principal + netIncrease) * advanceInterestRate / 100.0D - serviceCharge - partials;
+    public String computeNetDueOrProceeds(double principal, double interest, double netIncrease, double advanceInterest, double serviceCharge, double otherCharges, double insurance, double partials) {
+        this.totalAmountDue = principal + interest + otherCharges + insurance;
+        this.netProceeds = principal + netIncrease - advanceInterest - serviceCharge - partials;
         this.netDueOrProceeds = this.netProceeds - this.totalAmountDue;
         return this.decimalChanger.FormatNumber(this.netDueOrProceeds);
     }
+    
+//    public String computeNetDueOrProceeds(double principal, double interestRate, int numberOfMonths, double netIncrease, double advanceInterestRate, double serviceCharge, double otherCharges, double insurance, double partials) {
+//        this.totalAmountDue = principal + principal * interestRate / 100.0D * numberOfMonths + otherCharges + insurance;
+//        this.netProceeds = principal + netIncrease - (principal + netIncrease) * advanceInterestRate / 100.0D - serviceCharge - partials;
+//        this.netDueOrProceeds = this.netProceeds - this.totalAmountDue;
+//        return this.decimalChanger.FormatNumber(this.netDueOrProceeds);
+//    }
 
     public String computeNewPrincipal(double principal, double netIncrease, double netDecrease) {
         return this.decimalChanger.FormatNumber(principal + netIncrease - netDecrease);

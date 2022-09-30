@@ -177,7 +177,9 @@ public class Search extends javax.swing.JPanel {
      * Creates new form Renewal
      */
     public Search() {
+        
         initComponents();
+        updateCombos();
     }
     
     Config con = new Config();
@@ -200,6 +202,7 @@ public class Search extends javax.swing.JPanel {
     private String constant3;
     private String constant4;
     private String constant5;
+    private DatabaseUpdater dbu = new DatabaseUpdater();
     
     public void requestFocusOnSearchField() {
         tempSearchName.requestFocusInWindow();
@@ -283,6 +286,7 @@ public class Search extends javax.swing.JPanel {
             Connection connectUpdate = DriverManager.getConnection(this.driver, this.f_user, this.f_pass);
             Statement queryUpdate = connectUpdate.createStatement();
             queryUpdate.executeUpdate(updateStatusExp);
+            dbu.editFile(updateStatusExp, dbu.getCurDateBackUpFilename());
         } catch (SQLException ex) {
             this.con.saveProp("mpis_last_error", String.valueOf(ex));
         } 
@@ -583,7 +587,7 @@ Color alternate = new Color(239,246,250);
 
         branchSearch.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         branchSearch.setForeground(new java.awt.Color(51, 51, 51));
-        branchSearch.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        branchSearch.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item1", "Item2" }));
         branchSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 branchSearchActionPerformed(evt);

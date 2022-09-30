@@ -11,27 +11,100 @@ package com.merlin;
  */
 
 //import com.mysql.jdbc.Statement;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
+import javax.swing.ImageIcon;
+import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
+import javax.imageio.ImageIO;
+import org.imgscalr.Scalr;
 
 /**
  *
  * @author Lucky
  */
 public class Client {
+
+    /**
+     * @return the clientPhotoFound
+     */
+    public boolean isClientPhotoFound() {
+        return clientPhotoFound;
+    }
+
+    /**
+     * @param clientPhotoFound the clientPhotoFound to set
+     */
+    public void setClientPhotoFound(boolean clientPhotoFound) {
+        this.clientPhotoFound = clientPhotoFound;
+    }
+
+    /**
+     * @return the clientIDFound
+     */
+    public boolean isClientIDFound() {
+        return clientIDFound;
+    }
+
+    /**
+     * @param clientIDFound the clientIDFound to set
+     */
+    public void setClientIDFound(boolean clientIDFound) {
+        this.clientIDFound = clientIDFound;
+    }
+
+    /**
+     * @return the photoimgSmall
+     */
+    public ImageIcon getPhotoimgSmall() {
+        return photoimgSmall;
+    }
+
+    /**
+     * @param photoimgSmall the photoimgSmall to set
+     */
+    public void setPhotoimgSmall(ImageIcon photoimgSmall) {
+        this.photoimgSmall = photoimgSmall;
+    }
+
+    /**
+     * @return the idimgSmall
+     */
+    public ImageIcon getIdimgSmall() {
+        return idimgSmall;
+    }
+
+    /**
+     * @param idimgSmall the idimgSmall to set
+     */
+    public void setIdimgSmall(ImageIcon idimgSmall) {
+        this.idimgSmall = idimgSmall;
+    }
+
+    /**
+     * @return the clientImage
+     */
+    public byte[] getClientImage() {
+        return clientImage;
+    }
+
+    /**
+     * @param clientImage the clientImage to set
+     */
+    public void setClientImage(byte[] clientImage) {
+        this.clientImage = clientImage;
+    }
 
 
     /**
@@ -268,6 +341,11 @@ public class Client {
     private String id_presented = "";
     private ImageIcon photoimg = null;
     private ImageIcon idimg = null;
+    private ImageIcon photoimgSmall = null;
+    private ImageIcon idimgSmall = null;
+    private boolean clientPhotoFound = false;
+    private boolean clientIDFound = false;
+    
     
     private String authName1 = "";
     private String authName2 = "";
@@ -282,6 +360,8 @@ public class Client {
     private String blt = "";
     private String cmplxn = "";
     private String ht = "";
+    
+    private byte[] clientImage = null;
     
     
     public void resetClient() {
@@ -313,6 +393,48 @@ public class Client {
         setId_presented("");
         setPhotoimg(null);
         setIdimg(null);
+        setPhotoimgSmall(null);
+        setIdimgSmall(null);
+    }
+    
+    public boolean isLoansFoundForThisClient() throws SQLException {
+        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+        Statement state = connect.createStatement();
+        ResultSet rset = state.executeQuery("select exists (select * from merlininventorydatabase.client_info where client_name = '" + getGiven_name() + "')");
+        int result = 0;
+        while (rset.next()) {
+            result = rset.getInt(1);
+        }
+        rset.close();
+        state.close();
+        connect.close();
+        if (result == 1) {
+            System.out.println("LOANS FOUND");
+            return true;
+        } else {
+            System.out.println("no loans found");
+            return false;
+        }
+    }
+    
+    public boolean isLoansFoundForThisClient(String addedQuery) throws SQLException {
+        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+        Statement state = connect.createStatement();
+        ResultSet rset = state.executeQuery("select exists (select * from merlininventorydatabase.client_info where client_name = '" + getGiven_name() + "' " + addedQuery + ")");
+        int result = 0;
+        while (rset.next()) {
+            result = rset.getInt(1);
+        }
+        rset.close();
+        state.close();
+        connect.close();
+        if (result == 1) {
+            System.out.println("LOANS FOUND");
+            return true;
+        } else {
+            System.out.println("no loans found");
+            return false;
+        }
     }
     
     
@@ -325,7 +447,7 @@ public class Client {
             setAddress(rset.getString(1));
             setContact_no(rset.getString(2));
         }
-        rset.close();
+        rset.close(); 
 //        rset = state.executeQuery("Select * from kyc where ")
         state.close();
         connect.close();
@@ -348,7 +470,7 @@ public class Client {
     public int insertToKYCdatabase2() throws SQLException{
         Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
         
-        String updSt = "REPLACE INTO `merlininventorydatabase`.`kyc` (`fname`, `mname`, `lname`, `suffix`, `gender`, `bdate`, `bplace`, `street`, `brgy`, `town`, `prov`, `employer`, "
+        String updSt = "INSERT INTO `merlininventorydatabase`.`kyc` (`fname`, `mname`, `lname`, `suffix`, `gender`, `bdate`, `bplace`, `street`, `brgy`, `town`, `prov`, `employer`, "
                 + "`soi`, `tin`, `sss`, `gsis`, `risk`, `id_pres`, `face`, `nat_bus`, `idcard`, `spouse`, `nation`, `con_num`, `built`, `height`, `complexion`) "
                 + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         
@@ -372,8 +494,6 @@ public class Client {
         state.setString(16, getGsis());
         state.setString(17, getRisk());
         state.setString(18, getId_presented());
-//        state.setString(19, getPhoto_loc());
-//        state.setString(18, getId_loc());
         state.setString(20, getNature_business());
         state.setString(22, getSps_name());
         state.setString(23, getNationality());
@@ -381,7 +501,6 @@ public class Client {
         state.setString(25, getBlt());
         state.setString(26, getHt());
         state.setString(27, getCmplxn());
-//        System.out.println(getPhoto_loc().concat(" & ").concat(getId_loc()));
         
         try {
             if (!getPhoto_loc().equalsIgnoreCase("")) {
@@ -415,38 +534,99 @@ public class Client {
         return inserted;
     }
     
-    public boolean isClientFoundInKYC(String fn, String ln) throws SQLException{
+    
+    public int updateKYCrecord() throws SQLException{
         Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-        PreparedStatement pst = connect.prepareStatement("Select * from merlininventorydatabase.kyc where fname = ? and lname = ?");
-        pst.setString(1, fn);
-        pst.setString(2, ln);
+        
+        String updSt = "REPLACE INTO `merlininventorydatabase`.`kyc` (`fname`, `mname`, `lname`, `suffix`, `gender`, `bdate`, `bplace`, `street`, `brgy`, `town`, `prov`, `employer`, "
+                + "`soi`, `tin`, `sss`, `gsis`, `risk`, `id_pres`, `nat_bus`, `spouse`, `nation`, `con_num`, `built`, `height`, `complexion`) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        
+        PreparedStatement state = connect.prepareStatement(updSt);
+        
+        state.setString(1, getFirst_name());
+        state.setString(2, getMiddle_name());
+        state.setString(3, getLast_name());
+        state.setString(4, getSuffix());
+        state.setString(5, getGender());
+        state.setDate(6, getBirthday());
+        state.setString(7, getBirthplace());
+        state.setString(8, getStreet());
+        state.setString(9, getBrgy());
+        state.setString(10, getTown());
+        state.setString(11, getProv());
+        state.setString(12, getEmployer());
+        state.setString(13, getSoi());
+        state.setString(14, getTin());
+        state.setString(15, getSss());
+        state.setString(16, getGsis());
+        state.setString(17, getRisk());
+        state.setString(18, getId_presented());
+        state.setString(19, getNature_business());
+        state.setString(20, getSps_name());
+        state.setString(21, getNationality());
+        state.setString(22, getContact_no());
+        state.setString(23, getBlt());
+        state.setString(24, getHt());
+        state.setString(25, getCmplxn());
+        
+        
+        int inserted = state.executeUpdate();
+        state.close();
+        connect.close();
+        return inserted;
+    }
+    
+    public boolean isClientFoundInCLientInfo(String givenName) throws SQLException{
+        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+        PreparedStatement pst = connect.prepareStatement("Select * from merlininventorydatabase.client_info where client_name = ?");
+        pst.setString(1, givenName);
         ResultSet rs = pst.executeQuery();
         boolean x;
         if (rs.next()) {
-            setIdkey(rs.getInt("kyc_id"));
-            setMiddle_name(rs.getString("mname"));
-            setSuffix(rs.getString("suffix"));
-            setGender(rs.getString("gender"));
-            setBirthday(rs.getDate("bdate"));
-            setBirthplace(rs.getString("bplace"));
-            setSps_name(rs.getString("spouse"));
-            setStreet(rs.getString("street"));
-            setBrgy(rs.getString("brgy").replace("Ã±", "ñ" ));
-            setTown(rs.getString("town").replace("Ã±", "ñ" ));
-            setProv(rs.getString("prov").replace("Ã±", "ñ" ));
-            setEmployer(rs.getString("employer"));
-            setNature_business(rs.getString("nat_bus"));
-            setSoi(rs.getString("soi"));
-            setTin(rs.getString("tin"));
-            setSss(rs.getString("sss"));
-            setGsis(rs.getString("gsis"));
-            setRisk(rs.getString("risk"));
-            setId_presented(rs.getString("id_pres"));
-            setNationality(rs.getString("nation"));
-            setContact_no(rs.getString("con_num"));
-            setHt(rs.getString("height"));
-            setBlt(rs.getString("built"));
-            setCmplxn(rs.getString("complexion"));
+            x = true;
+        } else {
+            x = false;
+        }
+        rs.close();
+        pst.close();
+        connect.close();
+        return x;
+    }
+    
+    public boolean isClientFoundInKYC(String fn, String ln, String suf) throws SQLException{
+        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+        PreparedStatement pst = connect.prepareStatement("Select * from merlininventorydatabase.kyc where fname = ? and lname = ? and suffix = ?");
+        pst.setString(1, fn);
+        pst.setString(2, ln);
+        pst.setString(3, suf);
+        ResultSet rs = pst.executeQuery();
+        boolean x;
+        if (rs.next()) {
+//            setIdkey(rs.getInt("kyc_id"));
+//            setMiddle_name(rs.getString("mname"));
+//            setSuffix(rs.getString("suffix"));
+//            setGender(rs.getString("gender"));
+//            setBirthday(rs.getDate("bdate"));
+//            setBirthplace(rs.getString("bplace"));
+//            setSps_name(rs.getString("spouse"));
+//            setStreet(rs.getString("street"));
+//            setBrgy(rs.getString("brgy").replace("Ã±", "ñ" ));
+//            setTown(rs.getString("town").replace("Ã±", "ñ" ));
+//            setProv(rs.getString("prov").replace("Ã±", "ñ" ));
+//            setEmployer(rs.getString("employer"));
+//            setNature_business(rs.getString("nat_bus"));
+//            setSoi(rs.getString("soi"));
+//            setTin(rs.getString("tin"));
+//            setSss(rs.getString("sss"));
+//            setGsis(rs.getString("gsis"));
+//            setRisk(rs.getString("risk"));
+//            setId_presented(rs.getString("id_pres"));
+//            setNationality(rs.getString("nation"));
+//            setContact_no(rs.getString("con_num"));
+//            setHt(rs.getString("height"));
+//            setBlt(rs.getString("built"));
+//            setCmplxn(rs.getString("complexion"));
             x = true;
         } else {
             x = false;
@@ -458,12 +638,13 @@ public class Client {
     }
     
     
-    public void retrieveFromKYC() throws SQLException{
+    public void retrieveFromKYC() throws SQLException, IOException{
         Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
-        String query = "Select * from merlininventorydatabase.kyc where fname = ? and lname = ?";
+        String query = "Select * from merlininventorydatabase.kyc where fname = ? and lname = ? and suffix = ?";
         PreparedStatement pst = connect.prepareStatement(query);
         pst.setString(1, getFirst_name());
         pst.setString(2, getLast_name());
+        pst.setString(3, getSuffix());
         ResultSet rs = pst.executeQuery();
         while (rs.next()) {
             setIdkey(rs.getInt("kyc_id"));
@@ -489,10 +670,67 @@ public class Client {
             setHt(rs.getString("height"));
             setBlt(rs.getString("built"));
             setCmplxn(rs.getString("complexion"));
+            if (!isIDNull()) {
+                byte[] id_imgdata = rs.getBytes("idcard");
+                setIdimg(convertImgByteToIcon(id_imgdata, new Dimension(640, 480)));
+                setIdimgSmall(convertImgByteToIcon(id_imgdata, new Dimension(240, 180)));
+                setClientIDFound(true);
+            }
+            if (!isPhotoNull()) {
+                byte[] face_imgdata = rs.getBytes("face");
+                setPhotoimg(convertImgByteToIcon(face_imgdata, new Dimension(640, 480)));
+                setPhotoimgSmall(convertImgByteToIcon(face_imgdata, new Dimension(240, 180)));
+                setClientPhotoFound(true);
+            } 
+            
         }
         rs.close();
         pst.close();
         connect.close();
+    }
+    
+    public ImageIcon convertImgByteToIcon(byte[] imagedata, Dimension dim) throws IOException{
+        
+        InputStream is = new ByteArrayInputStream(imagedata);
+        BufferedImage img = ImageIO.read(is);
+        ImageIcon icon = new ImageIcon(Scalr.resize(img, Scalr.Method.QUALITY, dim.width, dim.height));
+        return icon;
+    }
+    
+    public boolean isPhotoNull() throws SQLException {
+        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+        PreparedStatement pst = connect.prepareStatement("Select face from merlininventorydatabase.kyc where fname = '" + getFirst_name() +"' and lname = '" + getLast_name() + "'");
+        ResultSet rs = pst.executeQuery();
+        boolean x = false;
+        if (rs.next()) {
+            if (rs.getBlob(1) == null) {
+                x = true;
+            } else {
+                x = false;
+            }
+        }
+        rs.close();
+        pst.close();
+        connect.close();
+        return x;
+    }
+    
+    public boolean isIDNull() throws SQLException {
+        Connection connect = DriverManager.getConnection(driver, f_user, f_pass);
+        PreparedStatement pst = connect.prepareStatement("Select idcard from merlininventorydatabase.kyc where fname = '" + getFirst_name() +"' and lname = '" + getLast_name() + "'");
+        ResultSet rs = pst.executeQuery();
+        boolean x = false;
+        if (rs.next()) {
+            if (rs.getBlob(1) == null) {
+                x = true;
+            } else {
+                x = false;
+            }
+        }
+        rs.close();
+        pst.close();
+        connect.close();
+        return x;
     }
     
     public void saveAuthRep1 () throws SQLException{
